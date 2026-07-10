@@ -17,3 +17,5 @@ Typer
 Mutagen
 ytmusicapi
 MusicBrainz
+
+#### em desenvolvimento
