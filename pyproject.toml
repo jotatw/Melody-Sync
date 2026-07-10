@@ -1,0 +1,20 @@
+[project]
+name = "Melody-Sync"
+version = "0.1.0"
+description = "Music Library Manager and YouTube Music Sync"
+readme = "README.md"
+requires-python = ">=3.11"
+
+dependencies = [
+    "typer",
+    "rich",
+    "mutagen",
+    "pyyaml"
+]
+
+[project.scripts]
+music = "music_library_sync.cli:app"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
