@@ -9,11 +9,26 @@ app = typer.Typer()
 
 @app.command()
 def run(
-        folder: Path = typer.Argument(..., exists=True)
+        folder: Path = typer.Argument(
+            ...,
+            exists=True,
+            file_okay=False,
+            dir_okay=True,
+            resolve_path=True,
+        )
 ):
-    files = scan_music(folder)
+    typer.echo("🎵 Iniciando análise...\n")
 
-    typer.echo(f"\nEncontradas {len(files)} músicas.\n")
+    songs = scan_music(folder)
 
-    for file in files:
-        typer.echo(file)
+    typer.echo(f"Encontradas {len(songs)} músicas.\n")
+
+    for song in songs:
+        typer.echo(
+        f"""
+        Título : {song.title}
+        Artista: {song.artist}
+        Álbum  : {song.album}
+        Arquivo: {song.filename}
+        """
+        )
