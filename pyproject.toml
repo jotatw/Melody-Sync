@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-music = "music_library_sync.cli:app"
+music = "melody_sync.cli:app"
 
 [build-system]
 requires = ["setuptools>=68"]
