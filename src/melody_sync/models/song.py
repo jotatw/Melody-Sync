@@ -10,11 +10,13 @@ class Song:
     size: int
 
     title: str | None = None
-    artist: str | None = None
+    artist: str |None = None
     album: str | None = None
 
     duration: float | None = None
     bitrate: int | None = None
+    sample_rate: int | None = None
+    channels: int | None = None
     codec: str | None = None
 
     @property
