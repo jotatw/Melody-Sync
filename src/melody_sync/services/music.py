@@ -2,6 +2,7 @@ from pathlib import Path
 
 from melody_sync.models.song import Song
 from melody_sync.services.metadata import load_metadata
+from ui.progress import track_files
 
 AUDIO_EXTENSIONS = {
     ".mp3",
@@ -21,7 +22,9 @@ def scan_music(directory: Path) -> list[Song]:
 
     music_files: list[Song] = []
 
-    for file in directory.rglob("*"):
+    files = list(directory.rglob("*"))
+
+    for file in track_files(files):
 
         if (
                 file.is_file()
