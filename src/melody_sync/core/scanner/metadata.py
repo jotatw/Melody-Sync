@@ -3,7 +3,7 @@ from mutagen import File
 from melody_sync.models.song import Song
 
 
-def load_metadata(song: Song) -> Song:
+def read_metadata(song: Song) -> Song:
 
     audio = File(song.path, easy=True)
 
@@ -16,15 +16,11 @@ def load_metadata(song: Song) -> Song:
         audio.get("title", [song.filename])[0]
     )
 
-    song.artist = (
-        audio.get("artist", ["Unknown Artist"])[0]
-    )
+    song.artist = audio.get("artist", [None])[0]
 
-    song.album = (
-        audio.get("album", ["Unknown Album"])[0]
-    )
+    song.album = audio.get("album", [None])[0]
 
-    if full_audio and full_audio.info:
+    if full_audio is not None and full_audio.info is not None:
 
         info = full_audio.info
 

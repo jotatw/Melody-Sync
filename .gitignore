@@ -2,6 +2,7 @@
 .idea/
 __pycache__/
 *.pyc
+*.py[cod]
 dist/
 build/
 *.egg-info/
