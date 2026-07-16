@@ -1,190 +1,218 @@
-## Purpose
+# Documentation Standard
 
-The Documentation Standard defines the official documentation conventions adopted by the Melody Sync project.
-
-Its purpose is to provide a consistent foundation for creating, organizing, maintaining and evolving project documentation throughout the project lifecycle.
-
-This document establishes the principles, structure and standards that ensure all documentation remains clear, maintainable and aligned with the current state of the project.
-
-It is intended for every contributor who creates, reviews or maintains project documentation.
-
-This standard is designed to support the current needs of the project while remaining adaptable as Melody Sync evolves.
+> Draft Version 1.0
 
 ---
+
+# Foundation
+
+The Foundation establishes the principles and architectural organization of Melody Sync documentation.
+
+It defines why documentation exists, how it is structured, and the concepts that guide every document within the project.
+
+---
+
+# Part I — Documentation Philosophy
+
+## Purpose
+
+The Documentation Standard defines the principles, structure, and conventions used to create and maintain documentation throughout the Melody Sync project.
+
+Its purpose is to provide a consistent foundation that helps contributors organize information, document decisions, and maintain project knowledge in a clear, structured, and sustainable way.
+
+This document serves as the starting point for all project documentation and should be used as the primary reference when creating or updating documentation.
 
 ## Why This Standard Exists
 
-As Melody Sync evolved, its documentation needs grew alongside the project itself. What began as a small software project naturally required a more consistent and organized approach to documenting its architecture, development and evolution.
+As Melody Sync grows, its documentation must remain organized, consistent, and easy to maintain.
 
-To keep this documentation clear, maintainable and easy to navigate, a common set of standards became necessary.
+This standard establishes a common approach for creating and managing project documentation, ensuring that information is structured, accessible, and understandable for both current and future contributors.
 
-The Documentation Standard was created to provide a shared foundation for project documentation while preserving Melody Sync's philosophy of simplicity and incremental growth.
-
-Rather than introducing unnecessary complexity, this standard provides a lightweight foundation that can evolve together with the project as new requirements emerge.
-
----
+By following a shared documentation standard, the project reduces inconsistencies, improves maintainability, and preserves knowledge throughout its development lifecycle.
 
 ## Documentation Philosophy
 
-Melody Sync treats documentation as an integral part of the software development process rather than a task performed after implementation.
+Documentation is a fundamental part of the Melody Sync project. It is treated as a long-term project asset rather than supplementary material.
 
-Documentation exists to support development, preserve architectural knowledge and simplify future maintenance. It should accurately represent the current state of the project and evolve together with the source code.
+Every document should contribute to a documentation system that is clear, consistent, maintainable, and capable of evolving alongside the project.
 
-The project favors simple, modular and maintainable documentation. New structures, documents and conventions are introduced only when they solve a real need while keeping the documentation prepared for future growth.
+This philosophy encourages documentation that is practical, easy to understand, and focused on supporting development, collaboration, and long-term knowledge preservation.
 
-This philosophy ensures that documentation remains practical for the project's current needs and adaptable as Melody Sync continues to evolve.
+### Core Principles
 
----
+The Melody Sync documentation is based on the following principles:
+
+- **Clarity** — Documentation should be easy to read and understand.
+- **Consistency** — Similar information should always follow the same structure.
+- **Maintainability** — Documentation should remain easy to update over time.
+- **Incremental Evolution** — Documentation evolves continuously alongside the project.
+- **Practicality** — Every document should have a clear purpose and provide real value.
 
 ## Documentation as Code
 
-Melody Sync treats documentation as part of the software itself, not as a separate deliverable.
+Documentation is developed and maintained as an integral part of the Melody Sync project.
 
-Documentation is created, reviewed and maintained alongside the source code. It evolves incrementally as the project evolves, ensuring that both remain consistent throughout the software lifecycle.
+It follows the same principles applied to the source code: it is version-controlled, reviewed, continuously improved, and evolves together with the project.
 
-Changes to the project should be reflected in its documentation whenever they affect the architecture, development process or user experience.
+Documentation is not considered a separate deliverable, but a core project asset that supports development, collaboration, and long-term maintainability.
 
-By treating documentation as code, Melody Sync preserves knowledge, reduces maintenance effort and keeps project information reliable over time.
+### Key Concepts
 
----
+Documentation within Melody Sync follows these principles:
 
-## Core Principles
-
-| Principle                 | Description                                                                                  |
-|---------------------------|----------------------------------------------------------------------------------------------|
-| **Simplicity**            | Documentation should solve current needs without unnecessary complexity.                     |
-| **Consistency**           | Similar documents should follow the same structure, terminology and conventions.             |
-| **Maintainability**       | Melody Sync documentation should be easy to update as the project evolves.                   |
-| **Pragmatic Scalability** | Melody Sync documentation should be designed to grow naturally when the project requires it. |
-| **Single Responsibility** | Every document should have one clear purpose and avoid unnecessary overlap.                  |
+- Documentation evolves together with the project.
+- Every meaningful change should be documented.
+- Documentation is reviewed as part of the development process.
+- Documentation is maintained with the same level of care as the source code.
 
 ---
 
-
+# Part II — Documentation Architecture
 
 ## Documentation Architecture
 
-The Melody Sync documentation is organized as a small, modular documentation structure designed to support the project throughout its development lifecycle.
+The Melody Sync documentation is organized as a structured system designed to support the entire project lifecycle.
 
-Instead of grouping documents by size or complexity, the documentation is organized by responsibility. Each directory has a clear purpose, making the documentation easier to understand, maintain and evolve over time.
+Rather than existing as isolated documents, each document belongs to a defined category with a specific purpose and responsibility. This organization improves navigation, reduces duplication, and ensures that documentation evolves consistently as the project grows.
 
-The architecture favors simplicity while remaining flexible enough to support future growth when the project requires it.
-
----
-
-### Documentation Structure
-
-The documentation is organized under the `docs/` directory, which serves as the central location for all project documentation.
-
-The current structure reflects the project's organization and is intentionally kept small. New directories should only be introduced when the existing structure no longer supports the project's needs.
-
-```text
-docs/
-
-├── README.md
-├── INDEX.md
-├── handbook/
-├── project/
-├── history/
-└── templates/
-```
-
----
-
-### Directory Responsibilities
-
-| Directory    | Purpose                                             |
-|--------------|-----------------------------------------------------|
-| `docs/`      | Root directory for all project documentation        |
-| `README.md`  | Primary entry point to the project                  |
-| `INDEX.md`   | Central navigation for the documentation            |
-| `handbook/`  | Permanent guides and standards                      |
-| `project/`   | Planning, active development and project management |
-| `history/`   | Historical records and project evolution            |
-| `templates/` | Reusable templates for documentation                |
-
-
----
-
-### Organization Principles
-
-The documentation architecture follows three organizational principles:
-
-- **Simplicity** — Keep the structure as small as possible while meeting the project's current needs.
-
-- **Single Responsibility** — Each directory has a clearly defined purpose to avoid overlap and improve navigation.
-
-- **Expandability** — The structure is designed to accommodate future growth without requiring major reorganization.
-
----
+The documentation architecture establishes the foundation for creating, maintaining, and discovering project information in a predictable and scalable way.
 
 ## Documentation Categories
 
-Project documentation is organized into categories according to the role each document plays within the project rather than its size or complexity.
+To keep the project organized and maintainable, the Melody Sync documentation is divided into categories. Each category groups documents with a common purpose and responsibility.
 
-Grouping related documents together improves navigation, simplifies maintenance and makes the documentation easier to expand as the project evolves.
+This organization improves navigation, reduces information duplication, and helps contributors quickly locate the documentation they need.
 
-Each category represents a specific area of the project and helps contributors quickly identify where new documentation belongs.
+The following sections describe the primary documentation categories used throughout the project.
 
----
+### Category Overview
 
-### Category Reference
+| Category       | Purpose                                                             |
+|----------------|---------------------------------------------------------------------|
+| Foundation     | Defines the project's documentation philosophy and architecture.    |
+| Implementation | Describes how the project is developed and implemented.             |
+| Governance     | Defines maintenance, review, and long-term documentation practices. |
 
-| If you need to...                    | Use...        |
-|--------------------------------------|---------------|
-| Create a permanent guide or standard | **Handbook**  |
-| Plan or track project work           | **Project**   |
-| Record changes or milestones         | **History**   |
-| Create a reusable document model     | **Templates** |
+## Directory Structure
 
----
+The Melody Sync documentation follows a standardized directory structure designed to keep project information organized, easy to navigate, and scalable as the project evolves.
 
-### Purpose
+Each documentation category has a dedicated location within the repository, allowing contributors to quickly locate documents and maintain a consistent organizational pattern across the project.
 
-| Category      | Purpose                                                        |
-|---------------|----------------------------------------------------------------|
-| **Handbook**  | Permanent guides, standards and reference documentation.       |
-| **Project**   | Planning, active development and project management documents. |
-| **History**   | Historical records and project evolution.                      |
-| **Templates** | Reusable document templates used across the project.           |
+The following directory structure represents the recommended organization of the documentation.
 
----
+```text
+docs/
+│
+├── foundation/
+│
+├── implementation/
+│
+├── governance/
+│
+├── templates/
+│
+└── assets/
+```
 
-### Category Evolution
+### Design Goals
 
-Documentation categories should evolve only when the existing structure can no longer represent the project's needs effectively.
+The documentation directory structure is designed to:
 
-To preserve a simple and maintainable documentation architecture, category evolution follows three principles:
-
-- **Reuse First** — Prefer existing categories before introducing new ones.
-
-- **Grow When Necessary** — Create new categories only when they solve a recurring and well-defined need.
-
-- **Keep Responsibilities Clear** — Every category should represent a single area of responsibility, avoiding unnecessary overlap.
-
----
+- Keep related documents together.
+- Make information easy to locate.
+- Support incremental project growth.
+- Maintain a consistent organization across the repository.
 
 ## Template System
 
-Templates provide a consistent foundation for creating project documentation.
+To ensure consistency across the project, Melody Sync uses a standardized template system for creating and maintaining documentation.
 
-Rather than defining the content of individual documents, templates define their structure, ensuring that documentation remains consistent, maintainable and aligned with the standards established by Melody Sync.
+Templates provide a common structure for documents with similar purposes, helping contributors organize information in a predictable and consistent way.
 
-By standardizing document structure, templates reduce repetitive work, simplify maintenance and allow new documentation to integrate naturally into the project's documentation architecture.
+By using templates, the project reduces formatting differences, improves readability, and simplifies the creation of new documentation.
 
----
+### Key Objectives
 
-### Template Evolution
+The template system is designed to:
 
-The template system should evolve together with the project while preserving consistency across all documentation.
+- Standardize document structure.
+- Improve documentation consistency.
+- Simplify document creation.
+- Reduce maintenance effort.
+- Support long-term project evolution.
 
-To maintain a coherent documentation architecture, template evolution follows three principles:
+## Template Structure
 
-- **Reuse Before Creating** — Prefer existing templates whenever possible.
+All documentation templates in Melody Sync follow a common structure to provide consistency, readability, and ease of maintenance.
 
-- **Improve Existing Templates** — Extend or refine existing templates before introducing new ones.
+Although each template is designed for a specific purpose, they all share a standardized organization that allows contributors to quickly understand and complete new documents.
 
-- **Maintain Consistency** — Changes to templates should preserve the project's documentation standards and shared structure.
+This common structure ensures that documentation remains predictable and easy to navigate throughout the project.
 
----
+### Standard Sections
 
+A typical documentation template may include the following sections:
+
+- Document Title
+- Metadata
+- Purpose
+- Scope
+- Main Content
+- References
+- Revision History (when applicable)
+
+### Design Principles
+
+All templates should follow these principles:
+
+- Consistent organization
+- Clear responsibilities
+- Minimal redundancy
+- Easy maintenance
+- Scalability
+
+## Template Reference
+
+The Melody Sync documentation system includes a collection of standardized templates designed for different documentation purposes.
+
+Each template provides a predefined structure that promotes consistency while reducing the effort required to create new documents.
+
+The following table presents the primary templates adopted by the project.
+
+### Available Templates
+
+| Template                           | Purpose                                                       |
+|------------------------------------|---------------------------------------------------------------|
+| Documentation Standard             | Defines documentation principles and architecture.            |
+| Development Guide                  | Describes the development workflow and recommended practices. |
+| Architecture Decision Record (ADR) | Records important architectural decisions.                    |
+| Feature Specification              | Defines the requirements and implementation of new features.  |
+| Sprint Planning                    | Documents sprint goals and planned work.                      |
+| Meeting Notes                      | Records meetings and important discussions.                   |
+| Release Notes                      | Summarizes changes introduced in each release.                |
+
+### Template Maintenance
+
+Templates should be reviewed periodically to ensure they remain aligned with the project's documentation standards and development practices.
+
+New templates may be introduced as the project evolves, provided they follow the principles and structure defined in this standard.
+
+## Transition to Implementation
+
+The Foundation establishes the principles, architecture, and organizational structure of the Melody Sync documentation system.
+
+With these concepts defined, the following sections focus on how these standards are applied throughout the project's development process.
+
+The Implementation section describes the practical workflows, development practices, and documentation procedures used to create, maintain, and evolve the project in a consistent and sustainable manner.
+
+### Foundation Summary
+
+The Foundation defines:
+
+- Why documentation exists.
+- The principles that guide it.
+- How documentation is organized.
+- How documentation is standardized.
+
+The following parts build upon this foundation by explaining how these concepts are applied during software development.
