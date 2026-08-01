@@ -5,10 +5,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.melodysync.database.MusicDatabase
 import com.melodysync.database.MusicRepository
+import com.melodysync.model.DuplicateGroup
 import com.melodysync.model.HealthReport
 import com.melodysync.model.LibraryStatistics
 import com.melodysync.model.Song
 import com.melodysync.scanner.calculateStatistics
+import com.melodysync.service.DuplicateDetectionService
 import com.melodysync.service.LibraryHealthService
 import com.melodysync.service.LibrarySyncService
 import com.melodysync.service.SyncResult
@@ -25,6 +27,13 @@ enum class ScanStatus {
 }
 
 enum class HealthStatus {
+    IDLE,
+    RUNNING,
+    DONE,
+    ERROR,
+}
+
+enum class DuplicatesStatus {
     IDLE,
     RUNNING,
     DONE,
@@ -61,6 +70,12 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
         private set
 
     var healthReport by mutableStateOf<HealthReport?>(null)
+        private set
+
+    var duplicatesStatus by mutableStateOf(DuplicatesStatus.IDLE)
+        private set
+
+    var duplicateGroups by mutableStateOf<List<DuplicateGroup>>(emptyList())
         private set
 
     val filteredSongs: List<Song>
@@ -123,6 +138,25 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Health check failed"
                 healthStatus = HealthStatus.ERROR
+            }
+        }
+    }
+
+    fun detectDuplicates() {
+        if (duplicatesStatus == DuplicatesStatus.RUNNING) return
+        val dir = Path.of(directory.trim())
+        errorMessage = null
+
+        scope.launch {
+            duplicatesStatus = DuplicatesStatus.RUNNING
+            try {
+                MusicDatabase.connect()
+                val songs = MusicRepository.findAll().filter { it.path.startsWith(dir) }
+                duplicateGroups = DuplicateDetectionService.detectDuplicates(songs)
+                duplicatesStatus = DuplicatesStatus.DONE
+            } catch (e: Exception) {
+                errorMessage = e.message ?: "Duplicate detection failed"
+                duplicatesStatus = DuplicatesStatus.ERROR
             }
         }
     }

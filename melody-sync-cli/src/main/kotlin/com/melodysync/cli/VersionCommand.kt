@@ -10,6 +10,6 @@ class VersionCommand : CliktCommand(
         "Show the Melody Sync version"
 
     override fun run() {
-        echo("Melody Sync v0.3.0-dev")
+        echo("Melody Sync v0.6.0-dev")
     }
 }

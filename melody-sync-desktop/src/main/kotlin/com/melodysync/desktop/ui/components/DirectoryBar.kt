@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
+import com.melodysync.desktop.state.DuplicatesStatus
 import com.melodysync.desktop.state.HealthStatus
 import com.melodysync.desktop.state.ScanStatus
 import java.io.File
@@ -51,6 +52,12 @@ fun DirectoryBar(state: AppState) {
                 enabled = state.directory.isNotBlank() && state.healthStatus != HealthStatus.RUNNING,
             ) {
                 Text(if (state.healthStatus == HealthStatus.RUNNING) "Checking…" else "Health")
+            }
+            OutlinedButton(
+                onClick = state::detectDuplicates,
+                enabled = state.directory.isNotBlank() && state.duplicatesStatus != DuplicatesStatus.RUNNING,
+            ) {
+                Text(if (state.duplicatesStatus == DuplicatesStatus.RUNNING) "Checking…" else "Duplicates")
             }
         }
 
@@ -114,6 +121,71 @@ fun DirectoryBar(state: AppState) {
                 }
             }
             HealthStatus.IDLE -> Unit
+        }
+
+        when (state.duplicatesStatus) {
+            DuplicatesStatus.RUNNING -> {
+                LinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                )
+                Text(
+                    "Checking for duplicates…",
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
+            DuplicatesStatus.DONE -> {
+                if (state.duplicateGroups.isNotEmpty()) {
+                    DuplicatesSummary(state)
+                } else {
+                    Text(
+                        "No duplicates found.",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                }
+            }
+            DuplicatesStatus.ERROR -> {
+                state.errorMessage?.let {
+                    Text(
+                        it,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                }
+            }
+            DuplicatesStatus.IDLE -> Unit
+        }
+    }
+}
+
+@Composable
+private fun DuplicatesSummary(state: AppState) {
+    val extraFiles = state.duplicateGroups.sumOf { it.extraFiles }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp),
+    ) {
+        Text(
+            "Duplicates: ${state.duplicateGroups.size} groups · $extraFiles extra files",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.error,
+        )
+        state.duplicateGroups.take(3).forEach { group ->
+            Text(
+                "  • ${group.artist ?: "Unknown"} — ${group.title ?: "Untitled"} (${group.songs.size} files)",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        if (state.duplicateGroups.size > 3) {
+            Text(
+                "  … and ${state.duplicateGroups.size - 3} more",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }

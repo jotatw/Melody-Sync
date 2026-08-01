@@ -82,15 +82,16 @@ High-level project evolution.
 
 | Item | Status |
 |------|--------|
-| Version | **v0.5.0-dev** |
+| Version | **v0.6.0-dev** |
 | Language | **Kotlin** (migrated from Python) |
 | Core (model + scanner) | ✅ Completed |
-| CLI (`melody-sync scan` / `health`) | ✅ Completed |
+| CLI (`melody-sync scan` / `health` / `duplicates`) | ✅ Completed |
 | Database (SQLite via Exposed) | ✅ Completed |
 | Library Sync (scanner → DB) | ✅ Completed |
 | Desktop GUI (Compose) | ✅ Completed |
 | Library Health Check | ✅ Completed |
-| Automated Tests | 🎉 **90 Passing** (76 core + 8 CLI + 6 desktop) |
+| Duplicate Detection | ✅ Completed |
+| Automated Tests | 🎉 **100 Passing** (83 core + 11 CLI + 6 desktop) |
 | YouTube API enrichment | ⏳ Next milestone |
 | Automatic library re-scan | ⏳ Planned |
 
@@ -139,4 +140,4 @@ The documentation follows the same philosophy as the source code:
 
 **Last Updated**
 
-2026-08-01 — Milestone 5 (Library Health Check) completed
+2026-08-01 — Milestone 6 (Duplicate Detection) completed

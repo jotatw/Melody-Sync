@@ -13,7 +13,7 @@ class MelodySyncCommand : CliktCommand(
 
     override fun run() {
         if (currentContext.invokedSubcommand == null) {
-            echo("Melody Sync v0.3.0-dev")
+            echo("Melody Sync v0.6.0-dev")
             echo("Run 'melody-sync scan <directory>' to scan a music library.")
         }
     }
@@ -21,5 +21,5 @@ class MelodySyncCommand : CliktCommand(
 
 fun main(args: Array<String>) =
     MelodySyncCommand()
-        .subcommands(ScanCommand(), HealthCommand(), VersionCommand())
+        .subcommands(ScanCommand(), HealthCommand(), DuplicatesCommand(), VersionCommand())
         .main(args)

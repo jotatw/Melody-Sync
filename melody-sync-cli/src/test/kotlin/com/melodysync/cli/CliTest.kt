@@ -1,6 +1,9 @@
 package com.melodysync.cli
 
 import com.github.ajalt.clikt.testing.test
+import com.melodysync.database.MusicDatabase
+import com.melodysync.database.MusicRepository
+import com.melodysync.model.Song
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -14,7 +17,7 @@ class VersionCommandTest {
         val result = VersionCommand().test("")
 
         assertEquals(0, result.statusCode)
-        assertTrue(result.stdout.contains("v0.3.0-dev"))
+        assertTrue(result.stdout.contains("v0.6.0-dev"))
     }
 }
 
@@ -110,5 +113,49 @@ class HealthCommandTest {
 
         assertEquals(0, result.statusCode)
         assertTrue(result.output.contains("0 total"))
+    }
+}
+
+class DuplicatesCommandTest {
+    @TempDir
+    lateinit var tmpDir: Path
+
+    @TempDir
+    lateinit var dbDir: Path
+
+    @Test
+    fun `reports no duplicates for empty database`() {
+        val db = dbDir.resolve("dup.db")
+        val result = DuplicatesCommand().test("--db $db ${tmpDir}")
+
+        assertEquals(0, result.statusCode)
+        assertTrue(result.stdout.contains("Duplicate groups: 0"))
+        assertTrue(result.stdout.contains("No duplicates found"))
+    }
+
+    @Test
+    fun `reports duplicate groups from database`() {
+        val db = dbDir.resolve("dup.db")
+        MusicDatabase.connectToFile(db)
+        MusicRepository.insert(
+            Song(path = tmpDir.resolve("a.mp3"), size = 100L, title = "Song", artist = "Artist", duration = 200.0),
+        )
+        MusicRepository.insert(
+            Song(path = tmpDir.resolve("b.mp3"), size = 100L, title = "Song", artist = "Artist", duration = 200.0),
+        )
+
+        val result = DuplicatesCommand().test("--db $db ${tmpDir}")
+
+        assertEquals(0, result.statusCode)
+        assertTrue(result.stdout.contains("Duplicate groups: 1"))
+        assertTrue(result.stdout.contains("Artist — Song"))
+    }
+
+    @Test
+    fun `fails for missing directory`() {
+        val missing = tmpDir.resolve("nonexistent").toString()
+        val result = DuplicatesCommand().test("--db ${dbDir.resolve("dup.db")} $missing")
+
+        assertTrue(result.output.contains("Directory must exist"))
     }
 }

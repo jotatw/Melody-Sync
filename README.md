@@ -16,14 +16,15 @@ The project is also a way to practice software engineering: architecture before 
 
 | Item | Status |
 |------|--------|
-| Version | **v0.5.0-dev** |
+| Version | **v0.6.0-dev** |
 | Language | **Kotlin** (JVM 21) |
 | Core (scan, metadata, statistics) | ✅ Migrated from Python |
-| CLI (`melody-sync scan` / `health`) | ✅ Working |
-| Automated tests | 🎉 **90 passing** |
+| CLI (`melody-sync scan` / `health` / `duplicates`) | ✅ Working |
+| Automated tests | 🎉 **100 passing** |
 | Database (SQLite) | ✅ Working |
 | GUI (Desktop) | ✅ Working (Compose) |
 | Library health check | ✅ Working |
+| Duplicate detection | ✅ Working |
 
 ---
 
@@ -40,15 +41,16 @@ The project is also a way to practice software engineering: architecture before 
 - ✅ Cross-format detection (uppercase extensions, nested directories)
 - ✅ Desktop GUI — scan, browse, search and filter songs (Compose Desktop, Material 3, dark/light toggle)
 - ✅ Library health check — classify non-audio files, detect missing metadata, zero duration and orphaned entries (CLI + GUI)
+- ✅ Duplicate detection — group songs by normalized title/artist and similar duration (CLI + GUI, report-only)
 - ✅ System theme detection (KDE Plasma + GNOME)
-- ✅ 90 automated tests with real audio fixtures
+- ✅ 100 automated tests with real audio fixtures
 
 ### In Progress / Planned
 
 - ⏳ YouTube API integration — enrich songs with metadata, covers and lyrics
 - ⏳ Automatic library re-scan (file watcher / periodic)
 - ⏳ File organization (auto-sort into `Artist/Album/` structure)
-- ⏳ Duplicate detection
+- ⏳ Export tools
 
 ---
 
@@ -56,10 +58,10 @@ The project is also a way to practice software engineering: architecture before 
 
 ```
 melody-sync-core/          Business logic
-├── model/                 Domain objects: Song, LibraryStatistics, HealthReport, FileCategory
+├── model/                 Domain objects: Song, LibraryStatistics, HealthReport, FileCategory, DuplicateGroup
 ├── scanner/               Discovery, Metadata, Scanner, Statistics
 ├── database/              SongsTable, MusicDatabase, MusicRepository
-└── service/               LibrarySyncService, LibraryHealthService
+└── service/               LibrarySyncService, LibraryHealthService, DuplicateDetectionService
 
 melody-sync-cli/           Command-line interface (clikt)
 └── cli/                   ScanCommand, VersionCommand
@@ -131,6 +133,7 @@ cd Melody-Sync
 # Run the CLI
 ./gradlew :melody-sync-cli:run --args="scan /path/to/music"
 ./gradlew :melody-sync-cli:run --args="health /path/to/music"
+./gradlew :melody-sync-cli:run --args="duplicates /path/to/music"
 
 # Run the Desktop GUI
 ./gradlew :melody-sync-desktop:run
@@ -151,12 +154,12 @@ cd Melody-Sync
 
 ## Testing
 
-**90 tests, all passing:**
+**100 tests, all passing:**
 
 | Module | Tests | Area |
 |--------|-------|------|
-| `core` | 76 | Models, Discovery, Metadata, Scanner, Statistics, Database, Sync, Health |
-| `cli` | 8 | Version, Scan, Health commands |
+| `core` | 83 | Models, Discovery, Metadata, Scanner, Statistics, Database, Sync, Health, Duplicates |
+| `cli` | 11 | Version, Scan, Health, Duplicates commands |
 | `desktop` | 6 | Theme detection, color schemes |
 
 ```bash
@@ -220,11 +223,15 @@ Project documentation lives in the `docs/` directory. Key documents:
 - [x] GUI Health button (report-only, suggestions for the user)
 - [ ] Report-only confirmed: never modifies files automatically
 
-### Milestone 6 — Enrichment & Organization ⏳
+### Milestone 6 — Duplicate Detection ✅
+- [x] Group duplicate songs (normalized title/artist + duration tolerance)
+- [x] CLI command `melody-sync duplicates <directory>`
+- [x] GUI Duplicates button (report-only, suggests which file to keep)
+
+### Milestone 7 — Enrichment & Organization ⏳
 - [ ] YouTube API integration (covers, lyrics)
 - [ ] Automatic library re-scan (file watcher / periodic)
 - [ ] File organization (Artist/Album structure)
-- [ ] Duplicate detection
 - [ ] Export tools
 
 ---
