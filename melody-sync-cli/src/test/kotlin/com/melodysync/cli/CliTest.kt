@@ -159,3 +159,56 @@ class DuplicatesCommandTest {
         assertTrue(result.output.contains("Directory must exist"))
     }
 }
+
+class ExportCommandTest {
+    @TempDir
+    lateinit var tmpDir: Path
+
+    @TempDir
+    lateinit var dbDir: Path
+
+    @Test
+    fun `exports library to json`() {
+        val db = dbDir.resolve("export.db")
+        MusicDatabase.connectToFile(db)
+        MusicRepository.insert(
+            Song(path = tmpDir.resolve("a.mp3"), size = 100L, title = "Song A", artist = "Artist", duration = 200.0),
+        )
+
+        val out = dbDir.resolve("lib.json")
+        val result = ExportCommand().test("--db $db --output $out ${tmpDir}")
+
+        assertEquals(0, result.statusCode)
+        assertTrue(result.stdout.contains("Exported 1 songs"))
+        assertTrue(Files.exists(out))
+        val content = Files.readString(out)
+        assertTrue(content.contains("Song A"))
+    }
+
+    @Test
+    fun `exports library to csv`() {
+        val db = dbDir.resolve("export.db")
+        MusicDatabase.connectToFile(db)
+        MusicRepository.insert(
+            Song(path = tmpDir.resolve("a.mp3"), size = 100L, title = "Song A", artist = "Artist", duration = 200.0),
+        )
+
+        val out = dbDir.resolve("lib.csv")
+        val result = ExportCommand().test("--format csv --db $db --output $out ${tmpDir}")
+
+        assertEquals(0, result.statusCode)
+        assertTrue(Files.exists(out))
+        val content = Files.readString(out)
+        assertTrue(content.startsWith("path,filename"))
+        assertTrue(content.contains("Song A"))
+    }
+
+    @Test
+    fun `reports no songs for empty library`() {
+        val db = dbDir.resolve("empty.db")
+        val result = ExportCommand().test("--db $db --output ${dbDir.resolve("lib.json")} ${tmpDir}")
+
+        assertEquals(0, result.statusCode)
+        assertTrue(result.stdout.contains("No songs found"))
+    }
+}

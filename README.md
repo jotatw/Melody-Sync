@@ -16,17 +16,18 @@ The project is also a way to practice software engineering: architecture before 
 
 | Item | Status |
 |------|--------|
-| Version | **v0.8.0-dev** |
+| Version | **v0.9.0-dev** |
 | Language | **Kotlin** (JVM 21) |
 | Core (scan, metadata, statistics) | ✅ Migrated from Python |
-| CLI (`melody-sync scan` / `health` / `duplicates` / `organize`) | ✅ Working |
-| Automated tests | 🎉 **113 passing** |
+| CLI (`melody-sync scan` / `health` / `duplicates` / `organize` / `export`) | ✅ Working |
+| Automated tests | 🎉 **122 passing** |
 | Database (SQLite) | ✅ Working |
 | GUI (Desktop) | ✅ Working (Compose) |
 | Library health check | ✅ Working |
 | Duplicate detection | ✅ Working |
 | File watcher (auto re-sync) | ✅ Working |
 | Folder organization | ✅ Working |
+| Export (JSON/CSV) | ✅ Working |
 
 ---
 
@@ -46,13 +47,13 @@ The project is also a way to practice software engineering: architecture before 
 - ✅ Duplicate detection — group songs by normalized title/artist and similar duration (CLI + GUI, report-only)
 - ✅ File watcher — automatic re-sync when files change (GUI toggle, debounced)
 - ✅ Folder organization — plan `Artist/Album/` structure, apply with `--apply` (report-first, never automatic)
+- ✅ Export — library metadata to JSON or CSV (CLI)
 - ✅ System theme detection (KDE Plasma + GNOME)
-- ✅ 113 automated tests with real audio fixtures
+- ✅ 122 automated tests with real audio fixtures
 
 ### In Progress / Planned
 
 - ⏳ YouTube API integration — enrich songs with metadata, covers and lyrics
-- ⏳ Export tools
 
 ---
 
@@ -63,7 +64,7 @@ melody-sync-core/          Business logic
 ├── model/                 Domain objects: Song, LibraryStatistics, HealthReport, FileCategory, DuplicateGroup, OrganizationReport
 ├── scanner/               Discovery, Metadata, Scanner, Statistics
 ├── database/              SongsTable, MusicDatabase, MusicRepository
-└── service/               LibrarySyncService, LibraryHealthService, DuplicateDetectionService, LibraryWatcher, LibraryOrganizationService
+└── service/               LibrarySyncService, LibraryHealthService, DuplicateDetectionService, LibraryWatcher, LibraryOrganizationService, LibraryExportService
 
 melody-sync-cli/           Command-line interface (clikt)
 └── cli/                   ScanCommand, VersionCommand
@@ -138,6 +139,8 @@ cd Melody-Sync
 ./gradlew :melody-sync-cli:run --args="duplicates /path/to/music"
 ./gradlew :melody-sync-cli:run --args="organize /path/to/music"        # dry-run
 ./gradlew :melody-sync-cli:run --args="organize --apply /path/to/music" # move files
+./gradlew :melody-sync-cli:run --args="export --format json /path/to/music"
+./gradlew :melody-sync-cli:run --args="export --format csv -o library.csv /path/to/music"
 
 # Run the Desktop GUI
 ./gradlew :melody-sync-desktop:run
@@ -158,12 +161,12 @@ cd Melody-Sync
 
 ## Testing
 
-**113 tests, all passing:**
+**122 tests, all passing:**
 
 | Module | Tests | Area |
 |--------|-------|------|
-| `core` | 96 | Models, Discovery, Metadata, Scanner, Statistics, Database, Sync, Health, Duplicates, Watcher, Organization |
-| `cli` | 11 | Version, Scan, Health, Duplicates, Organize commands |
+| `core` | 102 | Models, Discovery, Metadata, Scanner, Statistics, Database, Sync, Health, Duplicates, Watcher, Organization, Export |
+| `cli` | 14 | Version, Scan, Health, Duplicates, Organize, Export commands |
 | `desktop` | 6 | Theme detection, color schemes |
 
 ```bash
@@ -244,9 +247,13 @@ Project documentation lives in the `docs/` directory. Key documents:
 - [x] CLI command `melody-sync organize`
 - [x] GUI Organize button (dry-run summary)
 
-### Milestone 9 — Enrichment & Export ⏳
+### Milestone 9 — Export ✅
+- [x] Export library metadata to JSON (pretty-printed)
+- [x] Export library metadata to CSV (with escaping)
+- [x] CLI command `melody-sync export` (`--format json|csv`, `--output`)
+
+### Milestone 10 — Enrichment ⏳
 - [ ] YouTube API integration (covers, lyrics)
-- [ ] Export tools
 
 ---
 

@@ -21,5 +21,5 @@ class MelodySyncCommand : CliktCommand(
 
 fun main(args: Array<String>) =
     MelodySyncCommand()
-        .subcommands(ScanCommand(), HealthCommand(), DuplicatesCommand(), OrganizeCommand(), VersionCommand())
+        .subcommands(ScanCommand(), HealthCommand(), DuplicatesCommand(), OrganizeCommand(), ExportCommand(), VersionCommand())
         .main(args)
