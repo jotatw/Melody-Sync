@@ -16,11 +16,11 @@ The project is also a way to practice software engineering: architecture before 
 
 | Item | Status |
 |------|--------|
-| Version | **v0.9.0-dev** |
+| Version | **v0.10.0-dev** |
 | Language | **Kotlin** (JVM 21) |
 | Core (scan, metadata, statistics) | ✅ Migrated from Python |
-| CLI (`melody-sync scan` / `health` / `duplicates` / `organize` / `export`) | ✅ Working |
-| Automated tests | 🎉 **122 passing** |
+| CLI (`melody-sync scan` / `health` / `duplicates` / `organize` / `export` / `enrich`) | ✅ Working |
+| Automated tests | 🎉 **129 passing** |
 | Database (SQLite) | ✅ Working |
 | GUI (Desktop) | ✅ Working (Compose) |
 | Library health check | ✅ Working |
@@ -28,6 +28,7 @@ The project is also a way to practice software engineering: architecture before 
 | File watcher (auto re-sync) | ✅ Working |
 | Folder organization | ✅ Working |
 | Export (JSON/CSV) | ✅ Working |
+| YouTube enrichment | ✅ Working (needs API key) |
 
 ---
 
@@ -48,12 +49,14 @@ The project is also a way to practice software engineering: architecture before 
 - ✅ File watcher — automatic re-sync when files change (GUI toggle, debounced)
 - ✅ Folder organization — plan `Artist/Album/` structure, apply with `--apply` (report-first, never automatic)
 - ✅ Export — library metadata to JSON or CSV (CLI)
+- ✅ YouTube enrichment — search candidates for songs missing metadata (CLI, report-only)
 - ✅ System theme detection (KDE Plasma + GNOME)
-- ✅ 122 automated tests with real audio fixtures
+- ✅ 129 automated tests with real audio fixtures
 
 ### In Progress / Planned
 
-- ⏳ YouTube API integration — enrich songs with metadata, covers and lyrics
+- ⏳ YouTube enrichment: auto-apply metadata to songs (currently report-only)
+- ⏳ Cover art and lyrics fetching from matched videos
 
 ---
 
@@ -61,10 +64,10 @@ The project is also a way to practice software engineering: architecture before 
 
 ```
 melody-sync-core/          Business logic
-├── model/                 Domain objects: Song, LibraryStatistics, HealthReport, FileCategory, DuplicateGroup, OrganizationReport
+├── model/                 Domain objects: Song, LibraryStatistics, HealthReport, FileCategory, DuplicateGroup, OrganizationReport, YouTubeVideoResult
 ├── scanner/               Discovery, Metadata, Scanner, Statistics
 ├── database/              SongsTable, MusicDatabase, MusicRepository
-└── service/               LibrarySyncService, LibraryHealthService, DuplicateDetectionService, LibraryWatcher, LibraryOrganizationService, LibraryExportService
+└── service/               LibrarySyncService, LibraryHealthService, DuplicateDetectionService, LibraryWatcher, LibraryOrganizationService, LibraryExportService, YouTubeSearchService, SongEnrichmentService
 
 melody-sync-cli/           Command-line interface (clikt)
 └── cli/                   ScanCommand, VersionCommand
@@ -141,6 +144,7 @@ cd Melody-Sync
 ./gradlew :melody-sync-cli:run --args="organize --apply /path/to/music" # move files
 ./gradlew :melody-sync-cli:run --args="export --format json /path/to/music"
 ./gradlew :melody-sync-cli:run --args="export --format csv -o library.csv /path/to/music"
+./gradlew :melody-sync-cli:run --args="enrich --only-missing /path/to/music"  # needs YOUTUBE_API_KEY
 
 # Run the Desktop GUI
 ./gradlew :melody-sync-desktop:run
@@ -161,12 +165,12 @@ cd Melody-Sync
 
 ## Testing
 
-**122 tests, all passing:**
+**129 tests, all passing:**
 
 | Module | Tests | Area |
 |--------|-------|------|
-| `core` | 102 | Models, Discovery, Metadata, Scanner, Statistics, Database, Sync, Health, Duplicates, Watcher, Organization, Export |
-| `cli` | 14 | Version, Scan, Health, Duplicates, Organize, Export commands |
+| `core` | 107 | Models, Discovery, Metadata, Scanner, Statistics, Database, Sync, Health, Duplicates, Watcher, Organization, Export, Enrichment |
+| `cli` | 16 | Version, Scan, Health, Duplicates, Organize, Export, Enrich commands |
 | `desktop` | 6 | Theme detection, color schemes |
 
 ```bash
@@ -252,8 +256,13 @@ Project documentation lives in the `docs/` directory. Key documents:
 - [x] Export library metadata to CSV (with escaping)
 - [x] CLI command `melody-sync export` (`--format json|csv`, `--output`)
 
-### Milestone 10 — Enrichment ⏳
-- [ ] YouTube API integration (covers, lyrics)
+### Milestone 10 — YouTube Enrichment ✅
+- [x] Search YouTube for candidate matches (YouTube Data API v3)
+- [x] Query built from artist + title (or filename fallback)
+- [x] CLI command `melody-sync enrich` with `--only-missing`
+- [x] Report-only — candidates shown for review, nothing written
+- [ ] Auto-apply metadata to songs (future)
+- [ ] Cover art and lyrics fetching (future)
 
 ---
 

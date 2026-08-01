@@ -82,10 +82,10 @@ High-level project evolution.
 
 | Item | Status |
 |------|--------|
-| Version | **v0.9.0-dev** |
+| Version | **v0.10.0-dev** |
 | Language | **Kotlin** (migrated from Python) |
 | Core (model + scanner) | ✅ Completed |
-| CLI (`melody-sync scan` / `health` / `duplicates` / `organize` / `export`) | ✅ Completed |
+| CLI (`melody-sync scan` / `health` / `duplicates` / `organize` / `export` / `enrich`) | ✅ Completed |
 | Database (SQLite via Exposed) | ✅ Completed |
 | Library Sync (scanner → DB) | ✅ Completed |
 | Desktop GUI (Compose) | ✅ Completed |
@@ -94,8 +94,8 @@ High-level project evolution.
 | File Watcher (auto re-sync) | ✅ Completed |
 | Folder Organization | ✅ Completed |
 | Export (JSON/CSV) | ✅ Completed |
-| Automated Tests | 🎉 **122 Passing** (102 core + 14 CLI + 6 desktop) |
-| YouTube API enrichment | ⏳ Next milestone |
+| YouTube Enrichment | ✅ Completed (report-only) |
+| Automated Tests | 🎉 **129 Passing** (107 core + 16 CLI + 6 desktop) |
 
 ---
 
@@ -142,4 +142,4 @@ The documentation follows the same philosophy as the source code:
 
 **Last Updated**
 
-2026-08-01 — Milestone 9 (Export) completed
+2026-08-01 — Milestone 10 (YouTube Enrichment) completed

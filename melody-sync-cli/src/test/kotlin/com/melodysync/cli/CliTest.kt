@@ -212,3 +212,27 @@ class ExportCommandTest {
         assertTrue(result.stdout.contains("No songs found"))
     }
 }
+
+class EnrichCommandTest {
+    @TempDir
+    lateinit var tmpDir: Path
+
+    @TempDir
+    lateinit var dbDir: Path
+
+    @Test
+    fun `reports missing api key`() {
+        val result = EnrichCommand().test("${tmpDir}")
+
+        assertEquals(0, result.statusCode)
+        assertTrue(result.stdout.contains("YOUTUBE_API_KEY"))
+    }
+
+    @Test
+    fun `fails for missing directory`() {
+        val missing = tmpDir.resolve("nonexistent").toString()
+        val result = EnrichCommand().test("$missing")
+
+        assertTrue(result.output.contains("Directory must exist"))
+    }
+}
