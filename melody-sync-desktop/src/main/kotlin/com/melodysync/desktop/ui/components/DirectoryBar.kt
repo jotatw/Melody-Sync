@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.DuplicatesStatus
 import com.melodysync.desktop.state.HealthStatus
+import com.melodysync.desktop.state.OrganizeStatus
 import com.melodysync.desktop.state.ScanStatus
 import com.melodysync.desktop.state.WatchStatus
 import java.io.File
@@ -71,6 +72,12 @@ fun DirectoryBar(state: AppState) {
                 enabled = state.directory.isNotBlank(),
             ) {
                 Text(if (state.watchStatus == WatchStatus.WATCHING) "Stop Watch" else "Watch")
+            }
+            OutlinedButton(
+                onClick = state::planOrganization,
+                enabled = state.directory.isNotBlank() && state.organizeStatus != OrganizeStatus.RUNNING,
+            ) {
+                Text(if (state.organizeStatus == OrganizeStatus.RUNNING) "Planning…" else "Organize")
             }
         }
 
@@ -192,6 +199,56 @@ fun DirectoryBar(state: AppState) {
             }
             WatchStatus.STOPPED -> Unit
         }
+
+        when (state.organizeStatus) {
+            OrganizeStatus.RUNNING -> {
+                LinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                )
+                Text(
+                    "Planning organization…",
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
+            OrganizeStatus.DONE -> {
+                state.organizationReport?.let { report ->
+                    OrganizeSummary(report)
+                }
+            }
+            OrganizeStatus.ERROR -> {
+                state.errorMessage?.let {
+                    Text(
+                        it,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                }
+            }
+            OrganizeStatus.IDLE -> Unit
+        }
+    }
+}
+
+@Composable
+private fun OrganizeSummary(report: com.melodysync.model.OrganizationReport) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp),
+    ) {
+        Text(
+            "Organize: ${report.plannedMoves.size} songs · ${report.toMove} to move · ${report.alreadyOrganized} already organized",
+            style = MaterialTheme.typography.bodySmall,
+            color = if (report.toMove > 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            "Dry-run only — nothing moved. Use the CLI with --apply to reorganize.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 2.dp),
+        )
     }
 }
 

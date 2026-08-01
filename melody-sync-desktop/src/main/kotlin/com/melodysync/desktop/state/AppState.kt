@@ -8,10 +8,12 @@ import com.melodysync.database.MusicRepository
 import com.melodysync.model.DuplicateGroup
 import com.melodysync.model.HealthReport
 import com.melodysync.model.LibraryStatistics
+import com.melodysync.model.OrganizationReport
 import com.melodysync.model.Song
 import com.melodysync.scanner.calculateStatistics
 import com.melodysync.service.DuplicateDetectionService
 import com.melodysync.service.LibraryHealthService
+import com.melodysync.service.LibraryOrganizationService
 import com.melodysync.service.LibrarySyncService
 import com.melodysync.service.LibraryWatcher
 import com.melodysync.service.SyncResult
@@ -44,6 +46,13 @@ enum class DuplicatesStatus {
 enum class WatchStatus {
     STOPPED,
     WATCHING,
+    ERROR,
+}
+
+enum class OrganizeStatus {
+    IDLE,
+    RUNNING,
+    DONE,
     ERROR,
 }
 
@@ -88,6 +97,12 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
         private set
 
     var watchStatus by mutableStateOf(WatchStatus.STOPPED)
+        private set
+
+    var organizeStatus by mutableStateOf(OrganizeStatus.IDLE)
+        private set
+
+    var organizationReport by mutableStateOf<OrganizationReport?>(null)
         private set
 
     val filteredSongs: List<Song>
@@ -211,6 +226,25 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
                 progressText = "Auto-sync: +${result.added} added, ${result.updated} updated, ${result.removed} removed"
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Auto-sync failed"
+            }
+        }
+    }
+
+    fun planOrganization() {
+        if (organizeStatus == OrganizeStatus.RUNNING) return
+        val dir = Path.of(directory.trim())
+        errorMessage = null
+
+        scope.launch {
+            organizeStatus = OrganizeStatus.RUNNING
+            try {
+                MusicDatabase.connect()
+                val songs = MusicRepository.findAll().filter { it.path.startsWith(dir) }
+                organizationReport = LibraryOrganizationService.planOrganization(songs, dir)
+                organizeStatus = OrganizeStatus.DONE
+            } catch (e: Exception) {
+                errorMessage = e.message ?: "Organization failed"
+                organizeStatus = OrganizeStatus.ERROR
             }
         }
     }

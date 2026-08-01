@@ -82,19 +82,20 @@ High-level project evolution.
 
 | Item | Status |
 |------|--------|
-| Version | **v0.7.0-dev** |
+| Version | **v0.8.0-dev** |
 | Language | **Kotlin** (migrated from Python) |
 | Core (model + scanner) | ✅ Completed |
-| CLI (`melody-sync scan` / `health` / `duplicates`) | ✅ Completed |
+| CLI (`melody-sync scan` / `health` / `duplicates` / `organize`) | ✅ Completed |
 | Database (SQLite via Exposed) | ✅ Completed |
 | Library Sync (scanner → DB) | ✅ Completed |
 | Desktop GUI (Compose) | ✅ Completed |
 | Library Health Check | ✅ Completed |
 | Duplicate Detection | ✅ Completed |
 | File Watcher (auto re-sync) | ✅ Completed |
-| Automated Tests | 🎉 **103 Passing** (86 core + 11 CLI + 6 desktop) |
+| Folder Organization | ✅ Completed |
+| Automated Tests | 🎉 **113 Passing** (96 core + 11 CLI + 6 desktop) |
 | YouTube API enrichment | ⏳ Next milestone |
-| File organization | ⏳ Planned |
+| Export tools | ⏳ Planned |
 
 ---
 
@@ -141,4 +142,4 @@ The documentation follows the same philosophy as the source code:
 
 **Last Updated**
 
-2026-08-01 — Milestone 7 (File Watcher) completed
+2026-08-01 — Milestone 8 (Folder Organization) completed

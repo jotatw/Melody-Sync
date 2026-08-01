@@ -16,16 +16,17 @@ The project is also a way to practice software engineering: architecture before 
 
 | Item | Status |
 |------|--------|
-| Version | **v0.7.0-dev** |
+| Version | **v0.8.0-dev** |
 | Language | **Kotlin** (JVM 21) |
 | Core (scan, metadata, statistics) | ✅ Migrated from Python |
-| CLI (`melody-sync scan` / `health` / `duplicates`) | ✅ Working |
-| Automated tests | 🎉 **103 passing** |
+| CLI (`melody-sync scan` / `health` / `duplicates` / `organize`) | ✅ Working |
+| Automated tests | 🎉 **113 passing** |
 | Database (SQLite) | ✅ Working |
 | GUI (Desktop) | ✅ Working (Compose) |
 | Library health check | ✅ Working |
 | Duplicate detection | ✅ Working |
 | File watcher (auto re-sync) | ✅ Working |
+| Folder organization | ✅ Working |
 
 ---
 
@@ -44,13 +45,13 @@ The project is also a way to practice software engineering: architecture before 
 - ✅ Library health check — classify non-audio files, detect missing metadata, zero duration and orphaned entries (CLI + GUI)
 - ✅ Duplicate detection — group songs by normalized title/artist and similar duration (CLI + GUI, report-only)
 - ✅ File watcher — automatic re-sync when files change (GUI toggle, debounced)
+- ✅ Folder organization — plan `Artist/Album/` structure, apply with `--apply` (report-first, never automatic)
 - ✅ System theme detection (KDE Plasma + GNOME)
-- ✅ 103 automated tests with real audio fixtures
+- ✅ 113 automated tests with real audio fixtures
 
 ### In Progress / Planned
 
 - ⏳ YouTube API integration — enrich songs with metadata, covers and lyrics
-- ⏳ File organization (auto-sort into `Artist/Album/` structure)
 - ⏳ Export tools
 
 ---
@@ -59,10 +60,10 @@ The project is also a way to practice software engineering: architecture before 
 
 ```
 melody-sync-core/          Business logic
-├── model/                 Domain objects: Song, LibraryStatistics, HealthReport, FileCategory, DuplicateGroup
+├── model/                 Domain objects: Song, LibraryStatistics, HealthReport, FileCategory, DuplicateGroup, OrganizationReport
 ├── scanner/               Discovery, Metadata, Scanner, Statistics
 ├── database/              SongsTable, MusicDatabase, MusicRepository
-└── service/               LibrarySyncService, LibraryHealthService, DuplicateDetectionService, LibraryWatcher
+└── service/               LibrarySyncService, LibraryHealthService, DuplicateDetectionService, LibraryWatcher, LibraryOrganizationService
 
 melody-sync-cli/           Command-line interface (clikt)
 └── cli/                   ScanCommand, VersionCommand
@@ -135,6 +136,8 @@ cd Melody-Sync
 ./gradlew :melody-sync-cli:run --args="scan /path/to/music"
 ./gradlew :melody-sync-cli:run --args="health /path/to/music"
 ./gradlew :melody-sync-cli:run --args="duplicates /path/to/music"
+./gradlew :melody-sync-cli:run --args="organize /path/to/music"        # dry-run
+./gradlew :melody-sync-cli:run --args="organize --apply /path/to/music" # move files
 
 # Run the Desktop GUI
 ./gradlew :melody-sync-desktop:run
@@ -155,12 +158,12 @@ cd Melody-Sync
 
 ## Testing
 
-**103 tests, all passing:**
+**113 tests, all passing:**
 
 | Module | Tests | Area |
 |--------|-------|------|
-| `core` | 86 | Models, Discovery, Metadata, Scanner, Statistics, Database, Sync, Health, Duplicates, Watcher |
-| `cli` | 11 | Version, Scan, Health, Duplicates commands |
+| `core` | 96 | Models, Discovery, Metadata, Scanner, Statistics, Database, Sync, Health, Duplicates, Watcher, Organization |
+| `cli` | 11 | Version, Scan, Health, Duplicates, Organize commands |
 | `desktop` | 6 | Theme detection, color schemes |
 
 ```bash
@@ -234,9 +237,15 @@ Project documentation lives in the `docs/` directory. Key documents:
 - [x] Debounced automatic re-sync of the database
 - [x] GUI Watch toggle button
 
-### Milestone 8 — Enrichment & Organization ⏳
+### Milestone 8 — Folder Organization ✅
+- [x] Plan `Artist/Album/` structure (dry-run, report-first)
+- [x] Apply moves with `--apply` (never automatic)
+- [x] Name collision handling (numeric suffix)
+- [x] CLI command `melody-sync organize`
+- [x] GUI Organize button (dry-run summary)
+
+### Milestone 9 — Enrichment & Export ⏳
 - [ ] YouTube API integration (covers, lyrics)
-- [ ] File organization (Artist/Album structure)
 - [ ] Export tools
 
 ---
