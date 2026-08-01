@@ -16,13 +16,13 @@ The project is also a way to practice software engineering: architecture before 
 
 | Item | Status |
 |------|--------|
-| Version | **v0.3.0-dev** |
+| Version | **v0.4.0-dev** |
 | Language | **Kotlin** (JVM 21) |
 | Core (scan, metadata, statistics) | ✅ Migrated from Python |
 | CLI (`melody-sync scan`) | ✅ Working |
-| Automated tests | 🎉 **73 passing** |
+| Automated tests | 🎉 **80 passing** |
 | Database (SQLite) | ✅ Working |
-| GUI (Desktop) | ⏳ Planned |
+| GUI (Desktop) | ✅ Working (Compose) |
 
 ---
 
@@ -37,13 +37,15 @@ The project is also a way to practice software engineering: architecture before 
 - ✅ Library sync — scan a folder and persist/update/remove songs in the database
 - ✅ CLI — `melody-sync scan <directory>`
 - ✅ Cross-format detection (uppercase extensions, nested directories)
-- ✅ 73 automated tests with real audio fixtures
+- ✅ Desktop GUI — scan, browse, search and filter songs (Compose Desktop, Material 3, dark/light toggle)
+- ✅ System theme detection (KDE Plasma + GNOME)
+- ✅ 80 automated tests with real audio fixtures
 
 ### In Progress / Planned
 
 - ⏳ YouTube API integration — enrich songs with metadata, covers and lyrics
 - ⏳ Library health check (missing metadata, orphan files)
-- ⏳ Graphical User Interface (Compose Desktop)
+- ⏳ Automatic library re-scan (file watcher / periodic)
 - ⏳ File organization (auto-sort into `Artist/Album/` structure)
 - ⏳ Duplicate detection
 
@@ -61,7 +63,12 @@ melody-sync-core/          Business logic
 melody-sync-cli/           Command-line interface (clikt)
 └── cli/                   ScanCommand, VersionCommand
 
-melody-sync-desktop/       Desktop GUI (Compose Desktop) — future
+melody-sync-desktop/       Desktop GUI (Compose Desktop)
+├── desktop/               Main.kt (window, theme state)
+├── theme/                 AppTheme (light/dark, system detection)
+├── state/                 AppState (state holder)
+└── ui/                    LibraryScreen + components
+    └── components/        TopBar, DirectoryBar, SearchBar, SongList
 ```
 
 Data flow:
@@ -123,6 +130,9 @@ cd Melody-Sync
 # Run the CLI
 ./gradlew :melody-sync-cli:run --args="scan /path/to/music"
 
+# Run the Desktop GUI
+./gradlew :melody-sync-desktop:run
+
 # Or use the wrapper after build
 ./gradlew :melody-sync-cli:installDist
 ./melody-sync-cli/build/install/melody-sync-cli/bin/melody-sync-cli scan /path/to/music
@@ -139,12 +149,13 @@ cd Melody-Sync
 
 ## Testing
 
-**73 tests, all passing:**
+**80 tests, all passing:**
 
 | Module | Tests | Area |
 |--------|-------|------|
 | `core` | 69 | Models, Discovery, Metadata, Scanner, Statistics, Database, Sync |
-| `cli` | 4 | Version command, Scan command, edge cases |
+| `cli` | 5 | Version command, Scan command, edge cases |
+| `desktop` | 6 | Theme detection, color schemes |
 
 ```bash
 ./gradlew test
@@ -191,13 +202,19 @@ Project documentation lives in the `docs/` directory. Key documents:
 ### Milestone 3 — Database & Sync ✅
 - [x] SQLite database (Exposed) for persistent metadata cache
 - [x] Library sync (scan → insert/update/remove in DB)
-- [ ] YouTube API metadata enrichment (covers, lyrics)
-- [ ] Library health check (missing tags, orphan files)
 
-### Milestone 4 — Enrichment & GUI ⏳
-- [ ] YouTube API integration
-- [ ] Library health check
-- [ ] Desktop GUI (Compose Desktop)
+### Milestone 4 — Desktop GUI ✅
+- [x] Compose Desktop window (Material 3)
+- [x] System theme detection (KDE + GNOME) with dark/light toggle
+- [x] Directory selection + scan with linear progress
+- [x] Song list with search/filter (title, artist, album) and clear button
+- [x] Compact library statistics in the top bar
+- [x] 4-column song list (title, artist, album, duration)
+
+### Milestone 5 — Enrichment & Organization ⏳
+- [ ] YouTube API integration (covers, lyrics)
+- [ ] Library health check (missing tags, orphan files)
+- [ ] Automatic library re-scan (file watcher / periodic)
 - [ ] File organization (Artist/Album structure)
 - [ ] Duplicate detection
 - [ ] Export tools
