@@ -23,7 +23,14 @@ Documentation describing the system design and architectural decisions.
 
 | Document | Purpose |
 |----------|---------|
-| Architecture Decision Records (ADR) | Important architectural decisions |
+| ADR-0001 | Project Vision |
+| ADR-0002 | Programming Language — Kotlin |
+| ADR-0003 | Desktop GUI — Compose Desktop |
+| ADR-0004 | Local Database — SQLite via Exposed |
+| ADR-0005 | Audio Metadata — JAudioTagger |
+| ADR-0006 | Documentation Structure |
+| ADR-0007 | CLI Framework — clikt |
+| ADR-0008 | Build System — Gradle Kotlin DSL |
 
 ---
 
@@ -75,11 +82,15 @@ High-level project evolution.
 
 | Item | Status |
 |------|--------|
-| Version | **v0.1.0-dev** |
-| Core MVP | ✅ Completed |
-| Automated Tests | ✅ 54 Passing |
-| Current Milestone | Documentation |
-| Next Milestone | Command Line Interface (CLI) |
+| Version | **v0.3.0-dev** |
+| Language | **Kotlin** (migrated from Python) |
+| Core (model + scanner) | ✅ Completed |
+| CLI (`melody-sync scan`) | ✅ Completed |
+| Database (SQLite via Exposed) | ✅ Completed |
+| Library Sync (scanner → DB) | ✅ Completed |
+| Automated Tests | 🎉 **73 Passing** (69 core + 4 CLI) |
+| YouTube API enrichment | ⏳ Next milestone |
+| Desktop GUI | ⏳ Planned |
 
 ---
 
@@ -126,4 +137,4 @@ The documentation follows the same philosophy as the source code:
 
 **Last Updated**
 
-Milestone 1.1 — Documentation
+2026-07-31 — Milestone 3 (Database + Library Sync) completed

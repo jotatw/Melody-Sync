@@ -1,221 +1,232 @@
-# 🎵 Melody Sync
+# Melody Sync
 
-> Organize, analyze and explore your local music library.
+> A personal tool to organize, analyze and explore your local music library.
 
-Melody Sync is an open-source Python application designed to scan local music libraries, extract audio metadata and generate useful statistics.
+Melody Sync is a **personal project** — not a commercial product, not a Spotify competitor.
 
-The project emphasizes clean architecture, modular design, automated testing and incremental development.
+I built it because I listen to music from YouTube and my library is a mess: `.mp3`, `.flac`, `.mp4`, `.png`, `.vtt` and `.txt` all mixed together. Existing tools like MusicBrainz Picard, Kid3, LRCGET and Strawberry each solve one piece of the puzzle, but none of them offer a *cohesive* workflow for cleaning up and organizing a library from start to finish.
 
----
+So I decided to build the tool I wanted. One place to scan, analyze and enrich my music library — with the option to identify songs and fetch metadata via the YouTube API in the future.
 
-## 🚧 Project Status
-
-**Current Version**
-
-`v0.1.0-dev`
-
-**Current Milestone**
-
-✅ Core MVP completed
-
-The project currently provides a fully functional backend capable of:
-
-- discovering audio files
-- reading metadata
-- creating music objects
-- generating library statistics
-
-A command-line interface (CLI) is the next milestone.
+The project is also a way to practice software engineering: architecture before implementation, documentation as code, and incremental evolution.
 
 ---
 
-## ✨ Features
+## Project Status
+
+| Item | Status |
+|------|--------|
+| Version | **v0.3.0-dev** |
+| Language | **Kotlin** (JVM 21) |
+| Core (scan, metadata, statistics) | ✅ Migrated from Python |
+| CLI (`melody-sync scan`) | ✅ Working |
+| Automated tests | 🎉 **73 passing** |
+| Database (SQLite) | ✅ Working |
+| GUI (Desktop) | ⏳ Planned |
+
+---
+
+## Features
 
 ### Implemented
 
-- ✅ Audio file discovery
-- ✅ Metadata extraction
-- ✅ Song model
-- ✅ Library statistics
-- ✅ Support for nested directories
-- ✅ Automated tests
+- ✅ Audio file discovery (`.mp3`, `.flac`, `.m4a`, `.ogg`, `.opus`, `.wav`, `.aac`)
+- ✅ Metadata extraction (title, artist, album, duration, bitrate, sample rate, channels, codec)
+- ✅ Library statistics (total songs, unique artists/albums, size, duration, formats, avg bitrate)
+- ✅ SQLite database — persistent metadata cache (`~/.config/melody-sync/library.db`)
+- ✅ Library sync — scan a folder and persist/update/remove songs in the database
+- ✅ CLI — `melody-sync scan <directory>`
+- ✅ Cross-format detection (uppercase extensions, nested directories)
+- ✅ 73 automated tests with real audio fixtures
 
-### Planned
+### In Progress / Planned
 
-- ⏳ Command Line Interface (CLI)
-- ⏳ Real library scanning
-- ⏳ Configuration file
-- ⏳ Playlist management
+- ⏳ YouTube API integration — enrich songs with metadata, covers and lyrics
+- ⏳ Library health check (missing metadata, orphan files)
+- ⏳ Graphical User Interface (Compose Desktop)
+- ⏳ File organization (auto-sort into `Artist/Album/` structure)
 - ⏳ Duplicate detection
-- ⏳ Graphical User Interface (GUI)
 
 ---
 
-## 🏗 Architecture
+## Architecture
 
 ```
-Music Library
-      │
-      ▼
- Discovery
-      │
-      ▼
- Metadata
-      │
-      ▼
-  Scanner
-      │
-      ▼
- Song Objects
-      │
-      ▼
- Statistics
+melody-sync-core/          Business logic
+├── model/                 Domain objects: Song, LibraryStatistics
+├── scanner/               Discovery, Metadata, Scanner, Statistics
+├── database/              SongsTable, MusicDatabase, MusicRepository
+└── service/               LibrarySyncService (scanner + database)
+
+melody-sync-cli/           Command-line interface (clikt)
+└── cli/                   ScanCommand, VersionCommand
+
+melody-sync-desktop/       Desktop GUI (Compose Desktop) — future
 ```
 
-### Models
+Data flow:
 
-- Song
-- LibraryStatistics
-
-### Core
-
-- Discovery
-- Metadata
-- Scanner
-- Statistics
-
----
-
-## 📂 Project Structure
-
-```text
-melody_sync/
-│
-├── core/          # Business logic
-├── models/        # Domain models
-│
-docs/              # Documentation
-tests/             # Automated tests
 ```
-
----
-
-## 📖 Documentation
-
-Project documentation is available in the `docs/` directory.
-
-Main documents include:
-
-- Architecture
-- Handbook
-- Sprint Board
-- Sprint Journal
-- Project History
-- Test Plan
-- Test Report
-
----
-
-## 🗺 Roadmap
-
-### Milestone 1 — Core MVP
-
-- [x] Song
-- [x] LibraryStatistics
-- [x] Discovery
-- [x] Metadata
-- [x] Scanner
-- [x] Statistics
-
----
-
-### Milestone 2 — Command Line Interface
-- [ ] Interactive CLI
-
-- [ ] Real library scan
-
-- [ ] Configuration system
-
----
-
-### Milestone 3
-
-- [ ] Graphical User Interface
-- [ ] Playlist management
-- [ ] Duplicate detection
-- [ ] Export tools
+Directory
+    │
+    ▼
+ discover()          → list of audio files
+    │
+    ▼
+ readMetadata()      → enriched Song objects
+    │
+    ▼
+ scan()              → orchestration
+    │
+    ▼
+ LibrarySyncService  → persist to SQLite (insert/update/remove)
+    │
+    ▼
+ calculateStatistics() → LibraryStatistics
+    │
+    ▼
+ CLI / GUI           → display
+```
 
 ---
 
 ## Tech Stack
 
-- Python 3.14
-- pytest
-- mutagen
-- pathlib
-- dataclasses
+| Component | Technology |
+|-----------|------------|
+| Language | **Kotlin** 2.4.10 (JVM 21) |
+| Build | **Gradle** 9.6.1 (Kotlin DSL) |
+| Audio metadata | **JAudioTagger** 2.2.7 |
+| CLI framework | **clikt** 5.1.0 |
+| GUI (future) | **Compose Desktop** 1.11.1 |
+| Database | **SQLite** via **Exposed** 0.61.0 |
+| Testing | **JUnit 5** (73 tests, real audio fixtures) |
 
 ---
 
 ## Requirements
 
-- Python 3.14+
-- pip
-## 🚀 Quick Start
+- JDK 21+ (JVM target 21; JDK 25+ also works)
+- Linux (primary; Windows/macOS possible but not tested)
 
 ---
+
+## Quick Start
 
 ```bash
 git clone https://github.com/jotatw/Melody-Sync.git
-
 cd Melody-Sync
 
-python -m venv .venv
+# Build everything
+./gradlew build
 
-source .venv/bin/activate
+# Run the CLI
+./gradlew :melody-sync-cli:run --args="scan /path/to/music"
 
-pip install -e .
+# Or use the wrapper after build
+./gradlew :melody-sync-cli:installDist
+./melody-sync-cli/build/install/melody-sync-cli/bin/melody-sync-cli scan /path/to/music
 
-pytest -v
+# Run tests
+./gradlew test
+
+# Run specific module tests
+./gradlew :melody-sync-core:test
+./gradlew :melody-sync-cli:test
 ```
 
 ---
 
-## 🧪 Testing
+## Testing
 
-The project currently contains **54 automated tests**.
+**73 tests, all passing:**
 
-Run all tests:
+| Module | Tests | Area |
+|--------|-------|------|
+| `core` | 69 | Models, Discovery, Metadata, Scanner, Statistics, Database, Sync |
+| `cli` | 4 | Version command, Scan command, edge cases |
 
 ```bash
-pytest -v
+./gradlew test
 ```
 
-Current result:
-
-```text
-54 passed
-```
+Test fixtures include real `.mp3` files with and without metadata tags.
 
 ---
 
-### Quality Assurance
+## Documentation
 
-- 54 automated tests
-- Unit tests
-- Integration tests
-- Real audio fixtures
+Project documentation lives in the `docs/` directory. Key documents:
+
+| Document | Purpose |
+|----------|---------|
+| `INDEX.md` | Documentation entry point |
+| `architecture/ADR/ADR-0001` | Project Vision |
+| `architecture/ADR/ADR-0002` | Programming Language (Kotlin) |
+| `architecture/ADR/ADR-0003` | Desktop GUI (Compose Desktop) |
+| `architecture/ADR/ADR-0004` | Database (SQLite via Exposed) |
+| `architecture/ADR/ADR-0005` | Audio Metadata (JAudioTagger) |
+| `architecture/ADR/ADR-0007` | CLI Framework (clikt) |
+| `architecture/ADR/ADR-0008` | Build System (Gradle Kotlin DSL) |
+| `architecture/music-library-domain.md` | Domain model specification |
 
 ---
 
-## 🤝 Contributing
+## Roadmap
 
-The project is under active development.
+### Milestone 1 — Core MVP ✅
+- [x] Song model
+- [x] LibraryStatistics model
+- [x] Discovery (file scanning)
+- [x] Metadata extraction
+- [x] Scanner pipeline
+- [x] Statistics calculation
+- [x] 55 tests
 
-Contributions, ideas and suggestions are welcome after the Core MVP stabilization.
+### Milestone 2 — CLI ✅
+- [x] `melody-sync scan <directory>` command
+- [x] `melody-sync version` command
+- [x] 4 CLI tests
+
+### Milestone 3 — Database & Sync ✅
+- [x] SQLite database (Exposed) for persistent metadata cache
+- [x] Library sync (scan → insert/update/remove in DB)
+- [ ] YouTube API metadata enrichment (covers, lyrics)
+- [ ] Library health check (missing tags, orphan files)
+
+### Milestone 4 — Enrichment & GUI ⏳
+- [ ] YouTube API integration
+- [ ] Library health check
+- [ ] Desktop GUI (Compose Desktop)
+- [ ] File organization (Artist/Album structure)
+- [ ] Duplicate detection
+- [ ] Export tools
 
 ---
 
-## 📄 License
+## Contributing
 
-MIT License
+This is a **personal project** built for my own music library. It is not open for general contributions at this stage.
+
+That said, if you have ideas or suggestions, feel free to open an issue or discuss in the repository.
+
+---
+
+## License
+
+MIT License — see [LICENSE](LICENSE).
+
+---
+
+## Why not just use existing tools?
+
+I tried several Linux music library tools before starting this project:
+
+- **MusicBrainz Picard** — excellent for tagging and audio fingerprinting, but confusing for beginners and doesn't handle library organization beyond tags.
+- **Kid3** — a powerful tag editor, but purely technical — no library overview, no statistics.
+- **LRCGET** — fetches lyrics only, nothing else.
+- **Strawberry** — a great music player, but its organization features are scattered and not cohesive.
+
+Each tool solves one problem well. None solves the *whole* problem in a simple, integrated way.
+
+Melody Sync is my attempt to bring the pieces together in one place — not to compete with any of these tools, but to fill the gap between them for my own use.
