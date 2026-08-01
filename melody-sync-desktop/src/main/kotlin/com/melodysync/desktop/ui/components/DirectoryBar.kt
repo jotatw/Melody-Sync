@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
+import com.melodysync.desktop.state.HealthStatus
 import com.melodysync.desktop.state.ScanStatus
 import java.io.File
 import javax.swing.JFileChooser
@@ -44,6 +45,12 @@ fun DirectoryBar(state: AppState) {
                 enabled = state.directory.isNotBlank() && state.status != ScanStatus.SCANNING,
             ) {
                 Text(if (state.status == ScanStatus.SCANNING) "Scanning…" else "Scan")
+            }
+            OutlinedButton(
+                onClick = state::analyzeHealth,
+                enabled = state.directory.isNotBlank() && state.healthStatus != HealthStatus.RUNNING,
+            ) {
+                Text(if (state.healthStatus == HealthStatus.RUNNING) "Checking…" else "Health")
             }
         }
 
@@ -79,6 +86,57 @@ fun DirectoryBar(state: AppState) {
             }
             ScanStatus.IDLE -> Unit
         }
+
+        when (state.healthStatus) {
+            HealthStatus.RUNNING -> {
+                LinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                )
+                Text(
+                    "Checking library health…",
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
+            HealthStatus.DONE -> {
+                state.healthReport?.let { report ->
+                    HealthSummary(report)
+                }
+            }
+            HealthStatus.ERROR -> {
+                state.errorMessage?.let {
+                    Text(
+                        it,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                }
+            }
+            HealthStatus.IDLE -> Unit
+        }
+    }
+}
+
+@Composable
+private fun HealthSummary(report: com.melodysync.model.HealthReport) {
+    androidx.compose.foundation.layout.Column(
+        modifier = androidx.compose.ui.Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp),
+    ) {
+        Text(
+            "Health: ${report.totalFiles} files | ${report.audioFiles} audio | ${report.totalNonAudio} non-audio",
+            style = MaterialTheme.typography.bodySmall,
+        )
+        Text(
+            "Issues: ${report.songsWithoutMetadata.size} without metadata · " +
+                "${report.songsWithZeroDuration.size} zero duration · " +
+                "${report.orphanedEntries.size} orphaned",
+            style = MaterialTheme.typography.bodySmall,
+            color = if (report.songsWithMetadataIssues > 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = androidx.compose.ui.Modifier.padding(top = 2.dp),
+        )
     }
 }
 

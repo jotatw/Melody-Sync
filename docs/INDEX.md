@@ -82,14 +82,15 @@ High-level project evolution.
 
 | Item | Status |
 |------|--------|
-| Version | **v0.4.0-dev** |
+| Version | **v0.5.0-dev** |
 | Language | **Kotlin** (migrated from Python) |
 | Core (model + scanner) | ✅ Completed |
-| CLI (`melody-sync scan`) | ✅ Completed |
+| CLI (`melody-sync scan` / `health`) | ✅ Completed |
 | Database (SQLite via Exposed) | ✅ Completed |
 | Library Sync (scanner → DB) | ✅ Completed |
 | Desktop GUI (Compose) | ✅ Completed |
-| Automated Tests | 🎉 **80 Passing** (69 core + 5 CLI + 6 desktop) |
+| Library Health Check | ✅ Completed |
+| Automated Tests | 🎉 **90 Passing** (76 core + 8 CLI + 6 desktop) |
 | YouTube API enrichment | ⏳ Next milestone |
 | Automatic library re-scan | ⏳ Planned |
 
@@ -138,4 +139,4 @@ The documentation follows the same philosophy as the source code:
 
 **Last Updated**
 
-2026-07-31 — Milestone 4 (Desktop GUI) completed
+2026-08-01 — Milestone 5 (Library Health Check) completed

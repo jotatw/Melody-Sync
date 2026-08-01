@@ -5,9 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.melodysync.database.MusicDatabase
 import com.melodysync.database.MusicRepository
+import com.melodysync.model.HealthReport
 import com.melodysync.model.LibraryStatistics
 import com.melodysync.model.Song
 import com.melodysync.scanner.calculateStatistics
+import com.melodysync.service.LibraryHealthService
 import com.melodysync.service.LibrarySyncService
 import com.melodysync.service.SyncResult
 import kotlinx.coroutines.CoroutineScope
@@ -18,6 +20,13 @@ import java.nio.file.Path
 enum class ScanStatus {
     IDLE,
     SCANNING,
+    DONE,
+    ERROR,
+}
+
+enum class HealthStatus {
+    IDLE,
+    RUNNING,
     DONE,
     ERROR,
 }
@@ -46,6 +55,12 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
         private set
 
     var query by mutableStateOf("")
+        private set
+
+    var healthStatus by mutableStateOf(HealthStatus.IDLE)
+        private set
+
+    var healthReport by mutableStateOf<HealthReport?>(null)
         private set
 
     val filteredSongs: List<Song>
@@ -90,6 +105,24 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
                 errorMessage = e.message ?: "Scan failed"
                 progressText = ""
                 status = ScanStatus.ERROR
+            }
+        }
+    }
+
+    fun analyzeHealth() {
+        if (healthStatus == HealthStatus.RUNNING) return
+        val dir = Path.of(directory.trim())
+        errorMessage = null
+
+        scope.launch {
+            healthStatus = HealthStatus.RUNNING
+            try {
+                MusicDatabase.connect()
+                healthReport = LibraryHealthService.analyze(dir)
+                healthStatus = HealthStatus.DONE
+            } catch (e: Exception) {
+                errorMessage = e.message ?: "Health check failed"
+                healthStatus = HealthStatus.ERROR
             }
         }
     }

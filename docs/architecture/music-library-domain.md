@@ -93,6 +93,63 @@ A `LibraryStatistics` represents a summary of an entire music library scan, aggr
 
 ---
 
+## HealthReport
+
+A `HealthReport` summarizes the health of a music library, produced by the `LibraryHealthService`.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `directory` | `Path` | The analyzed directory |
+| `totalFiles` | `Int` | All files found in the directory |
+| `audioFiles` | `Int` | Supported audio files |
+| `nonAudio` | `List<FileCategory>` | Non-audio files grouped by category |
+| `unknownExtensions` | `List<String>` | Extensions not recognized by any category |
+| `songsWithoutMetadata` | `List<Song>` | Songs missing title or artist |
+| `songsWithZeroDuration` | `List<Song>` | Songs with null or zero duration |
+| `orphanedEntries` | `List<String>` | Paths in the database that no longer exist on disk |
+
+### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `totalNonAudio` | `Int` | Sum of all non-audio file counts |
+| `songsWithMetadataIssues` | `Int` | Total count of metadata problems (missing + zero duration + orphaned) |
+
+### Design decisions
+
+- The health check is **report-only**: it never modifies or deletes files. Actions are suggested to the user.
+- Two analysis modes: `analyze()` (full disk scan, default) and `analyzeFromDatabase()` (fast, database-only).
+- Database songs are filtered to those under the analyzed directory, so the report is coherent per directory.
+
+---
+
+## FileCategory
+
+A `FileCategory` groups non-audio files by their purpose.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `category` | `String` | Category key (e.g., "image", "subtitle", "lyrics") |
+| `description` | `String` | Human-readable description |
+| `extensions` | `Set<String>` | File extensions in this category |
+| `count` | `Int` | Number of files |
+| `totalSize` | `Long` | Total size in bytes |
+
+### Known categories (`KNOWN_NON_AUDIO`)
+
+| Category | Extensions | Description |
+|----------|-----------|-------------|
+| `image` | png, jpg, jpeg, gif, bmp, webp, svg | Cover art and images |
+| `subtitle` | vtt, srt, ass, ssa, sub | Subtitle files |
+| `lyrics` | lrc, txt | Lyrics and text files |
+| `metadata` | meta, nfo, xml, cue | Metadata files |
+| `playlist` | m3u, m3u8, pls, xspf | Playlist files |
+| `video` | mp4, mkv, avi, webm, mov | Video files |
+
+> `.lrc` (lyrics) and `.meta` (metadata) are classified here. Their *use* (e.g., displaying lyrics or reading extra metadata in the GUI) is a future feature, not part of the health check.
+
+---
+
 ## Relationships
 
 ```
@@ -103,9 +160,14 @@ LibraryStatistics
                         ├── file information (path, size)
                         ├── metadata tags (title, artist, album)
                         └── technical info (duration, bitrate, codec)
+
+HealthReport
+    ├── produced by LibraryHealthService
+    ├── references → List<Song> (songs without metadata / zero duration)
+    └── groups → List<FileCategory> (non-audio files)
 ```
 
-The `Scanner` module produces a `List<Song>`, and the `StatisticsCalculator` consumes that list to produce a single `LibraryStatistics`. The database (SQLite via Exposed, ADR-0004) will persist both individual songs and computed statistics.
+The `Scanner` module produces a `List<Song>`, and the `StatisticsCalculator` consumes that list to produce a single `LibraryStatistics`. The database (SQLite via Exposed, ADR-0004) persists both individual songs and computed statistics. The `LibraryHealthService` combines a disk scan with database contents to produce a `HealthReport`.
 
 ---
 
@@ -117,6 +179,9 @@ The `Scanner` module produces a `List<Song>`, and the `StatisticsCalculator` con
 - `melody-sync-core/src/main/kotlin/com/melodysync/model/Song.kt` — Current implementation
 - `melody-sync-core/src/test/kotlin/com/melodysync/model/SongTest.kt` — Tests (8 passing)
 - `melody-sync-core/src/test/kotlin/com/melodysync/model/LibraryStatisticsTest.kt` — Tests (7 passing)
+- `melody-sync-core/src/main/kotlin/com/melodysync/model/HealthReport.kt` — Health report model
+- `melody-sync-core/src/main/kotlin/com/melodysync/model/FileCategory.kt` — Non-audio file classification
+- `melody-sync-core/src/main/kotlin/com/melodysync/service/LibraryHealthService.kt` — Health analysis service
 
 ---
 

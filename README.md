@@ -16,13 +16,14 @@ The project is also a way to practice software engineering: architecture before 
 
 | Item | Status |
 |------|--------|
-| Version | **v0.4.0-dev** |
+| Version | **v0.5.0-dev** |
 | Language | **Kotlin** (JVM 21) |
 | Core (scan, metadata, statistics) | ✅ Migrated from Python |
-| CLI (`melody-sync scan`) | ✅ Working |
-| Automated tests | 🎉 **80 passing** |
+| CLI (`melody-sync scan` / `health`) | ✅ Working |
+| Automated tests | 🎉 **90 passing** |
 | Database (SQLite) | ✅ Working |
 | GUI (Desktop) | ✅ Working (Compose) |
+| Library health check | ✅ Working |
 
 ---
 
@@ -38,13 +39,13 @@ The project is also a way to practice software engineering: architecture before 
 - ✅ CLI — `melody-sync scan <directory>`
 - ✅ Cross-format detection (uppercase extensions, nested directories)
 - ✅ Desktop GUI — scan, browse, search and filter songs (Compose Desktop, Material 3, dark/light toggle)
+- ✅ Library health check — classify non-audio files, detect missing metadata, zero duration and orphaned entries (CLI + GUI)
 - ✅ System theme detection (KDE Plasma + GNOME)
-- ✅ 80 automated tests with real audio fixtures
+- ✅ 90 automated tests with real audio fixtures
 
 ### In Progress / Planned
 
 - ⏳ YouTube API integration — enrich songs with metadata, covers and lyrics
-- ⏳ Library health check (missing metadata, orphan files)
 - ⏳ Automatic library re-scan (file watcher / periodic)
 - ⏳ File organization (auto-sort into `Artist/Album/` structure)
 - ⏳ Duplicate detection
@@ -55,10 +56,10 @@ The project is also a way to practice software engineering: architecture before 
 
 ```
 melody-sync-core/          Business logic
-├── model/                 Domain objects: Song, LibraryStatistics
+├── model/                 Domain objects: Song, LibraryStatistics, HealthReport, FileCategory
 ├── scanner/               Discovery, Metadata, Scanner, Statistics
 ├── database/              SongsTable, MusicDatabase, MusicRepository
-└── service/               LibrarySyncService (scanner + database)
+└── service/               LibrarySyncService, LibraryHealthService
 
 melody-sync-cli/           Command-line interface (clikt)
 └── cli/                   ScanCommand, VersionCommand
@@ -129,6 +130,7 @@ cd Melody-Sync
 
 # Run the CLI
 ./gradlew :melody-sync-cli:run --args="scan /path/to/music"
+./gradlew :melody-sync-cli:run --args="health /path/to/music"
 
 # Run the Desktop GUI
 ./gradlew :melody-sync-desktop:run
@@ -149,12 +151,12 @@ cd Melody-Sync
 
 ## Testing
 
-**80 tests, all passing:**
+**90 tests, all passing:**
 
 | Module | Tests | Area |
 |--------|-------|------|
-| `core` | 69 | Models, Discovery, Metadata, Scanner, Statistics, Database, Sync |
-| `cli` | 5 | Version command, Scan command, edge cases |
+| `core` | 76 | Models, Discovery, Metadata, Scanner, Statistics, Database, Sync, Health |
+| `cli` | 8 | Version, Scan, Health commands |
 | `desktop` | 6 | Theme detection, color schemes |
 
 ```bash
@@ -211,9 +213,15 @@ Project documentation lives in the `docs/` directory. Key documents:
 - [x] Compact library statistics in the top bar
 - [x] 4-column song list (title, artist, album, duration)
 
-### Milestone 5 — Enrichment & Organization ⏳
+### Milestone 5 — Library Health Check ✅
+- [x] Classify non-audio files (image, subtitle, lyrics, metadata, playlist, video)
+- [x] Detect songs without metadata, zero duration and orphaned entries
+- [x] CLI command `melody-sync health <directory>`
+- [x] GUI Health button (report-only, suggestions for the user)
+- [ ] Report-only confirmed: never modifies files automatically
+
+### Milestone 6 — Enrichment & Organization ⏳
 - [ ] YouTube API integration (covers, lyrics)
-- [ ] Library health check (missing tags, orphan files)
 - [ ] Automatic library re-scan (file watcher / periodic)
 - [ ] File organization (Artist/Album structure)
 - [ ] Duplicate detection

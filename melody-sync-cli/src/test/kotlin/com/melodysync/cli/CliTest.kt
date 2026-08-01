@@ -68,3 +68,47 @@ class ScanCommandTest {
         assertTrue(Files.exists(db))
     }
 }
+
+class HealthCommandTest {
+    @TempDir
+    lateinit var tmpDir: Path
+
+    @TempDir
+    lateinit var dbDir: Path
+
+    private fun command(db: Path) = "--db $db"
+
+    @Test
+    fun `reports audio and non-audio files`() {
+        val source = Path.of(javaClass.getResource("/fixtures/audio/with_tags.mp3")!!.toURI())
+        Files.copy(source, tmpDir.resolve("song.mp3"))
+        Files.writeString(tmpDir.resolve("cover.png"), "png")
+        Files.writeString(tmpDir.resolve("sub.vtt"), "vtt")
+        Files.writeString(tmpDir.resolve("mystery.xyz"), "xyz")
+
+        val result = HealthCommand().test("${command(dbDir.resolve("h.db"))} ${tmpDir}")
+
+        assertEquals(0, result.statusCode)
+        assertTrue(result.stdout.contains("Library Health Report"))
+        assertTrue(result.stdout.contains("1 audio"))
+        assertTrue(result.stdout.contains("image"))
+        assertTrue(result.stdout.contains("subtitle"))
+        assertTrue(result.stdout.contains(".xyz"))
+    }
+
+    @Test
+    fun `fails for missing directory`() {
+        val missing = tmpDir.resolve("nonexistent").toString()
+        val result = HealthCommand().test("${command(dbDir.resolve("h.db"))} $missing")
+
+        assertTrue(result.output.contains("Directory must exist"))
+    }
+
+    @Test
+    fun `reports empty directory as healthy`() {
+        val result = HealthCommand().test("${command(dbDir.resolve("h.db"))} ${tmpDir}")
+
+        assertEquals(0, result.statusCode)
+        assertTrue(result.output.contains("0 total"))
+    }
+}
