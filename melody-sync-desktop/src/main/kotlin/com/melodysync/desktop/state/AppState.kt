@@ -13,6 +13,7 @@ import com.melodysync.scanner.calculateStatistics
 import com.melodysync.service.DuplicateDetectionService
 import com.melodysync.service.LibraryHealthService
 import com.melodysync.service.LibrarySyncService
+import com.melodysync.service.LibraryWatcher
 import com.melodysync.service.SyncResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +41,15 @@ enum class DuplicatesStatus {
     ERROR,
 }
 
+enum class WatchStatus {
+    STOPPED,
+    WATCHING,
+    ERROR,
+}
+
 class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default)) {
+
+    private var watcher: LibraryWatcher? = null
 
     var directory by mutableStateOf("")
         private set
@@ -76,6 +85,9 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
         private set
 
     var duplicateGroups by mutableStateOf<List<DuplicateGroup>>(emptyList())
+        private set
+
+    var watchStatus by mutableStateOf(WatchStatus.STOPPED)
         private set
 
     val filteredSongs: List<Song>
@@ -157,6 +169,48 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Duplicate detection failed"
                 duplicatesStatus = DuplicatesStatus.ERROR
+            }
+        }
+    }
+
+    fun startWatching() {
+        if (watchStatus == WatchStatus.WATCHING) return
+        if (directory.isBlank()) return
+        val dir = Path.of(directory.trim())
+        errorMessage = null
+
+        try {
+            val newWatcher = LibraryWatcher(scope)
+            newWatcher.start(dir) { _ ->
+                resyncFromWatch()
+            }
+            watcher = newWatcher
+            watchStatus = WatchStatus.WATCHING
+        } catch (e: Exception) {
+            errorMessage = e.message ?: "Failed to start watching"
+            watchStatus = WatchStatus.ERROR
+        }
+    }
+
+    fun stopWatching() {
+        watcher?.stop()
+        watcher = null
+        watchStatus = WatchStatus.STOPPED
+    }
+
+    private fun resyncFromWatch() {
+        if (directory.isBlank()) return
+        scope.launch {
+            try {
+                MusicDatabase.connect()
+                val dir = Path.of(directory.trim())
+                val result = LibrarySyncService.syncDirectory(dir)
+                lastResult = result
+                songs = MusicRepository.findAll()
+                statistics = calculateStatistics(songs)
+                progressText = "Auto-sync: +${result.added} added, ${result.updated} updated, ${result.removed} removed"
+            } catch (e: Exception) {
+                errorMessage = e.message ?: "Auto-sync failed"
             }
         }
     }

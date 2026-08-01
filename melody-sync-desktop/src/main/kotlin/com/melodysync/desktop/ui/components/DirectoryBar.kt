@@ -19,6 +19,7 @@ import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.DuplicatesStatus
 import com.melodysync.desktop.state.HealthStatus
 import com.melodysync.desktop.state.ScanStatus
+import com.melodysync.desktop.state.WatchStatus
 import java.io.File
 import javax.swing.JFileChooser
 
@@ -58,6 +59,18 @@ fun DirectoryBar(state: AppState) {
                 enabled = state.directory.isNotBlank() && state.duplicatesStatus != DuplicatesStatus.RUNNING,
             ) {
                 Text(if (state.duplicatesStatus == DuplicatesStatus.RUNNING) "Checking…" else "Duplicates")
+            }
+            Button(
+                onClick = {
+                    if (state.watchStatus == WatchStatus.WATCHING) {
+                        state.stopWatching()
+                    } else {
+                        state.startWatching()
+                    }
+                },
+                enabled = state.directory.isNotBlank(),
+            ) {
+                Text(if (state.watchStatus == WatchStatus.WATCHING) "Stop Watch" else "Watch")
             }
         }
 
@@ -156,6 +169,28 @@ fun DirectoryBar(state: AppState) {
                 }
             }
             DuplicatesStatus.IDLE -> Unit
+        }
+
+        when (state.watchStatus) {
+            WatchStatus.WATCHING -> {
+                Text(
+                    "Watching for changes in ${state.directory}…",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+            }
+            WatchStatus.ERROR -> {
+                state.errorMessage?.let {
+                    Text(
+                        it,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 4.dp),
+                    )
+                }
+            }
+            WatchStatus.STOPPED -> Unit
         }
     }
 }
