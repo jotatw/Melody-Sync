@@ -22,6 +22,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.nio.file.Path
 
+enum class Section {
+    LIBRARY,
+    STATISTICS,
+    HEALTH,
+    DUPLICATES,
+    ORGANIZE,
+}
+
+enum class SortColumn {
+    TITLE,
+    ARTIST,
+    ALBUM,
+    DURATION,
+}
+
 enum class ScanStatus {
     IDLE,
     SCANNING,
@@ -59,8 +74,18 @@ enum class OrganizeStatus {
 class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default)) {
 
     private var watcher: LibraryWatcher? = null
+    private val prefs = AppPreferences.load()
 
-    var directory by mutableStateOf("")
+    var directory by mutableStateOf(prefs.directory)
+        private set
+
+    var currentSection by mutableStateOf(sectionFromString(prefs.section))
+        private set
+
+    var sortColumn by mutableStateOf(sortColumnFromString(prefs.sortColumn))
+        private set
+
+    var sortAscending by mutableStateOf(prefs.sortAscending)
         private set
 
     var status by mutableStateOf(ScanStatus.IDLE)
@@ -108,7 +133,7 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
     val filteredSongs: List<Song>
         get() {
             val q = query.trim().lowercase()
-            return if (q.isEmpty()) {
+            val filtered = if (q.isEmpty()) {
                 songs
             } else {
                 songs.filter { song ->
@@ -117,14 +142,32 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
                         song.album?.lowercase()?.contains(q) == true
                 }
             }
+            val comparator = comparatorFor(sortColumn, sortAscending)
+            return filtered.sortedWith(comparator)
         }
 
     fun updateDirectory(value: String) {
         directory = value
+        savePrefs()
     }
 
     fun updateQuery(value: String) {
         query = value
+    }
+
+    fun setSection(section: Section) {
+        currentSection = section
+        savePrefs()
+    }
+
+    fun toggleSort(column: SortColumn) {
+        if (sortColumn == column) {
+            sortAscending = !sortAscending
+        } else {
+            sortColumn = column
+            sortAscending = true
+        }
+        savePrefs()
     }
 
     fun scan() {
@@ -213,23 +256,6 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
         watchStatus = WatchStatus.STOPPED
     }
 
-    private fun resyncFromWatch() {
-        if (directory.isBlank()) return
-        scope.launch {
-            try {
-                MusicDatabase.connect()
-                val dir = Path.of(directory.trim())
-                val result = LibrarySyncService.syncDirectory(dir)
-                lastResult = result
-                songs = MusicRepository.findAll()
-                statistics = calculateStatistics(songs)
-                progressText = "Auto-sync: +${result.added} added, ${result.updated} updated, ${result.removed} removed"
-            } catch (e: Exception) {
-                errorMessage = e.message ?: "Auto-sync failed"
-            }
-        }
-    }
-
     fun planOrganization() {
         if (organizeStatus == OrganizeStatus.RUNNING) return
         val dir = Path.of(directory.trim())
@@ -247,5 +273,49 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
                 organizeStatus = OrganizeStatus.ERROR
             }
         }
+    }
+
+    fun savePrefs() {
+        AppPreferences(
+            directory = directory,
+            section = currentSection.name.lowercase(),
+            sortColumn = sortColumn.name.lowercase(),
+            sortAscending = sortAscending,
+        ).save()
+    }
+
+    private fun resyncFromWatch() {
+        if (directory.isBlank()) return
+        scope.launch {
+            try {
+                MusicDatabase.connect()
+                val dir = Path.of(directory.trim())
+                val result = LibrarySyncService.syncDirectory(dir)
+                lastResult = result
+                songs = MusicRepository.findAll()
+                statistics = calculateStatistics(songs)
+                progressText = "Auto-sync: +${result.added} added, ${result.updated} updated, ${result.removed} removed"
+            } catch (e: Exception) {
+                errorMessage = e.message ?: "Auto-sync failed"
+            }
+        }
+    }
+
+    private fun comparatorFor(column: SortColumn, ascending: Boolean): Comparator<Song> {
+        val base: Comparator<Song> = when (column) {
+            SortColumn.TITLE -> compareBy { it.title?.lowercase() ?: it.filename.lowercase() }
+            SortColumn.ARTIST -> compareBy { it.artist?.lowercase() ?: "" }
+            SortColumn.ALBUM -> compareBy { it.album?.lowercase() ?: "" }
+            SortColumn.DURATION -> compareBy { it.duration ?: 0.0 }
+        }
+        return if (ascending) base else base.reversed()
+    }
+
+    companion object {
+        fun sectionFromString(value: String): Section =
+            try { Section.valueOf(value.uppercase()) } catch (_: Exception) { Section.LIBRARY }
+
+        fun sortColumnFromString(value: String): SortColumn =
+            try { SortColumn.valueOf(value.uppercase()) } catch (_: Exception) { SortColumn.TITLE }
     }
 }

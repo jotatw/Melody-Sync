@@ -16,19 +16,20 @@ The project is also a way to practice software engineering: architecture before 
 
 | Item | Status |
 |------|--------|
-| Version | **v0.10.0-dev** |
+| Version | **v0.11.0-dev** |
 | Language | **Kotlin** (JVM 21) |
 | Core (scan, metadata, statistics) | ✅ Migrated from Python |
 | CLI (`melody-sync scan` / `health` / `duplicates` / `organize` / `export` / `enrich`) | ✅ Working |
-| Automated tests | 🎉 **129 passing** |
+| Automated tests | 🎉 **133 passing** |
 | Database (SQLite) | ✅ Working |
-| GUI (Desktop) | ✅ Working (Compose) |
+| GUI (Desktop) | ✅ Working (Compose, sidebar) |
 | Library health check | ✅ Working |
 | Duplicate detection | ✅ Working |
 | File watcher (auto re-sync) | ✅ Working |
 | Folder organization | ✅ Working |
 | Export (JSON/CSV) | ✅ Working |
 | YouTube enrichment | ✅ Working (needs API key) |
+| Installation (Fedora) | ✅ Script (`scripts/install.sh`) |
 
 ---
 
@@ -50,13 +51,18 @@ The project is also a way to practice software engineering: architecture before 
 - ✅ Folder organization — plan `Artist/Album/` structure, apply with `--apply` (report-first, never automatic)
 - ✅ Export — library metadata to JSON or CSV (CLI)
 - ✅ YouTube enrichment — search candidates for songs missing metadata (CLI, report-only)
+- ✅ Sidebar navigation (Library, Statistics, Health, Duplicates, Organize)
+- ✅ Sortable song list with A–Z letter index
+- ✅ Persistent preferences (directory, theme, section, sort)
+- ✅ One-command installation on Fedora (`scripts/install.sh`)
 - ✅ System theme detection (KDE Plasma + GNOME)
-- ✅ 129 automated tests with real audio fixtures
+- ✅ 133 automated tests with real audio fixtures
 
 ### In Progress / Planned
 
 - ⏳ YouTube enrichment: auto-apply metadata to songs (currently report-only)
 - ⏳ Cover art and lyrics fetching from matched videos
+- ⏳ AppImage / RPM packaging for easier distribution (currently install script)
 
 ---
 
@@ -114,9 +120,9 @@ Directory
 | Build | **Gradle** 9.6.1 (Kotlin DSL) |
 | Audio metadata | **JAudioTagger** 2.2.7 |
 | CLI framework | **clikt** 5.1.0 |
-| GUI (future) | **Compose Desktop** 1.11.1 |
+| GUI | **Compose Desktop** 1.11.1 |
 | Database | **SQLite** via **Exposed** 0.61.0 |
-| Testing | **JUnit 5** (73 tests, real audio fixtures) |
+| Testing | **JUnit 5** (133 tests, real audio fixtures) |
 
 ---
 
@@ -124,6 +130,20 @@ Directory
 
 - JDK 21+ (JVM target 21; JDK 25+ also works)
 - Linux (primary; Windows/macOS possible but not tested)
+
+---
+
+## Installation (Fedora / Linux)
+
+Install the desktop GUI with a single command (builds, installs to `~/.local/share/melody-sync`, creates a launcher in `~/.local/bin` and a menu entry):
+
+```bash
+./scripts/install.sh
+```
+
+Then run `melody-sync` (or launch from your app menu). Uninstall with `./scripts/uninstall.sh` (keeps your `~/.config/melody-sync/library.db`).
+
+The install script builds a self-contained JAR and requires Java 21+ at runtime.
 
 ---
 
@@ -165,13 +185,13 @@ cd Melody-Sync
 
 ## Testing
 
-**129 tests, all passing:**
+**133 tests, all passing:**
 
 | Module | Tests | Area |
 |--------|-------|------|
 | `core` | 107 | Models, Discovery, Metadata, Scanner, Statistics, Database, Sync, Health, Duplicates, Watcher, Organization, Export, Enrichment |
 | `cli` | 16 | Version, Scan, Health, Duplicates, Organize, Export, Enrich commands |
-| `desktop` | 6 | Theme detection, color schemes |
+| `desktop` | 10 | Theme, preferences, color schemes |
 
 ```bash
 ./gradlew test
@@ -256,13 +276,21 @@ Project documentation lives in the `docs/` directory. Key documents:
 - [x] Export library metadata to CSV (with escaping)
 - [x] CLI command `melody-sync export` (`--format json|csv`, `--output`)
 
-### Milestone 10 — YouTube Enrichment ✅
-- [x] Search YouTube for candidate matches (YouTube Data API v3)
-- [x] Query built from artist + title (or filename fallback)
-- [x] CLI command `melody-sync enrich` with `--only-missing`
-- [x] Report-only — candidates shown for review, nothing written
-- [ ] Auto-apply metadata to songs (future)
-- [ ] Cover art and lyrics fetching (future)
+### Milestone 11 — Sidebar UI & Preferences ✅
+- [x] Sidebar navigation (Library, Statistics, Health, Duplicates, Organize)
+- [x] Sortable song list (clickable column headers with ▲/▼)
+- [x] A–Z letter index with scroll-to-letter
+- [x] Persistent preferences (`~/.config/melody-sync/settings.properties`)
+
+### Milestone 12 — Installation ✅
+- [x] Self-contained JAR (uberJar) with main class
+- [x] `scripts/install.sh` — build, install to `~/.local`, create launcher + menu entry
+- [x] `scripts/uninstall.sh`
+- [ ] AppImage / RPM packaging (future)
+
+### Milestone 13 — Enrichment ⏳
+- [ ] YouTube enrichment: auto-apply metadata to songs (currently report-only)
+- [ ] Cover art and lyrics fetching from matched videos
 
 ---
 

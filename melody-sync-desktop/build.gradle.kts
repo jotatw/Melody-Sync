@@ -31,7 +31,12 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Deb, TargetFormat.Rpm)
             packageName = "melody-sync"
-            packageVersion = "0.3.0"
+            packageVersion = "0.10.0"
+            description = "Organize, analyze and explore your local music library."
+            vendor = "Melody Sync"
+            linux {
+                iconFile.set(project.file("src/main/resources/icon.png"))
+            }
         }
     }
 }

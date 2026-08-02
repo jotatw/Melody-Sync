@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import com.melodysync.desktop.state.AppPreferences
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.theme.AppTheme
 import com.melodysync.desktop.ui.LibraryScreen
@@ -20,20 +21,38 @@ fun main() = application {
     val windowState = rememberWindowState(width = 1100.dp, height = 700.dp)
 
     val appState = remember { AppState() }
+    val savedTheme = remember { AppPreferences.load().theme }
 
     Window(
         onCloseRequest = ::exitApplication,
         title = "Melody Sync",
         state = windowState,
     ) {
-        var theme by remember { mutableStateOf(AppTheme.detectSystemTheme()) }
+        var theme by remember {
+            mutableStateOf(
+                when (savedTheme) {
+                    "light" -> AppTheme.LIGHT
+                    "dark" -> AppTheme.DARK
+                    else -> AppTheme.detectSystemTheme()
+                },
+            )
+        }
 
         MaterialTheme(colorScheme = theme.colorScheme) {
             Surface(modifier = Modifier.fillMaxSize()) {
                 LibraryScreen(
                     state = appState,
                     theme = theme,
-                    onToggleTheme = { theme = if (theme == AppTheme.LIGHT) AppTheme.DARK else AppTheme.LIGHT },
+                    onToggleTheme = {
+                        theme = if (theme == AppTheme.LIGHT) AppTheme.DARK else AppTheme.LIGHT
+                        AppPreferences(
+                            directory = appState.directory,
+                            theme = theme.name.lowercase(),
+                            section = appState.currentSection.name.lowercase(),
+                            sortColumn = appState.sortColumn.name.lowercase(),
+                            sortAscending = appState.sortAscending,
+                        ).save()
+                    },
                 )
             }
         }

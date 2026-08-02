@@ -82,7 +82,7 @@ High-level project evolution.
 
 | Item | Status |
 |------|--------|
-| Version | **v0.10.0-dev** |
+| Version | **v0.11.0-dev** |
 | Language | **Kotlin** (migrated from Python) |
 | Core (model + scanner) | ✅ Completed |
 | CLI (`melody-sync scan` / `health` / `duplicates` / `organize` / `export` / `enrich`) | ✅ Completed |
@@ -95,7 +95,9 @@ High-level project evolution.
 | Folder Organization | ✅ Completed |
 | Export (JSON/CSV) | ✅ Completed |
 | YouTube Enrichment | ✅ Completed (report-only) |
-| Automated Tests | 🎉 **129 Passing** (107 core + 16 CLI + 6 desktop) |
+| Sidebar UI + Preferences | ✅ Completed |
+| Installation (Fedora script) | ✅ Completed |
+| Automated Tests | 🎉 **133 Passing** (107 core + 16 CLI + 10 desktop) |
 
 ---
 
@@ -142,4 +144,4 @@ The documentation follows the same philosophy as the source code:
 
 **Last Updated**
 
-2026-08-01 — Milestone 10 (YouTube Enrichment) completed
+2026-08-02 — Milestones 11 & 12 (Sidebar UI + Installation) completed
