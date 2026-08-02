@@ -91,6 +91,9 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
     var sidebarExpanded by mutableStateOf(prefs.sidebarExpanded)
         private set
 
+    var transientMessage by mutableStateOf<String?>(null)
+        private set
+
     var status by mutableStateOf(ScanStatus.IDLE)
         private set
 
@@ -178,6 +181,14 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
         savePrefs()
     }
 
+    fun showMessage(message: String) {
+        transientMessage = message
+    }
+
+    fun clearMessage() {
+        transientMessage = null
+    }
+
     fun scan() {
         if (status == ScanStatus.SCANNING) return
         val dir = Path.of(directory.trim())
@@ -194,6 +205,9 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
                 statistics = calculateStatistics(songs)
                 progressText = "Done: +${result.added} added, ${result.updated} updated, ${result.removed} removed"
                 status = ScanStatus.DONE
+                if (result.added > 0 || result.updated > 0) {
+                    showMessage("Scan done: +${result.added} added, ${result.updated} updated")
+                }
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Scan failed"
                 progressText = ""

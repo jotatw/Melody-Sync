@@ -188,10 +188,10 @@ Current structure matches this already (theme/, state/, ui/components/).
 - [x] Letter index for large lists.
 - [x] Progress indicators for long operations.
 - [x] System dark mode detection (KDE + GNOME).
-- [ ] Navigation Rail (Material 3) replacing custom sidebar.
-- [ ] Distinct empty states (no directory / no results).
+- [x] Navigation Rail (Material 3) — replaces the custom sidebar.
+- [x] Distinct empty states (no directory / no search results).
+- [x] Snackbar for transient messages.
 - [ ] Keyboard navigation in lists.
-- [ ] Snackbar for transient messages.
 - [ ] Reusable ProgressCard/ResultCard component.
 - [ ] Inline error messages with recovery hints.
 

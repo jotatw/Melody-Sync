@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FolderOpen
+import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,15 +33,25 @@ import kotlinx.coroutines.launch
 @Composable
 fun SongList(state: AppState) {
     if (state.songs.isEmpty()) {
-        Text(
-            "No songs loaded. Choose a directory and press Scan.",
-            modifier = Modifier.padding(top = 24.dp),
-            style = MaterialTheme.typography.bodyMedium,
+        EmptyState(
+            icon = Icons.Filled.FolderOpen,
+            title = "No songs loaded",
+            message = "Choose a music directory above and press Scan to load your library.",
         )
         return
     }
 
     val songs = state.filteredSongs
+
+    if (songs.isEmpty()) {
+        EmptyState(
+            icon = Icons.Filled.SearchOff,
+            title = "No results",
+            message = "No songs match \"${state.query}\". Try a different search.",
+        )
+        return
+    }
+
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 

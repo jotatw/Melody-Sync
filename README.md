@@ -51,8 +51,9 @@ The project is also a way to practice software engineering: architecture before 
 - ✅ Folder organization — plan `Artist/Album/` structure, apply with `--apply` (report-first, never automatic)
 - ✅ Export — library metadata to JSON or CSV (CLI)
 - ✅ YouTube enrichment — search candidates for songs missing metadata (CLI, report-only)
-- ✅ Sidebar navigation (Library, Statistics, Health, Duplicates, Organize) — collapsible
+- ✅ Navigation Rail (Material 3) — collapsible sidebar
 - ✅ Sortable song list with A–Z letter index
+- ✅ Distinct empty states (no songs / no search results)
 - ✅ Persistent preferences (directory, theme, section, sort, sidebar)
 - ✅ One-command installation on Fedora (`scripts/install.sh`)
 - ✅ MIT license

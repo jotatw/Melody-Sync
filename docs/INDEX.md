@@ -51,8 +51,7 @@ Guidelines for contributors and future development.
 
 | Item | Status |
 |------|--------|
-| Version | **v0.12.0-dev** |
-| Language | **Kotlin** (migrated from Python) |
+| Version | **v0.12.0-dev** || Language | **Kotlin** (migrated from Python) |
 | Core (model + scanner) | ✅ Completed |
 | CLI (`melody-sync scan` / `health` / `duplicates` / `organize` / `export` / `enrich`) | ✅ Completed |
 | Database (SQLite via Exposed) | ✅ Completed |
