@@ -16,13 +16,13 @@ The project is also a way to practice software engineering: architecture before 
 
 | Item | Status |
 |------|--------|
-| Version | **v0.11.0-dev** |
+| Version | **v0.12.0-dev** |
 | Language | **Kotlin** (JVM 21) |
-| Core (scan, metadata, statistics) | ✅ Migrated from Python |
+| Core (scan, metadata, statistics) | ✅ Completed |
 | CLI (`melody-sync scan` / `health` / `duplicates` / `organize` / `export` / `enrich`) | ✅ Working |
 | Automated tests | 🎉 **133 passing** |
 | Database (SQLite) | ✅ Working |
-| GUI (Desktop) | ✅ Working (Compose, sidebar) |
+| GUI (Desktop) | ✅ Working (Compose, collapsible sidebar) |
 | Library health check | ✅ Working |
 | Duplicate detection | ✅ Working |
 | File watcher (auto re-sync) | ✅ Working |
@@ -51,10 +51,11 @@ The project is also a way to practice software engineering: architecture before 
 - ✅ Folder organization — plan `Artist/Album/` structure, apply with `--apply` (report-first, never automatic)
 - ✅ Export — library metadata to JSON or CSV (CLI)
 - ✅ YouTube enrichment — search candidates for songs missing metadata (CLI, report-only)
-- ✅ Sidebar navigation (Library, Statistics, Health, Duplicates, Organize)
+- ✅ Sidebar navigation (Library, Statistics, Health, Duplicates, Organize) — collapsible
 - ✅ Sortable song list with A–Z letter index
-- ✅ Persistent preferences (directory, theme, section, sort)
+- ✅ Persistent preferences (directory, theme, section, sort, sidebar)
 - ✅ One-command installation on Fedora (`scripts/install.sh`)
+- ✅ MIT license
 - ✅ System theme detection (KDE Plasma + GNOME)
 - ✅ 133 automated tests with real audio fixtures
 

@@ -88,6 +88,9 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
     var sortAscending by mutableStateOf(prefs.sortAscending)
         private set
 
+    var sidebarExpanded by mutableStateOf(prefs.sidebarExpanded)
+        private set
+
     var status by mutableStateOf(ScanStatus.IDLE)
         private set
 
@@ -167,6 +170,11 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
             sortColumn = column
             sortAscending = true
         }
+        savePrefs()
+    }
+
+    fun toggleSidebar() {
+        sidebarExpanded = !sidebarExpanded
         savePrefs()
     }
 
@@ -281,6 +289,7 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
             section = currentSection.name.lowercase(),
             sortColumn = sortColumn.name.lowercase(),
             sortAscending = sortAscending,
+            sidebarExpanded = sidebarExpanded,
         ).save()
     }
 

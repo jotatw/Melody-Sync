@@ -51,6 +51,7 @@ fun main() = application {
                             section = appState.currentSection.name.lowercase(),
                             sortColumn = appState.sortColumn.name.lowercase(),
                             sortAscending = appState.sortAscending,
+                            sidebarExpanded = appState.sidebarExpanded,
                         ).save()
                     },
                 )

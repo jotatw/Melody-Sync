@@ -1,5 +1,10 @@
 package com.melodysync.desktop.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.HealthAndSafety
@@ -39,18 +45,26 @@ private val items = listOf(
     SidebarItem(Section.ORGANIZE, "Organize", Icons.Filled.FolderOpen),
 )
 
+private val EXPANDED_WIDTH = 180.dp
+private val COLLAPSED_WIDTH = 48.dp
+
 @Composable
 fun Sidebar(state: AppState) {
+    val expanded = state.sidebarExpanded
+    val width = if (expanded) EXPANDED_WIDTH else COLLAPSED_WIDTH
+
     Column(
         modifier = Modifier
             .fillMaxHeight()
-            .padding(end = 16.dp),
+            .width(width)
+            .padding(end = if (expanded) 16.dp else 8.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         items.forEach { item ->
             SidebarItemRow(
                 item = item,
                 selected = state.currentSection == item.section,
+                expanded = expanded,
                 onClick = { state.setSection(item.section) },
             )
         }
@@ -61,6 +75,7 @@ fun Sidebar(state: AppState) {
 private fun SidebarItemRow(
     item: SidebarItem,
     selected: Boolean,
+    expanded: Boolean,
     onClick: () -> Unit,
 ) {
     val containerColor = if (selected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface
@@ -74,7 +89,7 @@ private fun SidebarItemRow(
             .clickable(onClick = onClick),
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            modifier = Modifier.padding(horizontal = if (expanded) 12.dp else 8.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
@@ -83,11 +98,18 @@ private fun SidebarItemRow(
                 contentDescription = item.label,
                 tint = contentColor,
             )
-            Text(
-                item.label,
-                style = MaterialTheme.typography.bodyLarge,
-                color = contentColor,
-            )
+            AnimatedVisibility(
+                visible = expanded,
+                enter = fadeIn(tween(150)),
+                exit = shrinkHorizontally(tween(150)) + fadeOut(tween(150)),
+            ) {
+                Text(
+                    item.label,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = contentColor,
+                    modifier = Modifier.width(EXPANDED_WIDTH - 60.dp),
+                )
+            }
         }
     }
 }

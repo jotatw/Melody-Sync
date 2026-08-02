@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MenuOpen
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +32,12 @@ fun TopBar(
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(onClick = state::toggleSidebar) {
+                Icon(
+                    imageVector = if (state.sidebarExpanded) Icons.Filled.MenuOpen else Icons.Filled.Menu,
+                    contentDescription = if (state.sidebarExpanded) "Collapse sidebar" else "Expand sidebar",
+                )
+            }
             Text("🎵", style = MaterialTheme.typography.titleLarge)
             Text(
                 "Melody Sync",

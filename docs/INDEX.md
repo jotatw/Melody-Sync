@@ -40,41 +40,10 @@ Guidelines for contributors and future development.
 
 | Document | Purpose |
 |----------|---------|
-| Development Guide | Development workflow |
-| Coding Standards | Coding conventions and project standards |
-| Testing Guidelines | Testing methodology and best practices |
-
----
-
-# 🧪 Testing
-
-Documentation related to the testing process.
-
-| Document | Purpose |
-|----------|---------|
-| Test Plan | Testing strategy |
-| Test Report | Current testing results |
-
----
-
-# 📋 Project Management
-
-Project planning and development history.
-
-| Document | Purpose |
-|----------|---------|
-| Sprint Board | Sprint planning and backlog |
-| Sprint Journal | Detailed record of every sprint |
-
----
-
-# 📖 Project History
-
-High-level project evolution.
-
-| Document | Purpose |
-|----------|---------|
-| Project History | Timeline and major milestones |
+| Documentation Standard | Documentation standards and conventions |
+| Architecture Review | Architectural reasoning and lessons learned |
+| Application Design Research | Design and UX best practices applied to the app |
+| Journal | Project history and context |
 
 ---
 
@@ -82,7 +51,7 @@ High-level project evolution.
 
 | Item | Status |
 |------|--------|
-| Version | **v0.11.0-dev** |
+| Version | **v0.12.0-dev** |
 | Language | **Kotlin** (migrated from Python) |
 | Core (model + scanner) | ✅ Completed |
 | CLI (`melody-sync scan` / `health` / `duplicates` / `organize` / `export` / `enrich`) | ✅ Completed |
@@ -98,6 +67,8 @@ High-level project evolution.
 | Sidebar UI + Preferences | ✅ Completed |
 | Installation (Fedora script) | ✅ Completed |
 | Automated Tests | 🎉 **133 Passing** (107 core + 16 CLI + 10 desktop) |
+| Collapsible Sidebar | ✅ Completed |
+| Cleanup (legacy Python, empty docs) | ✅ Completed |
 
 ---
 
@@ -108,23 +79,20 @@ docs/
 │
 ├── INDEX.md
 │
-├── ADR/
+├── architecture/
+│   ├── ADR/                      # Architecture Decision Records
+│   ├── music-library-domain.md   # Domain models specification
+│   └── reviews/                  # Architecture reviews
 │
-├── handbook/
-│   ├── DevelopmentGuide.md
-│   ├── CodingStandards.md
-│   └── TestingGuidelines.md
+├── journal/                      # Project journal and context
 │
-├── history/
-│   └── ProjectHistory.md
+├── project/                      # Project notes
 │
-├── project/
-│   ├── SprintBoard.md
-│   └── SprintJournal.md
+├── standards/
+│   ├── handbook/                 # Documentation standard
+│   └── templates/                # Document templates
 │
-└── testing/
-    ├── TEST_PLAN.md
-    └── TEST_REPORT.md
+└── research/                     # Design and technology research
 ```
 
 ---
@@ -136,12 +104,10 @@ The documentation follows the same philosophy as the source code:
 - Each document has a single responsibility.
 - Documentation should reflect the current state of the project.
 - Architectural decisions are recorded using ADRs.
-- Sprint Journal records the development process.
-- Handbook contains permanent development guidelines.
-- Project History summarizes the evolution of the project.
+- Documentation is part of the project's architecture and evolves with it.
 
 ---
 
 **Last Updated**
 
-2026-08-02 — Milestones 11 & 12 (Sidebar UI + Installation) completed
+2026-08-02 — Milestones 11 & 12 + cleanup + design research
