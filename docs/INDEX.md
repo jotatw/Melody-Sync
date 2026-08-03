@@ -44,6 +44,7 @@ Visual identity and interaction standards.
 |----------|---------|
 | Design System | Hi-Fi Editorial visual identity (colors, typography, layout) |
 | Application Design Research | Design and UX best practices applied to the app |
+| Quick-Fix HUD | Assisted curation vision (registered, not implemented) |
 
 ---
 
@@ -76,9 +77,11 @@ Guidelines for contributors and future development.
 | YouTube Enrichment | ✅ Completed (report-only) |
 | Sidebar UI + Preferences | ✅ Completed |
 | Installation (Fedora script) | ✅ Completed |
-| Automated Tests | 🎉 **133 Passing** (107 core + 16 CLI + 10 desktop) |
+| Automated Tests | 🎉 **144 Passing** (118 core + 16 CLI + 10 desktop) |
 | Collapsible Sidebar | ✅ Completed |
 | Cleanup (legacy Python, empty docs) | ✅ Completed |
+| Hi-Fi Editorial Design System | ✅ Completed (subtle first pass) |
+| Security hardening (path traversal, WAL) | ✅ Completed |
 
 ---
 
@@ -121,4 +124,4 @@ The documentation follows the same philosophy as the source code:
 
 **Last Updated**
 
-2026-08-03 — Merged Hi-Fi Editorial design system, multiplatform and security guides
+2026-08-03 — Hi-Fi Editorial design system, security hardening, design guides merged
