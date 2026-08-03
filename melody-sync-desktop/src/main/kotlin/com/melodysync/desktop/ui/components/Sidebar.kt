@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.HealthAndSafety
@@ -49,9 +50,10 @@ private val footerItems = listOf(
 @Composable
 fun Sidebar(state: AppState) {
     val expanded = state.sidebarExpanded
+    val railWidth = if (expanded) 200.dp else 80.dp
 
     NavigationRail(
-        modifier = Modifier.fillMaxHeight(),
+        modifier = Modifier.fillMaxHeight().width(railWidth),
         header = {
             if (expanded) {
                 Text(
