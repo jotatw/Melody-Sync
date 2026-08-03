@@ -12,8 +12,36 @@ enum class AppTheme {
 
     val colorScheme: ColorScheme
         get() = when (this) {
-            LIGHT -> lightColorScheme()
-            DARK -> darkColorScheme()
+            LIGHT -> lightColorScheme(
+                primary = HiFiLightColors.Primary,
+                onPrimary = HiFiLightColors.Background,
+                secondary = HiFiLightColors.Secondary,
+                onSecondary = HiFiLightColors.Background,
+                background = HiFiLightColors.Background,
+                onBackground = HiFiLightColors.TextPrimary,
+                surface = HiFiLightColors.Surface,
+                onSurface = HiFiLightColors.TextPrimary,
+                surfaceVariant = HiFiLightColors.SurfaceVariant,
+                onSurfaceVariant = HiFiLightColors.TextSecondary,
+                outline = HiFiLightColors.Border,
+                error = HiFiLightColors.Error,
+                onError = HiFiLightColors.Background,
+            )
+            DARK -> darkColorScheme(
+                primary = HiFiDarkColors.Primary,
+                onPrimary = HiFiDarkColors.Background,
+                secondary = HiFiDarkColors.Secondary,
+                onSecondary = HiFiDarkColors.Background,
+                background = HiFiDarkColors.Background,
+                onBackground = HiFiDarkColors.TextPrimary,
+                surface = HiFiDarkColors.Surface,
+                onSurface = HiFiDarkColors.TextPrimary,
+                surfaceVariant = HiFiDarkColors.SurfaceVariant,
+                onSurfaceVariant = HiFiDarkColors.TextSecondary,
+                outline = HiFiDarkColors.Border,
+                error = HiFiDarkColors.Error,
+                onError = HiFiDarkColors.Background,
+            )
         }
 
     companion object {

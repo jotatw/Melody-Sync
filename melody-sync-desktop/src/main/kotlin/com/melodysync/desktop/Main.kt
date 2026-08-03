@@ -15,6 +15,8 @@ import androidx.compose.ui.window.rememberWindowState
 import com.melodysync.desktop.state.AppPreferences
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.theme.AppTheme
+import com.melodysync.desktop.theme.HiFiShapes
+import com.melodysync.desktop.theme.HiFiTypography
 import com.melodysync.desktop.ui.LibraryScreen
 
 fun main() = application {
@@ -38,7 +40,11 @@ fun main() = application {
             )
         }
 
-        MaterialTheme(colorScheme = theme.colorScheme) {
+        MaterialTheme(
+            colorScheme = theme.colorScheme,
+            typography = HiFiTypography,
+            shapes = HiFiShapes.material,
+        ) {
             Surface(modifier = Modifier.fillMaxSize()) {
                 LibraryScreen(
                     state = appState,
