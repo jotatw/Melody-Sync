@@ -31,6 +31,19 @@ Documentation describing the system design and architectural decisions.
 | ADR-0006 | Documentation Structure |
 | ADR-0007 | CLI Framework — clikt |
 | ADR-0008 | Build System — Gradle Kotlin DSL |
+| Multiplatform Portability Guide | Strategy for porting to Windows/Android (KMP) |
+| Security & Resilience Guide | Defensive coding, sandboxing, data integrity |
+
+---
+
+# 🎨 Design
+
+Visual identity and interaction standards.
+
+| Document | Purpose |
+|----------|---------|
+| Design System | Hi-Fi Editorial visual identity (colors, typography, layout) |
+| Application Design Research | Design and UX best practices applied to the app |
 
 ---
 
@@ -42,8 +55,6 @@ Guidelines for contributors and future development.
 |----------|---------|
 | Documentation Standard | Documentation standards and conventions |
 | Architecture Review | Architectural reasoning and lessons learned |
-| Application Design Research | Design and UX best practices applied to the app |
-| Journal | Project history and context |
 
 ---
 
@@ -79,19 +90,20 @@ docs/
 ├── INDEX.md
 │
 ├── architecture/
-│   ├── ADR/                      # Architecture Decision Records
-│   ├── music-library-domain.md   # Domain models specification
-│   └── reviews/                  # Architecture reviews
+│   ├── ADR/                       # Architecture Decision Records
+│   ├── music-library-domain.md    # Domain models specification
+│   ├── MultiplatformPortabilityGuide.md  # KMP porting strategy
+│   ├── SecurityAndResilienceGuide.md     # Defensive coding standards
+│   └── reviews/                   # Architecture reviews
 │
-├── journal/                      # Project journal and context
-│
-├── project/                      # Project notes
+├── project/                       # Project notes
 │
 ├── standards/
-│   ├── handbook/                 # Documentation standard
-│   └── templates/                # Document templates
+│   ├── DesignSystem.md            # Hi-Fi Editorial visual identity
+│   ├── handbook/                  # Documentation standard
+│   └── templates/                 # Document templates
 │
-└── research/                     # Design and technology research
+└── research/                      # Design and technology research
 ```
 
 ---
@@ -109,4 +121,4 @@ The documentation follows the same philosophy as the source code:
 
 **Last Updated**
 
-2026-08-02 — Milestones 11 & 12 + cleanup + design research
+2026-08-03 — Merged Hi-Fi Editorial design system, multiplatform and security guides

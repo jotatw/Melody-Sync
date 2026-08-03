@@ -2,6 +2,8 @@
 
 > Design research and best practices applied to the Melody Sync desktop application.
 
+> **Note:** The visual identity is now defined by `docs/standards/DesignSystem.md` (Hi-Fi Editorial). This document records the research that led to the current UX decisions.
+
 ---
 
 ## Document Information
@@ -12,7 +14,7 @@
 | Audience         | Developers             |
 | Status           | Draft                  |
 | Project Version  | v0.12.0-dev            |
-| Last Updated     | 2026-08-02             |
+| Last Updated     | 2026-08-03             |
 
 ---
 
