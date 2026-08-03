@@ -33,6 +33,7 @@ class AppPreferencesTest {
             section = "health",
             sortColumn = "artist",
             sortAscending = false,
+            visibleColumns = "title,artist,bitrate",
         )
 
         original.save(prefsFile())
@@ -49,7 +50,21 @@ class AppPreferencesTest {
 
         assertEquals(SortColumn.TITLE, AppState.sortColumnFromString("title"))
         assertEquals(SortColumn.DURATION, AppState.sortColumnFromString("duration"))
+        assertEquals(SortColumn.BITRATE, AppState.sortColumnFromString("bitrate"))
         assertEquals(SortColumn.TITLE, AppState.sortColumnFromString("bogus"))
+    }
+
+    @Test
+    fun `parse columns from preferences`() {
+        val columns = AppState.parseColumns("title,artist,format,bitrate")
+
+        assertEquals(setOf(SongColumn.TITLE, SongColumn.ARTIST, SongColumn.FORMAT, SongColumn.BITRATE), columns)
+    }
+
+    @Test
+    fun `parse columns handles invalid and blank`() {
+        assertEquals(setOf(SongColumn.TITLE), AppState.parseColumns("title,bogus"))
+        assertEquals(SongColumn.entries.toSet(), AppState.parseColumns(""))
     }
 
     @Test

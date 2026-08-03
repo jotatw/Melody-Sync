@@ -21,8 +21,8 @@ import com.melodysync.desktop.ui.components.DirectoryBar
 import com.melodysync.desktop.ui.components.DuplicatesSection
 import com.melodysync.desktop.ui.components.HealthSection
 import com.melodysync.desktop.ui.components.LibraryHeader
+import com.melodysync.desktop.ui.components.LibraryToolbar
 import com.melodysync.desktop.ui.components.OrganizeSection
-import com.melodysync.desktop.ui.components.SearchBar
 import com.melodysync.desktop.ui.components.SettingsSection
 import com.melodysync.desktop.ui.components.Sidebar
 import com.melodysync.desktop.ui.components.SongList
@@ -68,7 +68,7 @@ fun LibraryScreen(
                         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                         DirectoryBar(state)
                         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                        SearchBar(state)
+                        LibraryToolbar(state)
                         SongList(state)
                     }
                     Section.STATISTICS -> {

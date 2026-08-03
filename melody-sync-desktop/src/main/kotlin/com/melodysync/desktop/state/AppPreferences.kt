@@ -11,6 +11,7 @@ data class AppPreferences(
     val sortColumn: String = "title",
     val sortAscending: Boolean = true,
     val sidebarExpanded: Boolean = true,
+    val visibleColumns: String = "title,artist,album,duration,format,bitrate",
 ) {
     fun save(file: Path = defaultFile()) {
         val props = Properties()
@@ -20,6 +21,7 @@ data class AppPreferences(
         props.setProperty("sortColumn", sortColumn)
         props.setProperty("sortAscending", sortAscending.toString())
         props.setProperty("sidebarExpanded", sidebarExpanded.toString())
+        props.setProperty("visibleColumns", visibleColumns)
 
         Files.createDirectories(file.parent)
         Files.newOutputStream(file).use { props.store(it, "Melody Sync preferences") }
@@ -45,6 +47,8 @@ data class AppPreferences(
                     sortColumn = props.getProperty("sortColumn") ?: "title",
                     sortAscending = props.getProperty("sortAscending")?.toBoolean() ?: true,
                     sidebarExpanded = props.getProperty("sidebarExpanded")?.toBoolean() ?: true,
+                    visibleColumns = props.getProperty("visibleColumns")
+                        ?: "title,artist,album,duration,format,bitrate",
                 )
             } catch (_: Exception) {
                 AppPreferences()

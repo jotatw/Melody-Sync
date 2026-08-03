@@ -39,6 +39,17 @@ enum class SortColumn {
     ARTIST,
     ALBUM,
     DURATION,
+    FORMAT,
+    BITRATE,
+}
+
+enum class SongColumn {
+    TITLE,
+    ARTIST,
+    ALBUM,
+    DURATION,
+    FORMAT,
+    BITRATE,
 }
 
 enum class ScanStatus {
@@ -102,6 +113,15 @@ class AppState(
     var sidebarExpanded by mutableStateOf(prefs.sidebarExpanded)
         private set
 
+    var visibleColumns by mutableStateOf(parseColumns(prefs.visibleColumns))
+        private set
+
+    var artistFilter by mutableStateOf("")
+        private set
+
+    var formatFilter by mutableStateOf("")
+        private set
+
     var transientMessage by mutableStateOf<String?>(null)
         private set
 
@@ -150,14 +170,18 @@ class AppState(
     val filteredSongs: List<Song>
         get() {
             val q = query.trim().lowercase()
-            val filtered = if (q.isEmpty()) {
-                songs
-            } else {
-                songs.filter { song ->
+            val artist = artistFilter.trim().lowercase()
+            val format = formatFilter.trim().lowercase()
+
+            val filtered = songs.filter { song ->
+                val matchesQuery = q.isEmpty() ||
                     song.title?.lowercase()?.contains(q) == true ||
-                        song.artist?.lowercase()?.contains(q) == true ||
-                        song.album?.lowercase()?.contains(q) == true
-                }
+                    song.artist?.lowercase()?.contains(q) == true ||
+                    song.album?.lowercase()?.contains(q) == true
+                val matchesArtist = artist.isEmpty() ||
+                    song.artist?.lowercase()?.contains(artist) == true
+                val matchesFormat = format.isEmpty() || song.extension.lowercase() == format
+                matchesQuery && matchesArtist && matchesFormat
             }
             val comparator = comparatorFor(sortColumn, sortAscending)
             return filtered.sortedWith(comparator)
@@ -172,6 +196,14 @@ class AppState(
         query = value
     }
 
+    fun updateArtistFilter(value: String) {
+        artistFilter = value
+    }
+
+    fun updateFormatFilter(value: String) {
+        formatFilter = value
+    }
+
     fun setSection(section: Section) {
         currentSection = section
         savePrefs()
@@ -184,6 +216,16 @@ class AppState(
             sortColumn = column
             sortAscending = true
         }
+        savePrefs()
+    }
+
+    fun toggleColumn(column: SongColumn) {
+        val updated = if (column in visibleColumns) {
+            visibleColumns - column
+        } else {
+            visibleColumns + column
+        }
+        visibleColumns = updated
         savePrefs()
     }
 
@@ -328,6 +370,7 @@ class AppState(
             sortColumn = sortColumn.name.lowercase(),
             sortAscending = sortAscending,
             sidebarExpanded = sidebarExpanded,
+            visibleColumns = visibleColumns.joinToString(",") { it.name.lowercase() },
         ).save()
     }
 
@@ -359,6 +402,8 @@ class AppState(
             SortColumn.ARTIST -> compareBy { it.artist?.lowercase() ?: "" }
             SortColumn.ALBUM -> compareBy { it.album?.lowercase() ?: "" }
             SortColumn.DURATION -> compareBy { it.duration ?: 0.0 }
+            SortColumn.FORMAT -> compareBy { it.extension }
+            SortColumn.BITRATE -> compareBy { it.bitrate ?: 0 }
         }
         return if (ascending) base else base.reversed()
     }
@@ -369,5 +414,12 @@ class AppState(
 
         fun sortColumnFromString(value: String): SortColumn =
             try { SortColumn.valueOf(value.uppercase()) } catch (_: Exception) { SortColumn.TITLE }
+
+        fun parseColumns(value: String): Set<SongColumn> {
+            if (value.isBlank()) return SongColumn.entries.toSet()
+            return value.split(",").mapNotNull { raw ->
+                try { SongColumn.valueOf(raw.trim().uppercase()) } catch (_: Exception) { null }
+            }.toSet()
+        }
     }
 }

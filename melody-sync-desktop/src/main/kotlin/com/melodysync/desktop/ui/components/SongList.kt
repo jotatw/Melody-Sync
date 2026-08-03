@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
+import com.melodysync.desktop.state.SongColumn
 import com.melodysync.desktop.state.SortColumn
 import com.melodysync.model.Song
 import kotlinx.coroutines.launch
@@ -77,7 +78,7 @@ fun SongList(state: AppState) {
 
             LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
                 items(songs, key = { it.path.toString() }) { song ->
-                    SongRow(song)
+                    SongRow(song, state)
                     HorizontalDivider()
                 }
             }
@@ -107,10 +108,24 @@ private fun SongListHeader(state: AppState) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        SortableHeader("Title", SortColumn.TITLE, Modifier.weight(2f), state)
-        SortableHeader("Artist", SortColumn.ARTIST, Modifier.weight(1.5f), state)
-        SortableHeader("Album", SortColumn.ALBUM, Modifier.weight(1.5f), state)
-        SortableHeader("Duration", SortColumn.DURATION, Modifier.width(80.dp), state)
+        if (SongColumn.TITLE in state.visibleColumns) {
+            SortableHeader("Title", SortColumn.TITLE, Modifier.weight(2f), state)
+        }
+        if (SongColumn.ARTIST in state.visibleColumns) {
+            SortableHeader("Artist", SortColumn.ARTIST, Modifier.weight(1.5f), state)
+        }
+        if (SongColumn.ALBUM in state.visibleColumns) {
+            SortableHeader("Album", SortColumn.ALBUM, Modifier.weight(1.5f), state)
+        }
+        if (SongColumn.DURATION in state.visibleColumns) {
+            SortableHeader("Duration", SortColumn.DURATION, Modifier.width(80.dp), state)
+        }
+        if (SongColumn.FORMAT in state.visibleColumns) {
+            SortableHeader("Format", SortColumn.FORMAT, Modifier.width(64.dp), state)
+        }
+        if (SongColumn.BITRATE in state.visibleColumns) {
+            SortableHeader("Bitrate", SortColumn.BITRATE, Modifier.width(72.dp), state)
+        }
     }
 }
 
@@ -135,35 +150,59 @@ private fun SortableHeader(
 }
 
 @Composable
-private fun SongRow(song: Song) {
+private fun SongRow(song: Song, state: AppState) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp, horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(
-            song.title ?: song.filename,
-            style = MaterialTheme.typography.bodyLarge,
-            maxLines = 1,
-            modifier = Modifier.weight(2f),
-        )
-        Text(
-            song.artist ?: "Unknown artist",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            modifier = Modifier.weight(1.5f),
-        )
-        Text(
-            song.album ?: "Unknown album",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            modifier = Modifier.weight(1.5f),
-        )
-        Text(
-            "%.1f min".format(song.durationMinutes),
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.width(80.dp),
-        )
+        if (SongColumn.TITLE in state.visibleColumns) {
+            Text(
+                song.title ?: song.filename,
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 1,
+                modifier = Modifier.weight(2f),
+            )
+        }
+        if (SongColumn.ARTIST in state.visibleColumns) {
+            Text(
+                song.artist ?: "Unknown artist",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                modifier = Modifier.weight(1.5f),
+            )
+        }
+        if (SongColumn.ALBUM in state.visibleColumns) {
+            Text(
+                song.album ?: "Unknown album",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                modifier = Modifier.weight(1.5f),
+            )
+        }
+        if (SongColumn.DURATION in state.visibleColumns) {
+            Text(
+                "%.1f min".format(song.durationMinutes),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.width(80.dp),
+            )
+        }
+        if (SongColumn.FORMAT in state.visibleColumns) {
+            Text(
+                song.extension,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.width(64.dp),
+            )
+        }
+        if (SongColumn.BITRATE in state.visibleColumns) {
+            Text(
+                song.bitrate?.let { "${it / 1000} kbps" } ?: "—",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.width(72.dp),
+            )
+        }
     }
 }
