@@ -3,8 +3,11 @@
   <component name="Black">
     <option name="sdkName" value="Python 3.14 (Melody-Sync)" />
   </component>
+  <component name="FrameworkDetectionExcludesConfiguration">
+    <file type="web" url="file://$PROJECT_DIR$" />
+  </component>
   <component name="KubernetesApiProvider"><![CDATA[{}]]></component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.14 (Melody-Sync)" project-jdk-type="Python SDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" project-jdk-name="Python 3.14 (Melody-Sync)" project-jdk-type="Python SDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>

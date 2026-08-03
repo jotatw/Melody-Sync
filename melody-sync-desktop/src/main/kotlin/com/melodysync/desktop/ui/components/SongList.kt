@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.SongColumn
 import com.melodysync.desktop.state.SortColumn
+import com.melodysync.desktop.theme.Spacing
 import com.melodysync.model.Song
 import java.awt.Desktop
 import java.awt.Toolkit
@@ -79,18 +80,29 @@ fun SongList(state: AppState) {
 
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
-    val availableLetters = remember(songs) {
-        songs.mapNotNull { it.title?.trim()?.firstOrNull()?.uppercaseChar() }.toSet()
+    val rows = remember(songs) {
+        buildList {
+            songs.groupBy { it.title?.trim()?.firstOrNull()?.uppercaseChar() ?: '#' }
+                .forEach { (letter, groupSongs) ->
+                    add(ListEntry.HeaderItem(letter))
+                    groupSongs.forEach { add(ListEntry.SongItem(it)) }
+                }
+        }
     }
 
-    val currentLetter by remember {
+    val availableLetters = remember(rows) {
+        rows.filterIsInstance<ListEntry.HeaderItem>().map { it.letter }.filter { it.isLetter() }.toSet()
+    }
+
+    val currentLetter by remember(rows) {
         derivedStateOf {
             val index = listState.firstVisibleItemIndex
-            if (index in songs.indices) {
-                songs[index].title?.trim()?.firstOrNull()?.uppercaseChar()
-            } else {
-                null
+            var letter: Char? = null
+            for (i in 0..index.coerceAtMost(rows.lastIndex)) {
+                val entry = rows[i]
+                if (entry is ListEntry.HeaderItem) letter = entry.letter
             }
+            letter
         }
     }
 
@@ -105,17 +117,28 @@ fun SongList(state: AppState) {
                     .focusRequester(focusRequester)
                     .onKeyEvent { event ->
                         if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
-                        handleKeyEvent(event.key, state, songs, listState, coroutineScope)
+                        handleKeyEvent(event.key, state, rows, listState, coroutineScope)
                     },
             ) {
                 LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
-                    items(songs, key = { it.path.toString() }) { song ->
-                        SongRow(
-                            song = song,
-                            state = state,
-                            onFocus = { focusRequester.requestFocus() },
-                        )
-                        HorizontalDivider()
+                    rows.forEach { entry ->
+                        when (entry) {
+                            is ListEntry.HeaderItem -> {
+                                item(key = "header-${entry.letter}") {
+                                    LetterGroupHeader(entry.letter)
+                                }
+                            }
+                            is ListEntry.SongItem -> {
+                                item(key = entry.song.path.toString()) {
+                                    SongRow(
+                                        song = entry.song,
+                                        state = state,
+                                        onFocus = { focusRequester.requestFocus() },
+                                    )
+                                    HorizontalDivider()
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -126,12 +149,17 @@ fun SongList(state: AppState) {
                 availableLetters = availableLetters,
                 currentLetter = currentLetter,
                 onLetterSelected = { letter ->
-                    val index = songs.indexOfFirst {
-                        it.title?.trim()?.firstOrNull()?.uppercaseChar() == letter
+                    val headerIndex = rows.indexOfFirst {
+                        it is ListEntry.HeaderItem && it.letter == letter
                     }
-                    if (index >= 0) {
-                        state.selectSong(songs[index].path.toString())
-                        coroutineScope.launch { listState.scrollToItem(index) }
+                    if (headerIndex >= 0) {
+                        val firstSong = rows.drop(headerIndex + 1)
+                            .filterIsInstance<ListEntry.SongItem>()
+                            .firstOrNull()?.song
+                        if (firstSong != null) {
+                            state.selectSong(firstSong.path.toString())
+                        }
+                        coroutineScope.launch { listState.scrollToItem(headerIndex) }
                     }
                 },
             )
@@ -142,26 +170,30 @@ fun SongList(state: AppState) {
 private fun handleKeyEvent(
     key: Key,
     state: AppState,
-    songs: List<Song>,
+    rows: List<ListEntry>,
     listState: LazyListState,
     coroutineScope: CoroutineScope,
 ): Boolean {
+    val songs = rows.filterIsInstance<ListEntry.SongItem>().map { it.song }
     if (songs.isEmpty()) return false
     val currentIndex = songs.indexOfFirst { it.path.toString() == state.selectedSongPath }
+
+    fun lazyIndexFor(path: String): Int =
+        rows.indexOfFirst { it is ListEntry.SongItem && it.song.path.toString() == path }
 
     return when (key) {
         Key.DirectionDown -> {
             val start = if (currentIndex < 0) -1 else currentIndex
             val next = (start + 1).coerceAtMost(songs.lastIndex)
             state.selectSong(songs[next].path.toString())
-            coroutineScope.launch { listState.animateScrollToItem(next) }
+            coroutineScope.launch { listState.animateScrollToItem(lazyIndexFor(songs[next].path.toString())) }
             true
         }
         Key.DirectionUp -> {
             val start = if (currentIndex < 0) 0 else currentIndex
             val prev = (start - 1).coerceAtLeast(0)
             state.selectSong(songs[prev].path.toString())
-            coroutineScope.launch { listState.animateScrollToItem(prev) }
+            coroutineScope.launch { listState.animateScrollToItem(lazyIndexFor(songs[prev].path.toString())) }
             true
         }
         Key.Enter -> {
@@ -170,6 +202,27 @@ private fun handleKeyEvent(
             true
         }
         else -> false
+    }
+}
+
+private sealed interface ListEntry {
+    data class HeaderItem(val letter: Char) : ListEntry
+    data class SongItem(val song: Song) : ListEntry
+}
+
+@Composable
+private fun LetterGroupHeader(letter: Char) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(horizontal = Spacing.md, vertical = Spacing.sm),
+    ) {
+        Text(
+            letter.toString(),
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.primary,
+        )
     }
 }
 
