@@ -2,15 +2,20 @@ package com.melodysync.desktop.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,7 +31,7 @@ fun DirectoryBar(state: AppState) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         OutlinedTextField(
             value = state.directory,
@@ -44,27 +49,19 @@ fun DirectoryBar(state: AppState) {
         Button(
             onClick = state::scan,
             enabled = state.directory.isNotBlank() && state.status != ScanStatus.SCANNING,
+            modifier = Modifier.padding(vertical = 4.dp),
         ) {
-            Text(if (state.status == ScanStatus.SCANNING) "Scanning…" else "Scan")
+            Text(if (state.status == ScanStatus.SCANNING) "Scanning…" else "Scan Library")
         }
-        Button(
-            onClick = {
-                if (state.watchStatus == WatchStatus.WATCHING) {
-                    state.stopWatching()
-                } else {
-                    state.startWatching()
-                }
-            },
-            enabled = state.directory.isNotBlank(),
-        ) {
-            Text(if (state.watchStatus == WatchStatus.WATCHING) "Stop Watch" else "Watch")
-        }
+        Spacer(modifier = Modifier.width(8.dp))
+        WatchToggle(state)
     }
 
     when (state.status) {
         ScanStatus.SCANNING -> Text(
-            state.progressText,
+            "Scanning library…",
             style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(top = 4.dp),
         )
         ScanStatus.DONE -> {
@@ -72,6 +69,7 @@ fun DirectoryBar(state: AppState) {
                 Text(
                     state.progressText,
                     style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 4.dp),
                 )
             }
@@ -91,7 +89,7 @@ fun DirectoryBar(state: AppState) {
 
     when (state.watchStatus) {
         WatchStatus.WATCHING -> Text(
-            "Watching for changes in ${state.directory}…",
+            "File watcher active — library stays in sync automatically",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(top = 4.dp),
@@ -107,6 +105,33 @@ fun DirectoryBar(state: AppState) {
             }
         }
         WatchStatus.STOPPED -> Unit
+    }
+}
+
+@Composable
+private fun WatchToggle(state: AppState) {
+    val watching = state.watchStatus == WatchStatus.WATCHING
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Icon(
+            imageVector = if (watching) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+            contentDescription = null,
+            tint = if (watching) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Switch(
+            checked = watching,
+            onCheckedChange = {
+                if (watching) state.stopWatching() else state.startWatching()
+            },
+            enabled = state.directory.isNotBlank(),
+        )
+        Text(
+            "Watch",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

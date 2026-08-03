@@ -16,12 +16,14 @@ import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.Section
 import com.melodysync.desktop.theme.AppTheme
+import com.melodysync.desktop.ui.components.AboutSection
 import com.melodysync.desktop.ui.components.DirectoryBar
 import com.melodysync.desktop.ui.components.DuplicatesSection
 import com.melodysync.desktop.ui.components.HealthSection
 import com.melodysync.desktop.ui.components.LibraryHeader
 import com.melodysync.desktop.ui.components.OrganizeSection
 import com.melodysync.desktop.ui.components.SearchBar
+import com.melodysync.desktop.ui.components.SettingsSection
 import com.melodysync.desktop.ui.components.Sidebar
 import com.melodysync.desktop.ui.components.SongList
 import com.melodysync.desktop.ui.components.StatisticsSection
@@ -88,6 +90,12 @@ fun LibraryScreen(
                         DirectoryBar(state)
                         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                         OrganizeSection(state)
+                    }
+                    Section.SETTINGS -> {
+                        SettingsSection(state)
+                    }
+                    Section.ABOUT -> {
+                        AboutSection()
                     }
                 }
             }

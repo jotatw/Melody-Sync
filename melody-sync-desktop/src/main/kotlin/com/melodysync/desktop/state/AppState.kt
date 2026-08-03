@@ -30,6 +30,8 @@ enum class Section {
     HEALTH,
     DUPLICATES,
     ORGANIZE,
+    SETTINGS,
+    ABOUT,
 }
 
 enum class SortColumn {
@@ -217,7 +219,7 @@ class AppState(
                 }
                 songs = found
                 statistics = calculateStatistics(found)
-                progressText = "Done: +${result.added} added, ${result.updated} updated, ${result.removed} removed"
+                progressText = "Library synchronized · ${found.size} songs analyzed"
                 status = ScanStatus.DONE
                 if (result.added > 0 || result.updated > 0) {
                     showMessage("Scan done: +${result.added} added, ${result.updated} updated")
