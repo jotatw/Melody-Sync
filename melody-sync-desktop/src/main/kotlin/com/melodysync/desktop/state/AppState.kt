@@ -143,6 +143,9 @@ class AppState(
     var statistics by mutableStateOf<LibraryStatistics?>(null)
         private set
 
+    var analytics by mutableStateOf<AnalyticsData?>(null)
+        private set
+
     var query by mutableStateOf("")
         private set
 
@@ -261,6 +264,7 @@ class AppState(
                 }
                 songs = found
                 statistics = calculateStatistics(found)
+                analytics = computeAnalytics(found)
                 progressText = "Library synchronized · ${found.size} songs analyzed"
                 status = ScanStatus.DONE
                 if (result.added > 0 || result.updated > 0) {
@@ -389,6 +393,7 @@ class AppState(
                 }
                 songs = found
                 statistics = calculateStatistics(found)
+                analytics = computeAnalytics(found)
                 progressText = "Auto-sync: +${result.added} added, ${result.updated} updated, ${result.removed} removed"
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Auto-sync failed"

@@ -18,6 +18,7 @@ dependencies {
     implementation(compose.material3)
     implementation(compose.foundation)
     implementation(compose.materialIconsExtended)
+    implementation(libs.koalaplot.core)
     implementation(libs.slf4j.api)
     implementation(libs.logback.classic)
     implementation(libs.kotlinx.coroutines.swing)
