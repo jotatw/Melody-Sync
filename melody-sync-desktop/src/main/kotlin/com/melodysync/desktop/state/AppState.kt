@@ -149,6 +149,9 @@ class AppState(
     var query by mutableStateOf("")
         private set
 
+    var selectedSongPath by mutableStateOf<String?>(null)
+        private set
+
     var healthStatus by mutableStateOf(HealthStatus.IDLE)
         private set
 
@@ -197,6 +200,10 @@ class AppState(
 
     fun updateQuery(value: String) {
         query = value
+    }
+
+    fun selectSong(path: String?) {
+        selectedSongPath = path
     }
 
     fun updateArtistFilter(value: String) {
