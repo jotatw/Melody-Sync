@@ -17,6 +17,7 @@ import com.melodysync.service.LibraryOrganizationService
 import com.melodysync.service.LibrarySyncService
 import com.melodysync.service.LibraryWatcher
 import com.melodysync.service.SyncResult
+import com.melodysync.service.TrashService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -164,6 +165,12 @@ class AppState(
     var duplicateGroups by mutableStateOf<List<DuplicateGroup>>(emptyList())
         private set
 
+    var duplicateTrashSelection by mutableStateOf<Set<String>>(emptySet())
+        private set
+
+    var duplicateTrashing by mutableStateOf(false)
+        private set
+
     var watchStatus by mutableStateOf(WatchStatus.STOPPED)
         private set
 
@@ -309,6 +316,7 @@ class AppState(
         if (duplicatesStatus == DuplicatesStatus.RUNNING) return
         val dir = Path.of(directory.trim())
         errorMessage = null
+        duplicateTrashSelection = emptySet()
 
         uiScope.launch {
             duplicatesStatus = DuplicatesStatus.RUNNING
@@ -323,6 +331,53 @@ class AppState(
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Duplicate detection failed"
                 duplicatesStatus = DuplicatesStatus.ERROR
+            }
+        }
+    }
+
+    fun toggleDuplicateSelection(path: String) {
+        duplicateTrashSelection = if (path in duplicateTrashSelection) {
+            duplicateTrashSelection - path
+        } else {
+            duplicateTrashSelection + path
+        }
+    }
+
+    fun trashSelectedDuplicates() {
+        if (duplicateTrashing || duplicateTrashSelection.isEmpty()) return
+        errorMessage = null
+
+        uiScope.launch {
+            duplicateTrashing = true
+            try {
+                val (moved, remainingSongs, newGroups) = withContext(Dispatchers.Default) {
+                    val selected = duplicateTrashSelection
+                    val movedList = selected.mapNotNull { path ->
+                        try {
+                            TrashService.moveToTrash(Path.of(path))
+                            path
+                        } catch (_: Exception) {
+                            null
+                        }
+                    }
+                    val remaining = songs.filterNot { it.path.toString() in movedList }
+                    val groups = DuplicateDetectionService.detectDuplicates(remaining)
+                    Triple(movedList, remaining, groups)
+                }
+                duplicateTrashSelection = emptySet()
+                if (moved.isEmpty()) {
+                    errorMessage = "Could not move the selected files to trash."
+                } else {
+                    songs = remainingSongs
+                    duplicateGroups = newGroups
+                    statistics = calculateStatistics(remainingSongs)
+                    analytics = computeAnalytics(remainingSongs)
+                    showMessage("Moved ${moved.size} file(s) to trash")
+                }
+            } catch (e: Exception) {
+                errorMessage = e.message ?: "Failed to move files to trash"
+            } finally {
+                duplicateTrashing = false
             }
         }
     }

@@ -9,14 +9,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -76,12 +83,14 @@ fun DuplicatesSection(state: AppState) {
 
 @Composable
 private fun DuplicatesView(state: AppState) {
+    var showConfirm by remember { mutableStateOf(false) }
     val groups = state.duplicateGroups
     val extraFiles = groups.sumOf { it.extraFiles }
     val recoverable = groups.sumOf { group ->
         val primary = group.primary()
         group.songs.filter { it != primary }.sumOf { it.size }
     }
+    val selected = state.duplicateTrashSelection
 
     Column(modifier = Modifier.fillMaxSize()) {
         Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
@@ -100,23 +109,67 @@ private fun DuplicatesView(state: AppState) {
             )
         }
 
-        Text(
-            "Nothing is deleted automatically — review and remove manually.",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = Spacing.md),
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(top = Spacing.md),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+        ) {
+            Text(
+                "Nothing is deleted automatically — review, select and move to trash.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f),
+            )
+            Button(
+                onClick = { showConfirm = true },
+                enabled = selected.isNotEmpty() && !state.duplicateTrashing,
+            ) {
+                Text(if (state.duplicateTrashing) "Moving…" else "Move to Trash (${selected.size})")
+            }
+        }
+
+        if (state.duplicateTrashing) {
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(top = Spacing.sm))
+        }
 
         LazyColumn(modifier = Modifier.weight(1f).padding(top = Spacing.md)) {
             items(groups, key = { it.key }) { group ->
-                DuplicateGroupCard(group)
+                DuplicateGroupCard(group, state)
             }
         }
+    }
+
+    if (showConfirm) {
+        AlertDialog(
+            onDismissRequest = { showConfirm = false },
+            title = { Text("Move to trash?") },
+            text = {
+                Text(
+                    "Move ${selected.size} duplicate file(s) to the system trash? " +
+                        "They stay recoverable until you empty the trash.",
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showConfirm = false
+                        state.trashSelectedDuplicates()
+                    },
+                ) {
+                    Text("Move to Trash", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showConfirm = false }) {
+                    Text("Cancel")
+                }
+            },
+        )
     }
 }
 
 @Composable
-private fun DuplicateGroupCard(group: DuplicateGroup) {
+private fun DuplicateGroupCard(group: DuplicateGroup, state: AppState) {
     val primary = group.primary()
 
     Card(modifier = Modifier.fillMaxWidth().padding(bottom = Spacing.md)) {
@@ -149,19 +202,45 @@ private fun DuplicateGroupCard(group: DuplicateGroup) {
             HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.sm))
 
             group.songs.forEach { song ->
-                CandidateRow(song, isPrimary = song == primary)
+                val isPrimary = song == primary
+                CandidateRow(
+                    song = song,
+                    isPrimary = isPrimary,
+                    selected = song.path.toString() in state.duplicateTrashSelection,
+                    onToggle = if (isPrimary) {
+                        null
+                    } else {
+                        { state.toggleDuplicateSelection(song.path.toString()) }
+                    },
+                )
             }
         }
     }
 }
 
 @Composable
-private fun CandidateRow(song: Song, isPrimary: Boolean) {
+private fun CandidateRow(
+    song: Song,
+    isPrimary: Boolean,
+    selected: Boolean,
+    onToggle: (() -> Unit)?,
+) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
+        if (onToggle != null) {
+            Checkbox(
+                checked = selected,
+                onCheckedChange = { onToggle() },
+            )
+        } else {
+            Checkbox(
+                checked = true,
+                onCheckedChange = null,
+            )
+        }
         Surface(
             color = if (isPrimary) {
                 MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
