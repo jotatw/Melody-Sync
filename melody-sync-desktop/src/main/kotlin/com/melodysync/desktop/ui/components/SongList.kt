@@ -122,7 +122,7 @@ fun SongList(state: AppState) {
         }
 
         if (availableLetters.isNotEmpty()) {
-            LetterIndex(
+            LetterScrubber(
                 availableLetters = availableLetters,
                 currentLetter = currentLetter,
                 onLetterSelected = { letter ->

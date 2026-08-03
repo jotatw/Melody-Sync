@@ -26,5 +26,5 @@ object Heights {
 
 object Widths {
     val navigationRail = 72.dp
-    val letterIndex = 24.dp
+    val letterScrubber = 16.dp
 }
