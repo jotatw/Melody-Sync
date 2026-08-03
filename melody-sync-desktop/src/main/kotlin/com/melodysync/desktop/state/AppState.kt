@@ -117,6 +117,9 @@ class AppState(
     var visibleColumns by mutableStateOf(parseColumns(prefs.visibleColumns))
         private set
 
+    var groupByLetter by mutableStateOf(prefs.groupByLetter)
+        private set
+
     var artistFilter by mutableStateOf("")
         private set
 
@@ -248,6 +251,11 @@ class AppState(
 
     fun toggleSidebar() {
         sidebarExpanded = !sidebarExpanded
+        savePrefs()
+    }
+
+    fun toggleGroupByLetter() {
+        groupByLetter = !groupByLetter
         savePrefs()
     }
 
@@ -437,6 +445,7 @@ class AppState(
             sortAscending = sortAscending,
             sidebarExpanded = sidebarExpanded,
             visibleColumns = visibleColumns.joinToString(",") { it.name.lowercase() },
+            groupByLetter = groupByLetter,
         ).save()
     }
 

@@ -80,29 +80,46 @@ fun SongList(state: AppState) {
 
     LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
-    val rows = remember(songs) {
-        buildList {
-            songs.groupBy { it.title?.trim()?.firstOrNull()?.uppercaseChar() ?: '#' }
-                .forEach { (letter, groupSongs) ->
-                    add(ListEntry.HeaderItem(letter))
-                    groupSongs.forEach { add(ListEntry.SongItem(it)) }
-                }
+    val grouped = state.groupByLetter
+
+    val rows: List<ListEntry> = remember(songs, grouped) {
+        if (grouped) {
+            buildList<ListEntry> {
+                songs.groupBy { it.title?.trim()?.firstOrNull()?.uppercaseChar() ?: '#' }
+                    .forEach { (letter, groupSongs) ->
+                        add(ListEntry.HeaderItem(letter))
+                        groupSongs.forEach { add(ListEntry.SongItem(it)) }
+                    }
+            }
+        } else {
+            songs.map<Song, ListEntry>(ListEntry::SongItem)
         }
     }
 
     val availableLetters = remember(rows) {
-        rows.filterIsInstance<ListEntry.HeaderItem>().map { it.letter }.filter { it.isLetter() }.toSet()
+        if (grouped) {
+            rows.filterIsInstance<ListEntry.HeaderItem>().map { it.letter }.filter { it.isLetter() }.toSet()
+        } else {
+            rows.filterIsInstance<ListEntry.SongItem>()
+                .mapNotNull { it.song.title?.trim()?.firstOrNull()?.uppercaseChar() }
+                .toSet()
+        }
     }
 
     val currentLetter by remember(rows) {
         derivedStateOf {
             val index = listState.firstVisibleItemIndex
-            var letter: Char? = null
-            for (i in 0..index.coerceAtMost(rows.lastIndex)) {
-                val entry = rows[i]
-                if (entry is ListEntry.HeaderItem) letter = entry.letter
+            if (grouped) {
+                var letter: Char? = null
+                for (i in 0..index.coerceAtMost(rows.lastIndex)) {
+                    val entry = rows[i]
+                    if (entry is ListEntry.HeaderItem) letter = entry.letter
+                }
+                letter
+            } else {
+                val entry = rows.getOrNull(index)
+                (entry as? ListEntry.SongItem)?.song?.title?.trim()?.firstOrNull()?.uppercaseChar()
             }
-            letter
         }
     }
 
@@ -149,17 +166,29 @@ fun SongList(state: AppState) {
                 availableLetters = availableLetters,
                 currentLetter = currentLetter,
                 onLetterSelected = { letter ->
-                    val headerIndex = rows.indexOfFirst {
-                        it is ListEntry.HeaderItem && it.letter == letter
-                    }
-                    if (headerIndex >= 0) {
-                        val firstSong = rows.drop(headerIndex + 1)
-                            .filterIsInstance<ListEntry.SongItem>()
-                            .firstOrNull()?.song
-                        if (firstSong != null) {
-                            state.selectSong(firstSong.path.toString())
+                    if (grouped) {
+                        val headerIndex = rows.indexOfFirst {
+                            it is ListEntry.HeaderItem && it.letter == letter
                         }
-                        coroutineScope.launch { listState.scrollToItem(headerIndex) }
+                        if (headerIndex >= 0) {
+                            val firstSong = rows.drop(headerIndex + 1)
+                                .filterIsInstance<ListEntry.SongItem>()
+                                .firstOrNull()?.song
+                            if (firstSong != null) {
+                                state.selectSong(firstSong.path.toString())
+                            }
+                            coroutineScope.launch { listState.scrollToItem(headerIndex) }
+                        }
+                    } else {
+                        val index = rows.indexOfFirst {
+                            (it as? ListEntry.SongItem)?.song?.title?.trim()
+                                ?.firstOrNull()?.uppercaseChar() == letter
+                        }
+                        if (index >= 0) {
+                            val song = (rows[index] as ListEntry.SongItem).song
+                            state.selectSong(song.path.toString())
+                            coroutineScope.launch { listState.scrollToItem(index) }
+                        }
                     }
                 },
             )

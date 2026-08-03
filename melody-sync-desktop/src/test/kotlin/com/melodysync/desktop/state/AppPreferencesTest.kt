@@ -23,6 +23,7 @@ class AppPreferencesTest {
         assertEquals("library", prefs.section)
         assertEquals("title", prefs.sortColumn)
         assertTrue(prefs.sortAscending)
+        assertFalse(prefs.groupByLetter)
     }
 
     @Test
@@ -34,6 +35,7 @@ class AppPreferencesTest {
             sortColumn = "artist",
             sortAscending = false,
             visibleColumns = "title,artist,bitrate",
+            groupByLetter = true,
         )
 
         original.save(prefsFile())
