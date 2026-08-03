@@ -53,8 +53,10 @@ object LibraryOrganizationService {
     }
 
     private fun planMoves(songs: List<Song>, root: Path): List<PlannedMove> {
+        val normalizedRoot = root.toAbsolutePath().normalize()
+
         val planned = songs.mapNotNull { song ->
-            val target = targetPath(song, root) ?: return@mapNotNull null
+            val target = safeTargetPath(song, normalizedRoot) ?: return@mapNotNull null
             PlannedMove(
                 song = song,
                 from = song.path,
@@ -63,10 +65,10 @@ object LibraryOrganizationService {
             )
         }
 
-        return resolveNameCollisions(planned)
+        return resolveNameCollisions(planned, normalizedRoot)
     }
 
-    private fun resolveNameCollisions(planned: List<PlannedMove>): List<PlannedMove> {
+    private fun resolveNameCollisions(planned: List<PlannedMove>, root: Path): List<PlannedMove> {
         val usedTargets = mutableSetOf<Path>()
         val result = mutableListOf<PlannedMove>()
 
@@ -91,11 +93,17 @@ object LibraryOrganizationService {
         return result
     }
 
-    fun targetPath(song: Song, root: Path): Path? {
-        if (!song.path.startsWith(root)) return null
+    /**
+     * Computes the target path for a song and verifies it is a strict
+     * descendant of [root], guarding against path traversal via tags.
+     *
+     * See docs/architecture/SecurityAndResilienceGuide.md §2.
+     */
+    fun safeTargetPath(song: Song, root: Path): Path? {
+        if (!song.path.toAbsolutePath().normalize().startsWith(root)) return null
 
-        val artist = sanitize(song.artist) ?: "Unknown Artist"
-        val album = sanitize(song.album)
+        val artist = FilenameSanitizer.sanitize(song.artist ?: "") ?: "Unknown Artist"
+        val album = song.album?.let { FilenameSanitizer.sanitize(it) }
         val title = sanitizeTitle(song)
         val extension = if (song.extension.isNotBlank()) ".${song.extension}" else ""
 
@@ -106,16 +114,20 @@ object LibraryOrganizationService {
             base.resolve("$title$extension")
         }
 
-        return file
+        val absoluteRoot = root.toAbsolutePath().normalize()
+        val absoluteTarget = file.toAbsolutePath().normalize()
+
+        if (!absoluteTarget.startsWith(absoluteRoot)) {
+            throw SecurityException(
+                "Security violation: Target path '$absoluteTarget' escapes the library root '$absoluteRoot'!",
+            )
+        }
+
+        return absoluteTarget
     }
 
     private fun sanitizeTitle(song: Song): String {
-        val title = sanitize(song.title) ?: song.filename.substringBeforeLast('.')
+        val title = FilenameSanitizer.sanitize(song.title ?: "") ?: song.filename.substringBeforeLast('.')
         return title
-    }
-
-    private fun sanitize(value: String?): String? {
-        val cleaned = value?.trim()?.replace(Regex("[/\\\\:*?\"<>|]"), "_")?.takeIf { it.isNotBlank() }
-        return cleaned
     }
 }

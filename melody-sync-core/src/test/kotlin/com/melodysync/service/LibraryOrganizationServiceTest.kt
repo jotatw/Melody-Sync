@@ -142,4 +142,57 @@ class LibraryOrganizationServiceTest {
 
         assertEquals(tmpDir.resolve("Artist/Album/Same Title (2).mp3"), report.plannedMoves[0].to)
     }
+
+    @Test
+    fun `sanitizes path traversal in artist tag`() {
+        val song = songAt("song.mp3", "Song Title", "../../../../etc", "Album")
+
+        val report = LibraryOrganizationService.planOrganization(listOf(song), tmpDir)
+
+        assertEquals(1, report.plannedMoves.size)
+        val target = report.plannedMoves[0].to
+        assertTrue(target.startsWith(tmpDir))
+        assertTrue(target.toString().contains(".._.._.._.._etc"))
+    }
+
+    @Test
+    fun `sanitizes path traversal in album tag`() {
+        val song = songAt("song.mp3", "Song Title", "Artist", "../../../usr")
+
+        val report = LibraryOrganizationService.planOrganization(listOf(song), tmpDir)
+
+        assertEquals(1, report.plannedMoves.size)
+        val target = report.plannedMoves[0].to
+        assertTrue(target.startsWith(tmpDir))
+        assertTrue(target.toString().contains(".._.._usr"))
+    }
+
+    @Test
+    fun `handles windows reserved names in tags`() {
+        val song = songAt("song.mp3", "Song Title", "CON", "Album")
+
+        val report = LibraryOrganizationService.planOrganization(listOf(song), tmpDir)
+
+        assertEquals(1, report.plannedMoves.size)
+        assertTrue(report.plannedMoves[0].to.startsWith(tmpDir.resolve("Prefix_CON")))
+    }
+
+    @Test
+    fun `safeTargetPath returns null for song outside root`() {
+        val song = songAt("song.mp3", "Song", "Artist", "Album", inRoot = false)
+
+        val target = LibraryOrganizationService.safeTargetPath(song, tmpDir)
+
+        assertEquals(null, target)
+    }
+
+    @Test
+    fun `safeTargetPath keeps target inside root for valid tags`() {
+        val song = songAt("song.mp3", "Song Title", "Queen", "A Night at the Opera")
+
+        val target = LibraryOrganizationService.safeTargetPath(song, tmpDir)
+
+        assertEquals(tmpDir.resolve("Queen/A Night at the Opera/Song Title.mp3"), target)
+        assertTrue(target!!.startsWith(tmpDir.toAbsolutePath().normalize()))
+    }
 }

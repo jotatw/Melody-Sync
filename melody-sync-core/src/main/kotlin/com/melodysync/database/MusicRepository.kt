@@ -45,6 +45,54 @@ object MusicRepository {
         }
     }
 
+    /**
+     * Inserts new songs and updates existing ones in a single transaction.
+     * Existing paths are provided by the caller (read outside the transaction),
+     * so metadata reading never blocks the database.
+     */
+    fun upsertAll(songs: List<Song>, existingPaths: Set<Path>): Pair<Int, Int> = transaction {
+        var added = 0
+        var updated = 0
+        songs.forEach { song ->
+            if (song.path in existingPaths) {
+                SongsTable.update({ SongsTable.path eq song.path.toString() }) {
+                    it[size] = song.size
+                    it[title] = song.title
+                    it[artist] = song.artist
+                    it[album] = song.album
+                    it[duration] = song.duration
+                    it[bitrate] = song.bitrate
+                    it[sampleRate] = song.sampleRate
+                    it[channels] = song.channels
+                    it[codec] = song.codec
+                }
+                updated++
+            } else {
+                SongsTable.insert {
+                    it[path] = song.path.toString()
+                    it[size] = song.size
+                    it[title] = song.title
+                    it[artist] = song.artist
+                    it[album] = song.album
+                    it[duration] = song.duration
+                    it[bitrate] = song.bitrate
+                    it[sampleRate] = song.sampleRate
+                    it[channels] = song.channels
+                    it[codec] = song.codec
+                }
+                added++
+            }
+        }
+        added to updated
+    }
+
+    /** Deletes the given paths in a single transaction. */
+    fun deleteAllByPath(paths: Set<Path>): Int = transaction {
+        paths.sumOf { path ->
+            SongsTable.deleteWhere { SongsTable.path eq path.toString() }
+        }
+    }
+
     fun findAll(): List<Song> = transaction {
         SongsTable.selectAll().map(::toSong)
     }

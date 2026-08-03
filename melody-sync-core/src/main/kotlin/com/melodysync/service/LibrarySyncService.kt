@@ -21,26 +21,15 @@ object LibrarySyncService {
         val scannedPaths = songs.map { it.path }.toSet()
         val existingPaths = MusicRepository.findAll().map { it.path }.toSet()
 
-        var added = 0
-        var updated = 0
-
-        songs.forEach { song ->
-            if (MusicRepository.exists(song.path)) {
-                MusicRepository.updateByPath(song)
-                updated++
-            } else {
-                MusicRepository.insert(song)
-                added++
-            }
-        }
+        val (added, updated) = MusicRepository.upsertAll(songs, existingPaths)
 
         val pathsToRemove = existingPaths - scannedPaths
-        pathsToRemove.forEach { MusicRepository.deleteByPath(it) }
+        val removed = MusicRepository.deleteAllByPath(pathsToRemove)
 
         return SyncResult(
             added = added,
             updated = updated,
-            removed = pathsToRemove.size,
+            removed = removed,
             totalInDatabase = MusicRepository.count().toInt(),
         )
     }
