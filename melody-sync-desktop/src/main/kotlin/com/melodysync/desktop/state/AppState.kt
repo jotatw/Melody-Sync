@@ -19,7 +19,9 @@ import com.melodysync.service.LibraryWatcher
 import com.melodysync.service.SyncResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.nio.file.Path
 
 enum class Section {
@@ -71,7 +73,14 @@ enum class OrganizeStatus {
     ERROR,
 }
 
-class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default)) {
+class AppState(
+    // State writes must happen on the Compose main thread to avoid
+    // snapshot corruption when recomposition is concurrent (e.g. tab
+    // switch + fullscreen during a scan).
+    private val uiScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate),
+    // Background scope for the file watcher loop (blocking WatchService).
+    private val ioScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+) {
 
     private var watcher: LibraryWatcher? = null
     private val prefs = AppPreferences.load()
@@ -194,15 +203,20 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
         val dir = Path.of(directory.trim())
         errorMessage = null
 
-        scope.launch {
+        uiScope.launch {
             status = ScanStatus.SCANNING
             progressText = "Scanning..."
             try {
-                MusicDatabase.connect()
-                val result = LibrarySyncService.syncDirectory(dir)
+                val result = withContext(Dispatchers.Default) {
+                    MusicDatabase.connect()
+                    LibrarySyncService.syncDirectory(dir)
+                }
                 lastResult = result
-                songs = MusicRepository.findAll()
-                statistics = calculateStatistics(songs)
+                val found = withContext(Dispatchers.Default) {
+                    MusicRepository.findAll()
+                }
+                songs = found
+                statistics = calculateStatistics(found)
                 progressText = "Done: +${result.added} added, ${result.updated} updated, ${result.removed} removed"
                 status = ScanStatus.DONE
                 if (result.added > 0 || result.updated > 0) {
@@ -221,11 +235,13 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
         val dir = Path.of(directory.trim())
         errorMessage = null
 
-        scope.launch {
+        uiScope.launch {
             healthStatus = HealthStatus.RUNNING
             try {
-                MusicDatabase.connect()
-                healthReport = LibraryHealthService.analyze(dir)
+                healthReport = withContext(Dispatchers.Default) {
+                    MusicDatabase.connect()
+                    LibraryHealthService.analyze(dir)
+                }
                 healthStatus = HealthStatus.DONE
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Health check failed"
@@ -239,12 +255,15 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
         val dir = Path.of(directory.trim())
         errorMessage = null
 
-        scope.launch {
+        uiScope.launch {
             duplicatesStatus = DuplicatesStatus.RUNNING
             try {
-                MusicDatabase.connect()
-                val songs = MusicRepository.findAll().filter { it.path.startsWith(dir) }
-                duplicateGroups = DuplicateDetectionService.detectDuplicates(songs)
+                val groups = withContext(Dispatchers.Default) {
+                    MusicDatabase.connect()
+                    val songs = MusicRepository.findAll().filter { it.path.startsWith(dir) }
+                    DuplicateDetectionService.detectDuplicates(songs)
+                }
+                duplicateGroups = groups
                 duplicatesStatus = DuplicatesStatus.DONE
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Duplicate detection failed"
@@ -260,7 +279,7 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
         errorMessage = null
 
         try {
-            val newWatcher = LibraryWatcher(scope)
+            val newWatcher = LibraryWatcher(ioScope)
             newWatcher.start(dir) { _ ->
                 resyncFromWatch()
             }
@@ -283,12 +302,15 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
         val dir = Path.of(directory.trim())
         errorMessage = null
 
-        scope.launch {
+        uiScope.launch {
             organizeStatus = OrganizeStatus.RUNNING
             try {
-                MusicDatabase.connect()
-                val songs = MusicRepository.findAll().filter { it.path.startsWith(dir) }
-                organizationReport = LibraryOrganizationService.planOrganization(songs, dir)
+                val report = withContext(Dispatchers.Default) {
+                    MusicDatabase.connect()
+                    val songs = MusicRepository.findAll().filter { it.path.startsWith(dir) }
+                    LibraryOrganizationService.planOrganization(songs, dir)
+                }
+                organizationReport = report
                 organizeStatus = OrganizeStatus.DONE
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Organization failed"
@@ -309,14 +331,19 @@ class AppState(private val scope: CoroutineScope = CoroutineScope(Dispatchers.De
 
     private fun resyncFromWatch() {
         if (directory.isBlank()) return
-        scope.launch {
+        uiScope.launch {
             try {
-                MusicDatabase.connect()
                 val dir = Path.of(directory.trim())
-                val result = LibrarySyncService.syncDirectory(dir)
+                val result = withContext(Dispatchers.Default) {
+                    MusicDatabase.connect()
+                    LibrarySyncService.syncDirectory(dir)
+                }
                 lastResult = result
-                songs = MusicRepository.findAll()
-                statistics = calculateStatistics(songs)
+                val found = withContext(Dispatchers.Default) {
+                    MusicRepository.findAll()
+                }
+                songs = found
+                statistics = calculateStatistics(found)
                 progressText = "Auto-sync: +${result.added} added, ${result.updated} updated, ${result.removed} removed"
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Auto-sync failed"

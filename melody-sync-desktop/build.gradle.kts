@@ -20,6 +20,7 @@ dependencies {
     implementation(compose.materialIconsExtended)
     implementation(libs.slf4j.api)
     implementation(libs.logback.classic)
+    implementation(libs.kotlinx.coroutines.swing)
 
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly(libs.junit.platform.launcher)
