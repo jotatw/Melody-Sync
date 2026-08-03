@@ -46,40 +46,11 @@ fun TopBar(
             )
         }
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            CompactStats(state)
-            IconButton(onClick = onToggleTheme) {
-                Icon(
-                    imageVector = if (theme == AppTheme.DARK) Icons.Filled.LightMode else Icons.Filled.DarkMode,
-                    contentDescription = if (theme == AppTheme.DARK) "Switch to light theme" else "Switch to dark theme",
-                )
-            }
+        IconButton(onClick = onToggleTheme) {
+            Icon(
+                imageVector = if (theme == AppTheme.DARK) Icons.Filled.LightMode else Icons.Filled.DarkMode,
+                contentDescription = if (theme == AppTheme.DARK) "Switch to light theme" else "Switch to dark theme",
+            )
         }
-    }
-}
-
-@Composable
-private fun CompactStats(state: AppState) {
-    val stats = state.statistics ?: return
-    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-        Stat("Songs", stats.totalSongs.toString())
-        Stat("Artists", stats.uniqueArtists.toString())
-        Stat("Albums", stats.uniqueAlbums.toString())
-        Stat("Duration", "${"%.1f".format(stats.totalDurationHours)}h")
-        Stat("Size", "${"%.2f".format(stats.totalSizeGb)}GB")
-    }
-}
-
-@Composable
-private fun Stat(label: String, value: String) {
-    Row {
-        Text(
-            "$value $label",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
     }
 }

@@ -19,6 +19,7 @@ import com.melodysync.desktop.theme.AppTheme
 import com.melodysync.desktop.ui.components.DirectoryBar
 import com.melodysync.desktop.ui.components.DuplicatesSection
 import com.melodysync.desktop.ui.components.HealthSection
+import com.melodysync.desktop.ui.components.LibraryHeader
 import com.melodysync.desktop.ui.components.OrganizeSection
 import com.melodysync.desktop.ui.components.SearchBar
 import com.melodysync.desktop.ui.components.Sidebar
@@ -59,19 +60,35 @@ fun LibraryScreen(
                     .fillMaxSize()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
             ) {
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                DirectoryBar(state)
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-
                 when (state.currentSection) {
                     Section.LIBRARY -> {
+                        LibraryHeader(state)
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                        DirectoryBar(state)
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                         SearchBar(state)
                         SongList(state)
                     }
-                    Section.STATISTICS -> StatisticsSection(state)
-                    Section.HEALTH -> HealthSection(state)
-                    Section.DUPLICATES -> DuplicatesSection(state)
-                    Section.ORGANIZE -> OrganizeSection(state)
+                    Section.STATISTICS -> {
+                        DirectoryBar(state)
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                        StatisticsSection(state)
+                    }
+                    Section.HEALTH -> {
+                        DirectoryBar(state)
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                        HealthSection(state)
+                    }
+                    Section.DUPLICATES -> {
+                        DirectoryBar(state)
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                        DuplicatesSection(state)
+                    }
+                    Section.ORGANIZE -> {
+                        DirectoryBar(state)
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                        OrganizeSection(state)
+                    }
                 }
             }
         }
