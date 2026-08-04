@@ -1,5 +1,8 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
+val melodySyncVersion: String by project
+val rpmSafeVersion: String = melodySyncVersion.substringBefore('-')
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.compose)
@@ -33,11 +36,14 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Deb, TargetFormat.Rpm)
             packageName = "melody-sync"
-            packageVersion = "0.10.0"
+            packageVersion = melodySyncVersion
             description = "Organize, analyze and explore your local music library."
             vendor = "Melody Sync"
             linux {
                 iconFile.set(project.file("src/main/resources/icon.png"))
+                // RPM rejects '-' in version strings; keep the full version
+                // for the uber jar naming but use a sanitized value for RPM.
+                rpmPackageVersion = rpmSafeVersion
             }
         }
     }

@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.melodysync.desktop.theme.Spacing
+import com.melodysync.platform.system.VersionInfo
 
 @Composable
 fun AboutSection() {
@@ -24,7 +25,7 @@ fun AboutSection() {
         )
 
         Text(
-            "Version 0.12.0-dev",
+            "Version ${VersionInfo.displayVersion}",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = Spacing.md),

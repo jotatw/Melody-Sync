@@ -27,6 +27,26 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
 }
 
+val generateVersionResource = tasks.register("generateVersionResource") {
+    val version = providers.gradleProperty("melodySyncVersion").get()
+    val outputDir = layout.buildDirectory.dir("generated/resources/version")
+    inputs.property("version", version)
+    outputs.dir(outputDir)
+    doLast {
+        val dir = outputDir.get().asFile
+        dir.mkdirs()
+        dir.resolve("melody-sync-version.properties").writeText("version=$version\n")
+    }
+}
+
+sourceSets.main {
+    resources.srcDir(layout.buildDirectory.dir("generated/resources/version"))
+}
+
+tasks.named("processResources") {
+    dependsOn(generateVersionResource)
+}
+
 kotlin {
     jvmToolchain(21)
 }

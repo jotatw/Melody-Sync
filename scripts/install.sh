@@ -7,7 +7,12 @@ NAME="melody-sync"
 BIN_DIR="$HOME/.local/bin"
 DATA_DIR="$HOME/.local/share/$NAME"
 DESKTOP_DIR="$HOME/.local/share/applications"
-VERSION="0.10.0"
+# Single source of truth for the version lives in gradle.properties.
+VERSION="$(grep -E '^melodySyncVersion=' "$PROJECT_DIR/gradle.properties" | cut -d= -f2- | tr -d '[:space:]')"
+if [ -z "$VERSION" ]; then
+    echo "==> ERROR: melodySyncVersion not found in gradle.properties"
+    exit 1
+fi
 
 echo "==> Building Melody Sync..."
 cd "$PROJECT_DIR"
@@ -17,6 +22,7 @@ echo "==> Installing to $DATA_DIR..."
 mkdir -p "$DATA_DIR"
 cp -f "$PROJECT_DIR/melody-sync-desktop/build/compose/jars/melody-sync-linux-x64-$VERSION.jar" "$DATA_DIR/$NAME.jar"
 cp -f "$PROJECT_DIR/melody-sync-desktop/src/main/resources/icon.png" "$DATA_DIR/icon.png"
+printf '%s\n' "$VERSION" > "$DATA_DIR/VERSION"
 
 cat > "$DATA_DIR/$NAME" <<'SCRIPT'
 #!/bin/sh

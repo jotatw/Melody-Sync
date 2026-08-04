@@ -4,6 +4,7 @@ import com.github.ajalt.clikt.testing.test
 import com.melodysync.database.MusicDatabase
 import com.melodysync.database.MusicRepository
 import com.melodysync.model.Song
+import com.melodysync.platform.system.VersionInfo
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -17,7 +18,7 @@ class VersionCommandTest {
         val result = VersionCommand().test("")
 
         assertEquals(0, result.statusCode)
-        assertTrue(result.stdout.contains("v0.6.0-dev"))
+        assertTrue(result.stdout.contains(VersionInfo.displayVersion))
     }
 }
 

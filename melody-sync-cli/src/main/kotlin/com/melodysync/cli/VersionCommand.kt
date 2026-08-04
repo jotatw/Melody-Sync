@@ -2,6 +2,7 @@ package com.melodysync.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.Context
+import com.melodysync.platform.system.VersionInfo
 
 class VersionCommand : CliktCommand(
     name = "version",
@@ -10,6 +11,6 @@ class VersionCommand : CliktCommand(
         "Show the Melody Sync version"
 
     override fun run() {
-        echo("Melody Sync v0.6.0-dev")
+        echo("Melody Sync ${VersionInfo.displayVersion}")
     }
 }
