@@ -15,6 +15,17 @@ import java.time.format.DateTimeFormatter
  * and CLI so both can share the same flow. Built to later grow a
  * "release download" strategy behind the same interface.
  */
+/**
+ * Result of a version check that does not perform any rebuild.
+ */
+data class UpdateCheck(
+    val sourceVersion: String?,
+    val installedVersion: String?,
+    val sourceBased: Boolean,
+    val updateAvailable: Boolean,
+    val message: String? = null,
+)
+
 class InstallationService(
     private val validator: InstallationValidator = InstallationValidator(),
     private val shell: ShellExecutor = ShellExecutor(),
@@ -123,6 +134,43 @@ class InstallationService(
             rebuilt = true,
             sourceBased = true,
             message = "Installed v$sourceVersion",
+        )
+    }
+
+    fun checkForUpdate(
+        projectDir: Path,
+        installDir: Path = InstallationPaths.installDir(),
+    ): UpdateCheck {
+        val environmentIssues = validator.validateEnvironment()
+        if (environmentIssues.isNotEmpty()) {
+            return UpdateCheck(
+                sourceVersion = null,
+                installedVersion = null,
+                sourceBased = false,
+                updateAvailable = false,
+                message = environmentIssues.joinToString("; ") { "${it.check}: ${it.message}" },
+            )
+        }
+
+        val projectIssues = validator.validateProject(projectDir)
+        if (projectIssues.isNotEmpty()) {
+            return UpdateCheck(
+                sourceVersion = null,
+                installedVersion = null,
+                sourceBased = false,
+                updateAvailable = false,
+                message = "Melody Sync was not installed from source. " +
+                    "Automatic rebuild is unavailable. Use the release installer instead.",
+            )
+        }
+
+        val sourceVersion = readSourceVersion(projectDir)
+        val installedVersion = InstallationPaths.readInstalledVersion(installDir)
+        return UpdateCheck(
+            sourceVersion = sourceVersion,
+            installedVersion = installedVersion,
+            sourceBased = true,
+            updateAvailable = sourceVersion != null && sourceVersion != installedVersion,
         )
     }
 

@@ -147,6 +147,40 @@ class InstallationServiceTest {
     }
 
     @Test
+    fun `checkForUpdate reports update available and up to date`() {
+        val shell = FakeShell()
+        val service = InstallationService(InstallationValidator(shell), shell)
+
+        val available = service.checkForUpdate(
+            createCheckout("0.13.0"),
+            createInstallDir("0.12.0-dev"),
+        )
+        assertTrue(available.sourceBased)
+        assertTrue(available.updateAvailable)
+        assertEquals("0.13.0", available.sourceVersion)
+        assertEquals("0.12.0-dev", available.installedVersion)
+
+        val same = service.checkForUpdate(
+            createCheckout("0.12.0-dev"),
+            createInstallDir("0.12.0-dev"),
+        )
+        assertTrue(same.sourceBased)
+        assertFalse(same.updateAvailable)
+    }
+
+    @Test
+    fun `checkForUpdate refuses when not a source checkout`() {
+        val shell = FakeShell()
+        val service = InstallationService(InstallationValidator(shell), shell)
+
+        val check = service.checkForUpdate(tmp.resolve("not-a-repo"), tmp.resolve("install"))
+
+        assertFalse(check.sourceBased)
+        assertFalse(check.updateAvailable)
+        assertTrue(check.message.orEmpty().contains("not installed from source"))
+    }
+
+    @Test
     fun `update reports missing melodySyncVersion`() {
         val shell = FakeShell(true)
         val service = InstallationService(InstallationValidator(shell), shell)

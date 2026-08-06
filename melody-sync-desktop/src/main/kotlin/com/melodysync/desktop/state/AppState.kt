@@ -10,6 +10,8 @@ import com.melodysync.model.HealthReport
 import com.melodysync.model.LibraryStatistics
 import com.melodysync.model.OrganizationReport
 import com.melodysync.model.Song
+import com.melodysync.platform.installation.InstallationInfo
+import com.melodysync.platform.installation.InstallationService
 import com.melodysync.scanner.calculateStatistics
 import com.melodysync.service.DuplicateDetectionService
 import com.melodysync.service.LibraryHealthService
@@ -82,6 +84,14 @@ enum class WatchStatus {
 
 enum class OrganizeStatus {
     IDLE,
+    RUNNING,
+    DONE,
+    ERROR,
+}
+
+enum class UpdateStatus {
+    IDLE,
+    CHECKING,
     RUNNING,
     DONE,
     ERROR,
@@ -172,6 +182,21 @@ class AppState(
         private set
 
     var duplicateTrashing by mutableStateOf(false)
+        private set
+
+    var updateStatus by mutableStateOf(UpdateStatus.IDLE)
+        private set
+
+    var updatePhase by mutableStateOf("")
+        private set
+
+    var updateMessage by mutableStateOf<String?>(null)
+        private set
+
+    var updateAvailable by mutableStateOf(false)
+        private set
+
+    var installationInfo by mutableStateOf<InstallationInfo?>(null)
         private set
 
     var watchStatus by mutableStateOf(WatchStatus.STOPPED)
@@ -388,6 +413,95 @@ class AppState(
                 duplicateTrashing = false
             }
         }
+    }
+
+    fun refreshInstallationInfo() {
+        uiScope.launch {
+            installationInfo = withContext(Dispatchers.Default) {
+                InstallationService().detectInstallation()
+            }
+        }
+    }
+
+    fun checkForUpdates() {
+        if (updateStatus == UpdateStatus.CHECKING || updateStatus == UpdateStatus.RUNNING) return
+        updateStatus = UpdateStatus.CHECKING
+        updatePhase = "Checking installation…"
+        updateMessage = null
+
+        uiScope.launch {
+            val projectDir = Path.of(System.getProperty("user.dir") ?: ".")
+            val service = InstallationService()
+            try {
+                val result = withContext(Dispatchers.Default) {
+                    service.checkForUpdate(projectDir)
+                }
+                val info = withContext(Dispatchers.Default) {
+                    service.detectInstallation()
+                }
+                installationInfo = info
+                updateAvailable = result.sourceBased && result.updateAvailable
+                updateMessage = when {
+                    !result.sourceBased -> result.message
+                        ?: "Automatic rebuild is unavailable from this location."
+                    result.updateAvailable -> {
+                        "Update available: v${result.installedVersion ?: "—"} → v${result.sourceVersion}"
+                    }
+                    else -> "Already up to date (v${result.sourceVersion})"
+                }
+                updateStatus = UpdateStatus.DONE
+                updatePhase = "Done"
+            } catch (e: Exception) {
+                updateMessage = e.message ?: "Update check failed"
+                updateStatus = UpdateStatus.ERROR
+            }
+        }
+    }
+
+    fun runUpdate(force: Boolean = true) {
+        if (updateStatus == UpdateStatus.RUNNING) return
+        updateStatus = UpdateStatus.RUNNING
+        updatePhase = "Preparing…"
+        updateMessage = null
+
+        uiScope.launch {
+            val projectDir = Path.of(System.getProperty("user.dir") ?: ".")
+            val service = InstallationService()
+            try {
+                val result = withContext(Dispatchers.Default) {
+                    service.update(
+                        projectDir = projectDir,
+                        build = "Desktop",
+                        force = force,
+                        onProgress = { line ->
+                            uiScope.launch { updatePhase = phaseFromLine(line) }
+                        },
+                    )
+                }
+                installationInfo = service.detectInstallation()
+                updateMessage = result.message
+                updatePhase = if (result.installed) "Done" else "Failed"
+                updateStatus = if (result.installed || result.sourceBased) {
+                    UpdateStatus.DONE
+                } else {
+                    UpdateStatus.ERROR
+                }
+                if (result.installed) {
+                    showMessage(result.message)
+                }
+            } catch (e: Exception) {
+                updateMessage = e.message ?: "Update failed"
+                updatePhase = "Failed"
+                updateStatus = UpdateStatus.ERROR
+            }
+        }
+    }
+
+    private fun phaseFromLine(line: String): String = when {
+        line.contains("Building", ignoreCase = true) -> "Compiling…"
+        line.contains("Installing to", ignoreCase = true) -> "Installing…"
+        line.contains("Installed!", ignoreCase = true) -> "Verifying…"
+        else -> line.trim().ifBlank { "Running scripts/install.sh…" }
     }
 
     fun startWatching() {
