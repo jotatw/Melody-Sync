@@ -31,5 +31,6 @@ fun main(args: Array<String>) =
             EnrichCommand(),
             VersionCommand(),
             UpdateCommand(),
+            DoctorCommand(),
         )
         .main(args)
