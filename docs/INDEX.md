@@ -31,6 +31,7 @@ Documentation describing the system design and architectural decisions.
 | ADR-0006 | Documentation Structure |
 | ADR-0007 | CLI Framework — clikt |
 | ADR-0008 | Build System — Gradle Kotlin DSL |
+| ADR-0009 | Platform Layer (`com.melodysync.platform`: installation, shell, system) |
 | Multiplatform Portability Guide | Strategy for porting to Windows/Android (KMP) |
 | Security & Resilience Guide | Defensive coding, sandboxing, data integrity |
 
@@ -45,6 +46,7 @@ Visual identity and interaction standards.
 | Design System | Hi-Fi Editorial visual identity (colors, typography, layout) |
 | Application Design Research | Design and UX best practices applied to the app |
 | Quick-Fix HUD | Assisted curation vision (registered, not implemented) |
+| Update Channels | Release installer & channels vision (registered, not implemented) |
 
 ---
 
@@ -63,9 +65,10 @@ Guidelines for contributors and future development.
 
 | Item | Status |
 |------|--------|
-| Version | **v0.12.0-dev** || Language | **Kotlin** (migrated from Python) |
+| Version | **v0.13.0-dev** |
+| Language | **Kotlin** (migrated from Python) |
 | Core (model + scanner) | ✅ Completed |
-| CLI (`melody-sync scan` / `health` / `duplicates` / `organize` / `export` / `enrich`) | ✅ Completed |
+| CLI (`melody-sync scan` / `health` / `duplicates` / `organize` / `export` / `enrich` / `update` / `doctor`) | ✅ Completed |
 | Database (SQLite via Exposed) | ✅ Completed |
 | Library Sync (scanner → DB) | ✅ Completed |
 | Desktop GUI (Compose) | ✅ Completed |
@@ -77,11 +80,14 @@ Guidelines for contributors and future development.
 | YouTube Enrichment | ✅ Completed (report-only) |
 | Sidebar UI + Preferences | ✅ Completed |
 | Installation (Fedora script) | ✅ Completed |
-| Automated Tests | 🎉 **144 Passing** (118 core + 16 CLI + 10 desktop) |
+| Automated Tests | 🎉 **185 Passing** (154 core + 17 CLI + 14 desktop) |
 | Collapsible Sidebar | ✅ Completed |
 | Cleanup (legacy Python, empty docs) | ✅ Completed |
 | Hi-Fi Editorial Design System | ✅ Completed (subtle first pass) |
 | Security hardening (path traversal, WAL) | ✅ Completed |
+| Letter grouping (opt-in) | ✅ Completed |
+| Move duplicates to system trash | ✅ Completed |
+| Platform layer (installation / shell / system) | ✅ Completed — frozen |
 
 ---
 
@@ -107,6 +113,9 @@ docs/
 │   └── templates/                 # Document templates
 │
 └── research/                      # Design and technology research
+    ├── app-design.md              # UX research applied to Melody Sync
+    ├── quick-fix-hud.md           # Curation vision (deferred)
+    └── update-channels.md         # Release installer vision (deferred)
 ```
 
 ---
@@ -124,4 +133,6 @@ The documentation follows the same philosophy as the source code:
 
 **Last Updated**
 
-2026-08-03 — Hi-Fi Editorial design system, security hardening, design guides merged
+2026-08-06 — Platform layer frozen (installation/shell/system); CLI
+update & doctor; GUI Settings → Installation Information & Updates;
+single-source-of-truth version; 185 tests passing.
