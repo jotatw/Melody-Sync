@@ -22,6 +22,16 @@ class VersionCommandTest {
     }
 }
 
+class UpdateCommandTest {
+    @Test
+    fun `reports when not a source checkout`() {
+        val result = UpdateCommand().test("")
+
+        assertEquals(0, result.statusCode)
+        assertTrue(result.stdout.contains("not installed from source"))
+    }
+}
+
 class ScanCommandTest {
     @TempDir
     lateinit var tmpDir: Path
