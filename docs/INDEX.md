@@ -46,7 +46,7 @@ Visual identity and interaction standards.
 | Design System | Hi-Fi Editorial visual identity (colors, typography, layout) |
 | Application Design Research | Design and UX best practices applied to the app |
 | Quick-Fix HUD | Assisted curation vision (registered, not implemented) |
-| Update Channels | Release installer & channels vision (registered, not implemented) |
+| Update Channels | Release installer implemented; channel UI registered |
 
 ---
 
@@ -80,7 +80,7 @@ Guidelines for contributors and future development.
 | YouTube Enrichment | ✅ Completed (report-only) |
 | Sidebar UI + Preferences | ✅ Completed |
 | Installation (Fedora script) | ✅ Completed |
-| Automated Tests | 🎉 **185 Passing** (154 core + 17 CLI + 14 desktop) |
+| Automated Tests | 🎉 **207 Passing** (176 core + 17 CLI + 14 desktop) |
 | Collapsible Sidebar | ✅ Completed |
 | Cleanup (legacy Python, empty docs) | ✅ Completed |
 | Hi-Fi Editorial Design System | ✅ Completed (subtle first pass) |
@@ -88,6 +88,8 @@ Guidelines for contributors and future development.
 | Letter grouping (opt-in) | ✅ Completed |
 | Move duplicates to system trash | ✅ Completed |
 | Platform layer (installation / shell / system) | ✅ Completed — frozen |
+| Release installer (download + verify + install) | ✅ Completed |
+| GitHub Actions CI + release automation | ✅ Completed |
 
 ---
 
@@ -133,6 +135,6 @@ The documentation follows the same philosophy as the source code:
 
 **Last Updated**
 
-2026-08-06 — Platform layer frozen (installation/shell/system); CLI
-update & doctor; GUI Settings → Installation Information & Updates;
-single-source-of-truth version; 185 tests passing.
+2026-08-07 — Release installer (download + verify sha256 + install with
+launcher); GitHub Actions CI + release automation; CLI/GUI release-mode
+update; 207 tests passing.

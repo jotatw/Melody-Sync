@@ -22,10 +22,21 @@
 
 ## Status
 
-**Deferred.** The current implementation only rebuilds from a local
-source checkout. This document records the intended evolution so any
-future contributor can extend `InstallationService` without breaking
-the public contract documented in ADR-0009.
+**Implemented (core).** Release-mode updates are available: the CLI
+(`melody-sync update --channel stable|beta|nightly`) and the GUI
+Settings → Updates download the latest published jar, verify the sha256
+(zip-integrity fallback) and install it with launcher + symlink +
+desktop entry. The release workflow publishes `.sha256` files so
+releases can be verified.
+
+What remains open (registered, not yet done):
+
+- Channel selection UI in Settings (the GUI currently uses STABLE; the
+  CLI accepts `--channel`).
+- `UpdateChannel` pre-selection persists to `AppPreferences`.
+- Publishing stable vs beta/nightly releases as a routine workflow
+  (release.sh bumps the version and tags; the workflow marks
+  `-dev`/`-beta`/`-rc` tags as pre-releases).
 
 ## What this is
 
