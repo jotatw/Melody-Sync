@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
+import com.melodysync.platform.installation.InstallationChannel
 import java.nio.file.Path
 
 class AppPreferencesTest {
@@ -24,6 +25,7 @@ class AppPreferencesTest {
         assertEquals("title", prefs.sortColumn)
         assertTrue(prefs.sortAscending)
         assertFalse(prefs.groupByLetter)
+        assertEquals("stable", prefs.updateChannel)
     }
 
     @Test
@@ -36,6 +38,7 @@ class AppPreferencesTest {
             sortAscending = false,
             visibleColumns = "title,artist,bitrate",
             groupByLetter = true,
+            updateChannel = "beta",
             windowWidth = 1280.0,
             windowHeight = 800.0,
             windowPositionX = 40.0,
@@ -65,6 +68,14 @@ class AppPreferencesTest {
         val columns = AppState.parseColumns("title,artist,format,bitrate")
 
         assertEquals(setOf(SongColumn.TITLE, SongColumn.ARTIST, SongColumn.FORMAT, SongColumn.BITRATE), columns)
+    }
+
+    @Test
+    fun `update channel mapping`() {
+        assertEquals(InstallationChannel.STABLE, AppState.channelFromString("stable"))
+        assertEquals(InstallationChannel.BETA, AppState.channelFromString("beta"))
+        assertEquals(InstallationChannel.NIGHTLY, AppState.channelFromString("nightly"))
+        assertEquals(InstallationChannel.STABLE, AppState.channelFromString("bogus"))
     }
 
     @Test

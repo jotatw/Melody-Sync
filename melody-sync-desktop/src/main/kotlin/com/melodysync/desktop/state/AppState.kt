@@ -14,6 +14,7 @@ import com.melodysync.platform.installation.InstallationChannel
 import com.melodysync.platform.installation.InstallationInfo
 import com.melodysync.platform.installation.InstallationService
 import com.melodysync.platform.installation.InstallationValidator
+import com.melodysync.platform.system.VersionInfo
 import com.melodysync.scanner.calculateStatistics
 import com.melodysync.service.DuplicateDetectionService
 import com.melodysync.service.LibraryHealthService
@@ -201,6 +202,9 @@ class AppState(
     var updateSourceBased by mutableStateOf(false)
         private set
 
+    var updateChannel by mutableStateOf(channelFromString(prefs.updateChannel))
+        private set
+
     var installationInfo by mutableStateOf<InstallationInfo?>(null)
         private set
 
@@ -286,6 +290,11 @@ class AppState(
 
     fun toggleGroupByLetter() {
         groupByLetter = !groupByLetter
+        savePrefs()
+    }
+
+    fun selectUpdateChannel(channel: InstallationChannel) {
+        updateChannel = channel
         savePrefs()
     }
 
@@ -477,7 +486,7 @@ class AppState(
                     if (sourceCheckout) {
                         service.checkForUpdate(projectDir)
                     } else {
-                        service.checkForReleaseUpdate(channel = InstallationChannel.STABLE)
+                        service.checkForReleaseUpdate(channel = updateChannel)
                     }
                 }
                 val info = withContext(Dispatchers.Default) {
@@ -525,7 +534,7 @@ class AppState(
                         )
                     } else {
                         service.updateFromRelease(
-                            channel = InstallationChannel.STABLE,
+                            channel = updateChannel,
                             build = "Desktop",
                             force = force,
                             onProgress = { line ->
@@ -618,6 +627,7 @@ class AppState(
             sidebarExpanded = sidebarExpanded,
             visibleColumns = visibleColumns.joinToString(",") { it.name.lowercase() },
             groupByLetter = groupByLetter,
+            updateChannel = updateChannel.name.lowercase(),
         ).save()
     }
 
@@ -669,5 +679,12 @@ class AppState(
                 try { SongColumn.valueOf(raw.trim().uppercase()) } catch (_: Exception) { null }
             }.toSet()
         }
+
+        fun channelFromString(value: String): InstallationChannel =
+            try {
+                InstallationChannel.valueOf(value.trim().uppercase())
+            } catch (_: Exception) {
+                InstallationChannel.STABLE
+            }
     }
 }

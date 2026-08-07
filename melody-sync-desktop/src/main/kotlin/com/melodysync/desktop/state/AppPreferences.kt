@@ -13,6 +13,7 @@ data class AppPreferences(
     val sidebarExpanded: Boolean = true,
     val visibleColumns: String = "title,artist,album,duration,format,bitrate",
     val groupByLetter: Boolean = false,
+    val updateChannel: String = "stable",
     val windowWidth: Double? = null,
     val windowHeight: Double? = null,
     val windowPositionX: Double? = null,
@@ -28,6 +29,7 @@ data class AppPreferences(
         props.setProperty("sidebarExpanded", sidebarExpanded.toString())
         props.setProperty("visibleColumns", visibleColumns)
         props.setProperty("groupByLetter", groupByLetter.toString())
+        props.setProperty("updateChannel", updateChannel)
         windowWidth?.let { props.setProperty("windowWidth", it.toString()) }
         windowHeight?.let { props.setProperty("windowHeight", it.toString()) }
         windowPositionX?.let { props.setProperty("windowPositionX", it.toString()) }
@@ -60,6 +62,7 @@ data class AppPreferences(
                     visibleColumns = props.getProperty("visibleColumns")
                         ?: "title,artist,album,duration,format,bitrate",
                     groupByLetter = props.getProperty("groupByLetter")?.toBoolean() ?: false,
+                    updateChannel = props.getProperty("updateChannel") ?: "stable",
                     windowWidth = props.getProperty("windowWidth")?.toDoubleOrNull(),
                     windowHeight = props.getProperty("windowHeight")?.toDoubleOrNull(),
                     windowPositionX = props.getProperty("windowPositionX")?.toDoubleOrNull(),

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.UpdateStatus
 import com.melodysync.desktop.theme.Spacing
+import com.melodysync.platform.installation.InstallationChannel
 import com.melodysync.platform.installation.InstallationPaths
 import com.melodysync.platform.system.VersionInfo
 
@@ -161,6 +163,31 @@ private fun UpdatesSection(state: AppState) {
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.padding(top = Spacing.xs),
     )
+
+    Text(
+        "Channel",
+        style = MaterialTheme.typography.titleSmall,
+        modifier = Modifier.padding(top = Spacing.md),
+    )
+    Row(
+        modifier = Modifier.padding(top = Spacing.sm),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+    ) {
+        val channelLocked = state.updateStatus == UpdateStatus.CHECKING ||
+            state.updateStatus == UpdateStatus.RUNNING
+        InstallationChannel.entries
+            .filter { it != InstallationChannel.SOURCE }
+            .forEach { channel ->
+                FilterChip(
+                    selected = state.updateChannel == channel,
+                    onClick = { state.selectUpdateChannel(channel) },
+                    enabled = !channelLocked,
+                    label = {
+                        Text(channel.name.lowercase().replaceFirstChar { it.uppercase() })
+                    },
+                )
+            }
+    }
 
     when (state.updateStatus) {
         UpdateStatus.IDLE -> {

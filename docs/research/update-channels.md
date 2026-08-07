@@ -22,18 +22,15 @@
 
 ## Status
 
-**Implemented (core).** Release-mode updates are available: the CLI
-(`melody-sync update --channel stable|beta|nightly`) and the GUI
-Settings → Updates download the latest published jar, verify the sha256
-(zip-integrity fallback) and install it with launcher + symlink +
-desktop entry. The release workflow publishes `.sha256` files so
-releases can be verified.
+**Implemented (core + GUI + CLI).** Release-mode updates are available:
+- CLI: `melody-sync update --channel stable|beta|nightly`.
+- GUI: Settings → Updates has a channel selector (Stable/Beta/Nightly)
+  persisted in `AppPreferences.updateChannel`; the update flow uses it.
+- The release workflow publishes `.sha256` files so releases can be
+  verified (zip-integrity fallback when missing).
 
 What remains open (registered, not yet done):
 
-- Channel selection UI in Settings (the GUI currently uses STABLE; the
-  CLI accepts `--channel`).
-- `UpdateChannel` pre-selection persists to `AppPreferences`.
 - Publishing stable vs beta/nightly releases as a routine workflow
   (release.sh bumps the version and tags; the workflow marks
   `-dev`/`-beta`/`-rc` tags as pre-releases).
