@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.Fullscreen
-import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MenuOpen
@@ -27,8 +25,6 @@ fun TopBar(
     state: AppState,
     theme: AppTheme,
     onToggleTheme: () -> Unit,
-    isFullscreen: Boolean,
-    onToggleFullscreen: () -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp),
@@ -45,19 +41,11 @@ fun TopBar(
             Text("Melody Sync", style = MaterialTheme.typography.titleLarge)
         }
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onToggleFullscreen) {
-                Icon(
-                    imageVector = if (isFullscreen) Icons.Filled.FullscreenExit else Icons.Filled.Fullscreen,
-                    contentDescription = if (isFullscreen) "Exit fullscreen" else "Enter fullscreen",
-                )
-            }
-            IconButton(onClick = onToggleTheme) {
-                Icon(
-                    imageVector = if (theme == AppTheme.DARK) Icons.Filled.LightMode else Icons.Filled.DarkMode,
-                    contentDescription = if (theme == AppTheme.DARK) "Switch to light theme" else "Switch to dark theme",
-                )
-            }
+        IconButton(onClick = onToggleTheme) {
+            Icon(
+                imageVector = if (theme == AppTheme.DARK) Icons.Filled.LightMode else Icons.Filled.DarkMode,
+                contentDescription = if (theme == AppTheme.DARK) "Switch to light theme" else "Switch to dark theme",
+            )
         }
     }
 }

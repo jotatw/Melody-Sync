@@ -36,6 +36,10 @@ class AppPreferencesTest {
             sortAscending = false,
             visibleColumns = "title,artist,bitrate",
             groupByLetter = true,
+            windowWidth = 1280.0,
+            windowHeight = 800.0,
+            windowPositionX = 40.0,
+            windowPositionY = 25.0,
         )
 
         original.save(prefsFile())
