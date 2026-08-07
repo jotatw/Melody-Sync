@@ -21,7 +21,8 @@ data class InstallationInfo(
     val projectDir: String? = null,
     val installDir: String? = null,
     val sourceBased: Boolean = false,
-    val installerVersion: Int = 1,
+    val installerVersion: Int = 2,
+    val channel: String = "source",
 ) {
     companion object {
         private val json = Json {

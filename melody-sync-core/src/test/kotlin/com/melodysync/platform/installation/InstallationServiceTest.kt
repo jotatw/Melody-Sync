@@ -157,7 +157,7 @@ class InstallationServiceTest {
         )
         assertTrue(available.sourceBased)
         assertTrue(available.updateAvailable)
-        assertEquals("0.13.0", available.sourceVersion)
+        assertEquals("0.13.0", available.availableVersion)
         assertEquals("0.12.0-dev", available.installedVersion)
 
         val same = service.checkForUpdate(
@@ -191,5 +191,133 @@ class InstallationServiceTest {
 
         assertFalse(result.installed)
         assertTrue(result.message.contains("melodySyncVersion"))
+    }
+
+    // ------------------------------------------------------------- release
+
+    private val server = GithubStubServer()
+
+    private fun releaseService() = InstallationService(
+        validator = InstallationValidator(),
+        releaseClient = ReleaseClient(
+            apiBaseUrl = server.baseUrl,
+            httpClient = java.net.http.HttpClient.newBuilder().build(),
+        ),
+    )
+
+    private fun startServerWithRelease(version: String, prerelease: Boolean = true) {
+        server.start()
+        server.releasesJson = GithubStubServer.releasesJson(
+            Triple("v$version", prerelease, listOf(
+                "melody-sync-linux-x64-$version.jar" to "${server.baseUrl}/download.jar",
+                "melody-sync-linux-x64-$version.jar.sha256" to "${server.baseUrl}/download.jar.sha256",
+            )),
+        )
+    }
+
+    @Test
+    fun `checkForReleaseUpdate reports update available when newer`() {
+        startServerWithRelease("0.13.0-dev")
+        try {
+            val check = releaseService().checkForReleaseUpdate(
+                channel = InstallationChannel.STABLE,
+                installDir = createInstallDir("0.12.0"),
+            )
+
+            assertFalse(check.sourceBased)
+            assertTrue(check.updateAvailable)
+            assertEquals("0.13.0-dev", check.availableVersion)
+            assertEquals("0.12.0", check.installedVersion)
+        } finally {
+            server.stop()
+        }
+    }
+
+    @Test
+    fun `checkForReleaseUpdate reports up to date`() {
+        startServerWithRelease("0.13.0-dev")
+        try {
+            val check = releaseService().checkForReleaseUpdate(
+                channel = InstallationChannel.STABLE,
+                installDir = createInstallDir("0.13.0-dev"),
+            )
+
+            assertFalse(check.updateAvailable)
+        } finally {
+            server.stop()
+        }
+    }
+
+    @Test
+    fun `checkForReleaseUpdate with nothing installed reports update available`() {
+        startServerWithRelease("0.13.0-dev")
+        try {
+            val check = releaseService().checkForReleaseUpdate(
+                channel = InstallationChannel.STABLE,
+                installDir = createInstallDir(null),
+            )
+
+            assertTrue(check.updateAvailable)
+        } finally {
+            server.stop()
+        }
+    }
+
+    @Test
+    fun `updateFromRelease downloads and installs a newer version`() {
+        startServerWithRelease("0.13.0-dev")
+        try {
+            val installDir = createInstallDir("0.12.0")
+            val result = releaseService().updateFromRelease(
+                channel = InstallationChannel.STABLE,
+                installDir = installDir,
+                build = "Desktop",
+            )
+
+            assertTrue(result.installed)
+            assertFalse(result.sourceBased)
+            assertEquals("0.13.0-dev", result.version)
+            assertTrue(Files.exists(installDir.resolve("melody-sync.jar")))
+            val info = InstallationInfo.load(installDir.resolve("INSTALLATION.json"))
+            assertTrue(info != null)
+            assertEquals("stable", info!!.channel)
+        } finally {
+            server.stop()
+        }
+    }
+
+    @Test
+    fun `updateFromRelease respects force when already up to date`() {
+        startServerWithRelease("0.13.0-dev")
+        try {
+            val installDir = createInstallDir("0.13.0-dev")
+            val withoutForce = releaseService().updateFromRelease(
+                channel = InstallationChannel.STABLE,
+                installDir = installDir,
+            )
+            assertFalse(withoutForce.installed)
+            assertTrue(withoutForce.message.contains("Already up to date"))
+
+            val withForce = releaseService().updateFromRelease(
+                channel = InstallationChannel.STABLE,
+                installDir = installDir,
+                force = true,
+            )
+            assertTrue(withForce.installed)
+        } finally {
+            server.stop()
+        }
+    }
+
+    @Test
+    fun `updateFromRelease reports a failed release check`() {
+        val service = releaseService()
+        val result = service.updateFromRelease(
+            channel = InstallationChannel.STABLE,
+            installDir = createInstallDir(null),
+        )
+
+        assertFalse(result.installed)
+        assertTrue(result.message.contains("Update failed"))
     }
 }

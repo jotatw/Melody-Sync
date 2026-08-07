@@ -1,6 +1,7 @@
 package com.melodysync.platform.installation
 
 import com.melodysync.platform.shell.ShellExecutor
+import com.melodysync.platform.system.VersionComparator
 import com.melodysync.platform.system.VersionInfo
 import java.nio.file.Files
 import java.nio.file.Path
@@ -8,27 +9,32 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 /**
- * Orchestrates install/update/repair of a local Melody Sync installation.
- *
- * Validates the environment and source checkout, compares versions, runs
- * scripts/install.sh and records INSTALLATION.json. Decoupled from the GUI
- * and CLI so both can share the same flow. Built to later grow a
- * "release download" strategy behind the same interface.
- */
-/**
- * Result of a version check that does not perform any rebuild.
+ * Result of a version check that does not perform any rebuild or download.
  */
 data class UpdateCheck(
-    val sourceVersion: String?,
+    val availableVersion: String?,
     val installedVersion: String?,
     val sourceBased: Boolean,
     val updateAvailable: Boolean,
     val message: String? = null,
 )
 
+/**
+ * Orchestrates install/update of a local Melody Sync installation.
+ *
+ * Two strategies behind the same interface:
+ * - source mode ([update], [checkForUpdate]): rebuilds from a local source
+ *   checkout via scripts/install.sh.
+ * - release mode ([updateFromRelease], [checkForReleaseUpdate]): downloads
+ *   a published jar from GitHub Releases.
+ * Both record VERSION + INSTALLATION.json so the installed version is always
+ * recognized afterwards.
+ */
 class InstallationService(
     private val validator: InstallationValidator = InstallationValidator(),
     private val shell: ShellExecutor = ShellExecutor(),
+    private val releaseClient: ReleaseClient = ReleaseClient(),
+    private val releaseInstaller: ReleaseInstaller = ReleaseInstaller(releaseClient),
 ) {
 
     fun detectInstallation(installDir: Path = InstallationPaths.installDir()): InstallationInfo? {
@@ -44,6 +50,8 @@ class InstallationService(
             build = "",
         )
     }
+
+    // ------------------------------------------------------------------ source
 
     fun update(
         projectDir: Path,
@@ -144,7 +152,7 @@ class InstallationService(
         val environmentIssues = validator.validateEnvironment()
         if (environmentIssues.isNotEmpty()) {
             return UpdateCheck(
-                sourceVersion = null,
+                availableVersion = null,
                 installedVersion = null,
                 sourceBased = false,
                 updateAvailable = false,
@@ -155,7 +163,7 @@ class InstallationService(
         val projectIssues = validator.validateProject(projectDir)
         if (projectIssues.isNotEmpty()) {
             return UpdateCheck(
-                sourceVersion = null,
+                availableVersion = null,
                 installedVersion = null,
                 sourceBased = false,
                 updateAvailable = false,
@@ -167,10 +175,75 @@ class InstallationService(
         val sourceVersion = readSourceVersion(projectDir)
         val installedVersion = InstallationPaths.readInstalledVersion(installDir)
         return UpdateCheck(
-            sourceVersion = sourceVersion,
+            availableVersion = sourceVersion,
             installedVersion = installedVersion,
             sourceBased = true,
-            updateAvailable = sourceVersion != null && sourceVersion != installedVersion,
+            updateAvailable = VersionComparator.isNewer(sourceVersion, installedVersion),
+        )
+    }
+
+    // ------------------------------------------------------------------ release
+
+    fun checkForReleaseUpdate(
+        channel: InstallationChannel = InstallationChannel.STABLE,
+        installDir: Path = InstallationPaths.installDir(),
+    ): UpdateCheck {
+        val installedVersion = InstallationPaths.readInstalledVersion(installDir)
+        val release = try {
+            releaseClient.latestRelease(channel)
+        } catch (e: Exception) {
+            return UpdateCheck(
+                availableVersion = null,
+                installedVersion = installedVersion,
+                sourceBased = false,
+                updateAvailable = false,
+                message = "Release check failed: ${e.message}",
+            )
+        }
+        return UpdateCheck(
+            availableVersion = release.version,
+            installedVersion = installedVersion,
+            sourceBased = false,
+            updateAvailable = VersionComparator.isNewer(release.version, installedVersion),
+        )
+    }
+
+    fun updateFromRelease(
+        channel: InstallationChannel = InstallationChannel.STABLE,
+        installDir: Path = InstallationPaths.installDir(),
+        build: String = "Desktop",
+        force: Boolean = false,
+        onProgress: (String) -> Unit = {},
+    ): InstallationResult {
+        val release = try {
+            releaseClient.latestRelease(channel)
+        } catch (e: Exception) {
+            return InstallationResult(
+                version = VersionInfo.version,
+                installed = false,
+                rebuilt = false,
+                sourceBased = false,
+                message = "Update failed: ${e.message}",
+            )
+        }
+
+        val installedVersion = InstallationPaths.readInstalledVersion(installDir)
+        if (!force && !VersionComparator.isNewer(release.version, installedVersion)) {
+            return InstallationResult(
+                version = release.version,
+                installed = false,
+                rebuilt = false,
+                sourceBased = false,
+                message = "Already up to date (v${installedVersion ?: release.version})",
+            )
+        }
+
+        return releaseInstaller.install(
+            release = release,
+            installDir = installDir,
+            channel = channel,
+            build = build,
+            onProgress = onProgress,
         )
     }
 

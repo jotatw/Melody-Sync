@@ -43,7 +43,7 @@ class InstallationInfoTest {
     }
 
     @Test
-    fun `installerVersion defaults to one`() {
+    fun `installerVersion defaults to two`() {
         val info = InstallationInfo(
             version = "v0.12.0-dev",
             installedAt = "2026-08-04T10:20",
@@ -52,7 +52,7 @@ class InstallationInfoTest {
             build = "Desktop",
         )
 
-        assertEquals(1, info.installerVersion)
+        assertEquals(2, info.installerVersion)
     }
 
     @Test
