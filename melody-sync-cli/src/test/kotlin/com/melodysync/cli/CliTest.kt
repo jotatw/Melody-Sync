@@ -23,12 +23,32 @@ class VersionCommandTest {
 }
 
 class UpdateCommandTest {
-    @Test
-    fun `reports when not a source checkout`() {
-        val result = UpdateCommand().test("")
+    @TempDir
+    lateinit var tmpDir: Path
 
-        assertEquals(0, result.statusCode)
-        assertTrue(result.stdout.contains("not installed from source"))
+    @Test
+    fun `reports already up to date from a source checkout`() {
+        val repo = tmpDir.resolve("repo")
+        Files.createDirectories(repo.resolve("scripts"))
+        Files.writeString(repo.resolve("gradlew"), "#!/bin/sh\n")
+        Files.writeString(repo.resolve("build.gradle.kts"), "plugins {}\n")
+        Files.writeString(repo.resolve("gradle.properties"), "melodySyncVersion=0.13.0-dev\n")
+        Files.writeString(repo.resolve("scripts/install.sh"), "#!/usr/bin/env bash\n")
+        val installDir = tmpDir.resolve("install")
+        Files.createDirectories(installDir)
+        Files.writeString(installDir.resolve("VERSION"), "0.13.0-dev\n")
+
+        val previous = System.getProperty("user.dir")
+        System.setProperty("user.dir", repo.toString())
+        try {
+            val result = UpdateCommand().test("--install-dir $installDir")
+
+            assertEquals(0, result.statusCode)
+            assertTrue(result.stdout.contains("Already up to date"))
+            assertTrue(result.stdout.contains("Mode:         source"))
+        } finally {
+            System.setProperty("user.dir", previous)
+        }
     }
 }
 

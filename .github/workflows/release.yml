@@ -28,6 +28,11 @@ jobs:
       - name: Build uber jar
         run: ./gradlew :melody-sync-desktop:packageUberJarForCurrentOS
 
+      - name: Generate checksums
+        run: |
+          cd melody-sync-desktop/build/compose/jars
+          for f in *.jar; do sha256sum "$f" > "$f.sha256"; done
+
       - name: Verify version matches tag
         run: |
           VERSION="$(grep -E '^melodySyncVersion=' gradle.properties | cut -d= -f2- | tr -d '[:space:]')"
@@ -40,7 +45,7 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          files: melody-sync-desktop/build/compose/jars/*.jar
+          files: melody-sync-desktop/build/compose/jars/*
           generate_release_notes: true
           # Tags like v0.13.0-dev / v0.14.0-beta / v0.14.0-rc are pre-releases.
           prerelease: ${{ contains(github.ref_name, '-dev') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') || contains(github.ref_name, '-alpha') || contains(github.ref_name, '-preview') }}

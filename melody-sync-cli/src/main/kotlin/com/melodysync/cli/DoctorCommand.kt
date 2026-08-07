@@ -34,6 +34,7 @@ class DoctorCommand : CliktCommand(
         val info = service.detectInstallation(installDir)
         issues += check("Installed", info?.let { "v${it.version}" } ?: "none")
         issues += check("Latest", VersionInfo.displayVersion)
+        issues += check("Latest release", detectLatestRelease())
 
         echo("")
         if (issues == 0) {
@@ -42,6 +43,15 @@ class DoctorCommand : CliktCommand(
             echo("✗ $issues issue(s) found.")
         }
     }
+
+    private fun detectLatestRelease(): String =
+        try {
+            val release = com.melodysync.platform.installation.ReleaseClient()
+                .latestRelease(com.melodysync.platform.installation.InstallationChannel.STABLE)
+            "v${release.version} (${if (release.prerelease) "pre-release" else "stable"})"
+        } catch (e: Exception) {
+            "unavailable (${e.message})"
+        }
 
     private fun check(name: String, value: String): Int {
         echo("  ✓ $name: $value")

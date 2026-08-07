@@ -10,8 +10,10 @@ import com.melodysync.model.HealthReport
 import com.melodysync.model.LibraryStatistics
 import com.melodysync.model.OrganizationReport
 import com.melodysync.model.Song
+import com.melodysync.platform.installation.InstallationChannel
 import com.melodysync.platform.installation.InstallationInfo
 import com.melodysync.platform.installation.InstallationService
+import com.melodysync.platform.installation.InstallationValidator
 import com.melodysync.scanner.calculateStatistics
 import com.melodysync.service.DuplicateDetectionService
 import com.melodysync.service.LibraryHealthService
@@ -194,6 +196,9 @@ class AppState(
         private set
 
     var updateAvailable by mutableStateOf(false)
+        private set
+
+    var updateSourceBased by mutableStateOf(false)
         private set
 
     var installationInfo by mutableStateOf<InstallationInfo?>(null)
@@ -426,28 +431,34 @@ class AppState(
     fun checkForUpdates() {
         if (updateStatus == UpdateStatus.CHECKING || updateStatus == UpdateStatus.RUNNING) return
         updateStatus = UpdateStatus.CHECKING
-        updatePhase = "Checking installation…"
+        updatePhase = "Checking for updates…"
         updateMessage = null
 
         uiScope.launch {
             val projectDir = Path.of(System.getProperty("user.dir") ?: ".")
             val service = InstallationService()
+            val sourceCheckout = InstallationValidator().isSourceCheckout(projectDir)
             try {
                 val result = withContext(Dispatchers.Default) {
-                    service.checkForUpdate(projectDir)
+                    if (sourceCheckout) {
+                        service.checkForUpdate(projectDir)
+                    } else {
+                        service.checkForReleaseUpdate(channel = InstallationChannel.STABLE)
+                    }
                 }
                 val info = withContext(Dispatchers.Default) {
                     service.detectInstallation()
                 }
                 installationInfo = info
-                updateAvailable = result.sourceBased && result.updateAvailable
+                updateSourceBased = sourceCheckout
+                updateAvailable = result.updateAvailable
                 updateMessage = when {
-                    !result.sourceBased -> result.message
-                        ?: "Automatic rebuild is unavailable from this location."
+                    result.message != null -> result.message
                     result.updateAvailable -> {
-                        "Update available: v${result.installedVersion ?: "—"} → v${result.sourceVersion}"
+                        val from = result.installedVersion?.let { "v$it" } ?: "nothing"
+                        "Update available: $from → v${result.availableVersion}"
                     }
-                    else -> "Already up to date (v${result.sourceVersion})"
+                    else -> "Already up to date (v${result.availableVersion})"
                 }
                 updateStatus = UpdateStatus.DONE
                 updatePhase = "Done"
@@ -461,7 +472,7 @@ class AppState(
     fun runUpdate(force: Boolean = true) {
         if (updateStatus == UpdateStatus.RUNNING) return
         updateStatus = UpdateStatus.RUNNING
-        updatePhase = "Preparing…"
+        updatePhase = if (updateSourceBased) "Preparing build…" else "Preparing download…"
         updateMessage = null
 
         uiScope.launch {
@@ -469,14 +480,25 @@ class AppState(
             val service = InstallationService()
             try {
                 val result = withContext(Dispatchers.Default) {
-                    service.update(
-                        projectDir = projectDir,
-                        build = "Desktop",
-                        force = force,
-                        onProgress = { line ->
-                            uiScope.launch { updatePhase = phaseFromLine(line) }
-                        },
-                    )
+                    if (updateSourceBased) {
+                        service.update(
+                            projectDir = projectDir,
+                            build = "Desktop",
+                            force = force,
+                            onProgress = { line ->
+                                uiScope.launch { updatePhase = phaseFromLine(line) }
+                            },
+                        )
+                    } else {
+                        service.updateFromRelease(
+                            channel = InstallationChannel.STABLE,
+                            build = "Desktop",
+                            force = force,
+                            onProgress = { line ->
+                                uiScope.launch { updatePhase = phaseFromLine(line) }
+                            },
+                        )
+                    }
                 }
                 installationInfo = service.detectInstallation()
                 updateMessage = result.message
@@ -498,10 +520,12 @@ class AppState(
     }
 
     private fun phaseFromLine(line: String): String = when {
+        line.contains("Downloading", ignoreCase = true) -> "Downloading…"
+        line.contains("Verifying", ignoreCase = true) -> "Verifying…"
         line.contains("Building", ignoreCase = true) -> "Compiling…"
         line.contains("Installing to", ignoreCase = true) -> "Installing…"
         line.contains("Installed!", ignoreCase = true) -> "Verifying…"
-        else -> line.trim().ifBlank { "Running scripts/install.sh…" }
+        else -> line.trim().ifBlank { "Working…" }
     }
 
     fun startWatching() {

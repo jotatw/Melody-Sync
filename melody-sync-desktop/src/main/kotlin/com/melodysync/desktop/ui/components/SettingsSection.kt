@@ -111,6 +111,7 @@ private fun InstallationInformationSection(state: AppState) {
     Column(modifier = Modifier.padding(top = Spacing.sm)) {
         InfoRow("Version", VersionInfo.displayVersion)
         InfoRow("Installed", info?.let { "v${it.version}" } ?: "not detected")
+        InfoRow("Channel", info?.channel?.ifBlank { "—" } ?: "—")
         InfoRow("Directory", InstallationPaths.installDir().toString())
         InfoRow("Java", System.getProperty("java.version") ?: "—")
         InfoRow("Build", info?.build?.ifBlank { "—" } ?: "—")
@@ -147,7 +148,11 @@ private fun UpdatesSection(state: AppState) {
         modifier = Modifier.padding(top = Spacing.lg),
     )
     Text(
-        "Rebuilds and reinstalls from the Melody Sync source checkout. Requires Java 21.",
+        if (state.updateSourceBased) {
+            "Rebuilds and reinstalls from the Melody Sync source checkout. Requires Java 21."
+        } else {
+            "Downloads the latest published Melody Sync release and installs it."
+        },
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.padding(top = Spacing.xs),
@@ -184,12 +189,13 @@ private fun UpdatesSection(state: AppState) {
         }
         UpdateStatus.DONE -> {
             val message = state.updateMessage.orEmpty()
+            val updateActionLabel = if (state.updateSourceBased) "Rebuild & Install" else "Download & Install"
             Text(
                 message,
                 style = MaterialTheme.typography.bodyMedium,
                 color = when {
                     state.updateAvailable -> MaterialTheme.colorScheme.primary
-                    message.contains("not installed from source") -> MaterialTheme.colorScheme.error
+                    message.contains("failed", ignoreCase = true) -> MaterialTheme.colorScheme.error
                     else -> MaterialTheme.colorScheme.onSurfaceVariant
                 },
                 modifier = Modifier.padding(top = Spacing.md),
@@ -199,21 +205,14 @@ private fun UpdatesSection(state: AppState) {
                     onClick = { state.runUpdate(force = true) },
                     modifier = Modifier.padding(top = Spacing.sm),
                 ) {
-                    Text("Rebuild & Install")
+                    Text(updateActionLabel)
                 }
             } else if (message.contains("Already up to date")) {
                 OutlinedButton(
                     onClick = { state.runUpdate(force = true) },
                     modifier = Modifier.padding(top = Spacing.sm),
                 ) {
-                    Text("Force Rebuild")
-                }
-            } else if (message.contains("not installed from source")) {
-                OutlinedButton(
-                    onClick = state::checkForUpdates,
-                    modifier = Modifier.padding(top = Spacing.sm),
-                ) {
-                    Text("Retry")
+                    Text(if (state.updateSourceBased) "Force Rebuild" else "Force Update")
                 }
             }
         }
