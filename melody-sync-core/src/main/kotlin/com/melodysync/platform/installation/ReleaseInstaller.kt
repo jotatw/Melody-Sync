@@ -16,6 +16,8 @@ import java.util.zip.ZipFile
  */
 class ReleaseInstaller(
     private val client: ReleaseClient = ReleaseClient(),
+    private val binDir: Path = InstallationPaths.defaultBinDir(),
+    private val applicationsDir: Path = InstallationPaths.defaultApplicationsDir(),
 ) {
 
     fun install(
@@ -71,6 +73,7 @@ class ReleaseInstaller(
                 ),
                 InstallationPaths.installationJson(resolvedDir),
             )
+            writeLaunchArtifacts(resolvedDir)
 
             return InstallationResult(
                 version = release.version,
@@ -91,6 +94,41 @@ class ReleaseInstaller(
             runCatching { Files.deleteIfExists(tempJar) }
             runCatching { Files.deleteIfExists(tempDir) }
         }
+    }
+
+    /**
+     * Creates the launcher script inside the install dir, a `melody-sync`
+     * symlink in the user bin dir and a desktop entry, mirroring install.sh
+     * so a release install is fully launchable.
+     */
+    private fun writeLaunchArtifacts(installDir: Path) {
+        val launcher = installDir.resolve("melody-sync")
+        Files.writeString(
+            launcher,
+            "#!/bin/sh\n" +
+                "DIR=\"\$(dirname \"\$(readlink -f \"\$0\")\")\"\n" +
+                "exec java -jar \"\$DIR/melody-sync.jar\" \"\$@\"\n",
+        )
+        launcher.toFile().setExecutable(true, false)
+
+        Files.createDirectories(binDir)
+        val link = binDir.resolve("melody-sync")
+        Files.deleteIfExists(link)
+        Files.createSymbolicLink(link, launcher)
+
+        Files.createDirectories(applicationsDir)
+        Files.writeString(
+            applicationsDir.resolve("melody-sync.desktop"),
+            "[Desktop Entry]\n" +
+                "Version=1.0\n" +
+                "Name=Melody Sync\n" +
+                "Comment=Organize, analyze and explore your local music library\n" +
+                "Exec=$launcher\n" +
+                "Terminal=false\n" +
+                "Type=Application\n" +
+                "Categories=Audio;Music;\n" +
+                "Keywords=music;library;organizer;metadata;\n",
+        )
     }
 
     private fun verify(jar: Path, expectedSha256: String?) {

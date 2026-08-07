@@ -203,6 +203,14 @@ class InstallationServiceTest {
             apiBaseUrl = server.baseUrl,
             httpClient = java.net.http.HttpClient.newBuilder().build(),
         ),
+        releaseInstaller = ReleaseInstaller(
+            client = ReleaseClient(
+                apiBaseUrl = server.baseUrl,
+                httpClient = java.net.http.HttpClient.newBuilder().build(),
+            ),
+            binDir = tmp.resolve("bin"),
+            applicationsDir = tmp.resolve("apps"),
+        ),
     )
 
     private fun startServerWithRelease(version: String, prerelease: Boolean = true) {

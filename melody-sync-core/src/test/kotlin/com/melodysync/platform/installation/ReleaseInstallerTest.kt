@@ -37,10 +37,16 @@ class ReleaseInstallerTest {
             sizeBytes = server.jarBytes.size.toLong(),
         )
 
+    private fun installer() = ReleaseInstaller(
+        client = ReleaseClient(apiBaseUrl = server.baseUrl, httpClient = java.net.http.HttpClient.newBuilder().build()),
+        binDir = tmp.resolve("bin"),
+        applicationsDir = tmp.resolve("apps"),
+    )
+
     @Test
     fun `installs jar, version file and installation json`() {
         val installDir = tmp.resolve("install")
-        val result = ReleaseInstaller().install(
+        val result = installer().install(
             release = releaseInfo(),
             installDir = installDir,
             channel = InstallationChannel.STABLE,
@@ -65,13 +71,28 @@ class ReleaseInstallerTest {
     }
 
     @Test
+    fun `creates launcher symlink and desktop entry`() {
+        val installDir = tmp.resolve("install")
+        val result = installer().install(
+            release = releaseInfo(),
+            installDir = installDir,
+            channel = InstallationChannel.STABLE,
+        )
+
+        assertTrue(result.installed)
+        assertTrue(Files.isExecutable(installDir.resolve("melody-sync")))
+        assertTrue(Files.isSymbolicLink(tmp.resolve("bin/melody-sync")))
+        assertTrue(Files.exists(tmp.resolve("apps/melody-sync.desktop")))
+    }
+
+    @Test
     fun `replaces an existing jar`() {
         val installDir = tmp.resolve("install")
         Files.createDirectories(installDir)
         Files.write(installDir.resolve("melody-sync.jar"), byteArrayOf(1, 2, 3))
         Files.writeString(installDir.resolve("VERSION"), "0.12.0\n")
 
-        val result = ReleaseInstaller().install(
+        val result = installer().install(
             release = releaseInfo(),
             installDir = installDir,
             channel = InstallationChannel.BETA,
@@ -88,7 +109,7 @@ class ReleaseInstallerTest {
         Files.createDirectories(installDir)
         Files.write(installDir.resolve("melody-sync.jar"), byteArrayOf(9, 9, 9))
 
-        val result = ReleaseInstaller().install(
+        val result = installer().install(
             release = releaseInfo(sha = "deadbeef"),
             installDir = installDir,
             channel = InstallationChannel.STABLE,
@@ -103,7 +124,7 @@ class ReleaseInstallerTest {
     @Test
     fun `verifies zip integrity when no checksum is published`() {
         val installDir = tmp.resolve("install")
-        val result = ReleaseInstaller().install(
+        val result = installer().install(
             release = releaseInfo(sha = null),
             installDir = installDir,
             channel = InstallationChannel.STABLE,

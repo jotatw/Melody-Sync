@@ -25,6 +25,11 @@ object InstallationPaths {
         return Path.of(home, ".local", "bin")
     }
 
+    fun defaultApplicationsDir(): Path {
+        val home = System.getProperty("user.home") ?: "."
+        return Path.of(home, ".local", "share", "applications")
+    }
+
     fun installDir(overridden: Path? = null): Path =
         (overridden ?: defaultInstallDir()).toAbsolutePath().normalize()
 

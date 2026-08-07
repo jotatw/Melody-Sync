@@ -77,6 +77,7 @@ class UpdateCommand : CliktCommand(
                 echo("✓ ${result.message}")
                 echo("Restart any running Melody Sync instance to use the new build.")
             }
+            result.message.contains("Already up to date") -> echo(result.message)
             result.sourceBased -> echo(result.message)
             else -> echo("✗ ${result.message}")
         }
