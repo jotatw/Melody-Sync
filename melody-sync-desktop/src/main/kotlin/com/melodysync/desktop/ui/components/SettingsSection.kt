@@ -10,7 +10,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,12 +38,17 @@ fun SettingsSection(state: AppState) {
             style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.padding(top = Spacing.md),
         )
-        OutlinedTextField(
-            value = state.directory,
-            onValueChange = state::updateDirectory,
-            label = { Text("Path") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth().padding(top = Spacing.xs),
+        Text(
+            "Set the music directory in the Library view (the path field above the Scan button).",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = Spacing.xs),
+        )
+        Text(
+            "Your library loads automatically from the database on startup — no rescan needed.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = Spacing.xs),
         )
 
         Text(

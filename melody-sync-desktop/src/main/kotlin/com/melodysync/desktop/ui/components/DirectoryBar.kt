@@ -51,7 +51,13 @@ fun DirectoryBar(state: AppState) {
             enabled = state.directory.isNotBlank() && state.status != ScanStatus.SCANNING,
             modifier = Modifier.padding(vertical = 4.dp),
         ) {
-            Text(if (state.status == ScanStatus.SCANNING) "Scanning…" else "Scan Library")
+            Text(
+                when {
+                    state.status == ScanStatus.SCANNING -> "Scanning…"
+                    state.songs.isNotEmpty() -> "Rescan"
+                    else -> "Scan Library"
+                },
+            )
         }
         Spacer(modifier = Modifier.width(8.dp))
         WatchToggle(state)

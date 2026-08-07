@@ -35,6 +35,8 @@ fun LibraryScreen(
     state: AppState,
     theme: AppTheme,
     onToggleTheme: () -> Unit,
+    isFullscreen: Boolean,
+    onToggleFullscreen: () -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -49,7 +51,13 @@ fun LibraryScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            TopBar(state = state, theme = theme, onToggleTheme = onToggleTheme)
+            TopBar(
+                state = state,
+                theme = theme,
+                onToggleTheme = onToggleTheme,
+                isFullscreen = isFullscreen,
+                onToggleFullscreen = onToggleFullscreen,
+            )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { innerPadding ->

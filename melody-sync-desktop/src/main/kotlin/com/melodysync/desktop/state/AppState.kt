@@ -330,6 +330,40 @@ class AppState(
         }
     }
 
+    /**
+     * Loads the previously scanned library for the current directory from
+     * the database, so the app starts ready without a full rescan.
+     * A manual "Rescan" re-syncs with the filesystem.
+     */
+    fun loadLibraryFromDatabase() {
+        if (status == ScanStatus.SCANNING) return
+        if (directory.isBlank()) return
+        val dir = Path.of(directory.trim())
+        errorMessage = null
+
+        uiScope.launch {
+            try {
+                val found = withContext(Dispatchers.Default) {
+                    MusicDatabase.connect()
+                    MusicRepository.findAll().filter { it.path.startsWith(dir) }
+                }
+                if (found.isNotEmpty()) {
+                    songs = found
+                    statistics = calculateStatistics(found)
+                    analytics = computeAnalytics(found)
+                    progressText = "Loaded ${found.size} songs from database"
+                    status = ScanStatus.DONE
+                } else {
+                    status = ScanStatus.IDLE
+                    progressText = ""
+                }
+            } catch (e: Exception) {
+                errorMessage = e.message ?: "Failed to load library from database"
+                status = ScanStatus.IDLE
+            }
+        }
+    }
+
     fun analyzeHealth() {
         if (healthStatus == HealthStatus.RUNNING) return
         val dir = Path.of(directory.trim())

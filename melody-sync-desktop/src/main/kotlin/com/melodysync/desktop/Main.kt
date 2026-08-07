@@ -3,6 +3,7 @@ package com.melodysync.desktop
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -10,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.melodysync.desktop.state.AppPreferences
@@ -25,6 +27,8 @@ fun main() = application {
     val appState = remember { AppState() }
     val savedTheme = remember { AppPreferences.load().theme }
 
+    LaunchedEffect(Unit) { appState.loadLibraryFromDatabase() }
+
     Window(
         onCloseRequest = ::exitApplication,
         title = "Melody Sync",
@@ -39,6 +43,7 @@ fun main() = application {
                 },
             )
         }
+        val isFullscreen = windowState.placement == WindowPlacement.Fullscreen
 
         MaterialTheme(
             colorScheme = theme.colorScheme,
@@ -59,7 +64,16 @@ fun main() = application {
                             sortAscending = appState.sortAscending,
                             sidebarExpanded = appState.sidebarExpanded,
                             visibleColumns = appState.visibleColumns.joinToString(",") { it.name.lowercase() },
+                            groupByLetter = appState.groupByLetter,
                         ).save()
+                    },
+                    isFullscreen = isFullscreen,
+                    onToggleFullscreen = {
+                        windowState.placement = if (isFullscreen) {
+                            WindowPlacement.Floating
+                        } else {
+                            WindowPlacement.Fullscreen
+                        }
                     },
                 )
             }
