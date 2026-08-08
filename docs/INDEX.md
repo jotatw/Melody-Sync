@@ -52,12 +52,12 @@ Planning is the entry point for future implementation. Large features should rec
 
 Visual identity and interaction standards.
 
-| Document | Purpose |
-|----------|---------|
-| Design System | Hi-Fi Editorial visual identity (colors, typography, layout) |
-| Application Design Research | Design and UX best practices applied to the app |
-| Quick-Fix HUD | Assisted curation vision and implementation history |
-| Update Channels | Release installer and update-channel architecture |
+| Document | Purpose | Status |
+|----------|---------|--------|
+| Design System | Hi-Fi Editorial visual identity (colors, typography, layout) | ✅ Implemented |
+| [Application Design Research](research/app-design.md) | Design and UX best practices applied to the app | 📚 Active reference |
+| [Quick-Fix HUD](research/quick-fix-hud.md) | Assisted curation interaction model and implementation history | ✅ Implemented |
+| [Update Channels](research/update-channels.md) | Release installer and update-channel architecture | ✅ Implemented; unattended updates backlog |
 
 ---
 
@@ -65,11 +65,11 @@ Visual identity and interaction standards.
 
 Guidelines for contributors and future development.
 
-| Document | Purpose |
-|----------|---------|
-| Documentation Standard | Documentation standards and conventions |
-| Architecture Review | Architectural reasoning and lessons learned |
-| Development Methodology | Planned development-cycle guide |
+| Document | Purpose | Status |
+|----------|---------|--------|
+| Documentation Standard | Documentation standards and conventions | ✅ Active |
+| Architecture Review | Architectural reasoning and lessons learned | ✅ Active |
+| [Development Methodology](standards/handbook/DevelopmentMethodology.md) | Official development cycle and planning rules | ✅ Accepted |
 
 ---
 
@@ -118,7 +118,7 @@ Historical project evolution is kept separately from planning so completed miles
 | GitHub Actions CI + release automation | ✅ Completed |
 | Unattended automatic updates | ⏳ Backlog |
 | Metadata foundation | 🚧 Planned |
-| Development Methodology | ⏳ Backlog |
+| Development Methodology | ✅ Accepted |
 
 ---
 
@@ -146,12 +146,12 @@ docs/
 │
 ├── standards/
 │   ├── DesignSystem.md            # Hi-Fi Editorial visual identity
-│   ├── handbook/                  # Documentation standard
+│   ├── handbook/                  # Documentation and development handbooks
 │   └── templates/                 # Document templates
 │
 └── research/                      # Design and technology research
     ├── app-design.md              # UX research applied to Melody Sync
-    ├── quick-fix-hud.md           # Quick Fix design and architecture
+    ├── quick-fix-hud.md           # Quick Fix design and implementation history
     └── update-channels.md         # Release/update research
 ```
 
@@ -166,10 +166,11 @@ The documentation follows the same philosophy as the source code:
 - Architectural decisions are recorded using ADRs.
 - Large features receive dedicated planning documents.
 - History records completed evolution; it is not an implementation backlog.
+- The roadmap points to detailed planning and research instead of duplicating them.
 - Documentation is part of the project's architecture and evolves with it.
 
 ---
 
 **Last Updated**
 
-2026-08-08 — Added ROADMAP, metadata foundation planning, project history and updated current status to v0.13.0-dev with 233 tests. UX-1, UX-2, Review, release installer and update channels are recorded as completed; unattended automatic updates and metadata foundation remain backlog items.
+2026-08-08 — Consolidated Planning, Design and Development references. Quick-Fix HUD and Update Channels are recorded as implemented with their remaining backlog boundaries; Development Methodology is accepted and no longer a backlog item. Current status remains v0.13.0-dev with 233 tests passing.
