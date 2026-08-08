@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.Info
@@ -43,6 +44,7 @@ private val mainItems = listOf(
     RailItem(Section.LIBRARY, "Library", Icons.Filled.LibraryMusic),
     RailItem(Section.STATISTICS, "Statistics", Icons.Filled.Insights),
     RailItem(Section.HEALTH, "Health", Icons.Filled.HealthAndSafety),
+    RailItem(Section.REVIEW, "Review", Icons.Filled.Build),
     RailItem(Section.DUPLICATES, "Duplicates", Icons.Filled.Repeat),
     RailItem(Section.ORGANIZE, "Organize", Icons.Filled.FolderOpen),
 )

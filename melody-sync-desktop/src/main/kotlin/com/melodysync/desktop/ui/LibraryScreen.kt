@@ -26,6 +26,7 @@ import com.melodysync.desktop.ui.components.LibraryHeader
 import com.melodysync.desktop.ui.components.LibraryToolbar
 import com.melodysync.desktop.ui.components.OrganizeSection
 import com.melodysync.desktop.ui.components.QuickFixPanel
+import com.melodysync.desktop.ui.components.ReviewSection
 import com.melodysync.desktop.ui.components.SettingsSection
 import com.melodysync.desktop.ui.components.Sidebar
 import com.melodysync.desktop.ui.components.SongList
@@ -98,6 +99,9 @@ fun LibraryScreen(
                         DirectoryBar(state)
                         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                         HealthSection(state)
+                    }
+                    Section.REVIEW -> {
+                        ReviewSection(state)
                     }
                     Section.DUPLICATES -> {
                         DirectoryBar(state)

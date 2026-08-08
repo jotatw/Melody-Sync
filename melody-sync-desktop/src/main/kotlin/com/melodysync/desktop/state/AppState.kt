@@ -10,6 +10,7 @@ import com.melodysync.model.HealthReport
 import com.melodysync.model.LibraryStatistics
 import com.melodysync.model.OrganizationReport
 import com.melodysync.model.Song
+import com.melodysync.model.SongDiagnostics
 import com.melodysync.model.TagSuggestion
 import com.melodysync.platform.installation.InstallationChannel
 import com.melodysync.platform.installation.InstallationInfo
@@ -38,6 +39,7 @@ enum class Section {
     LIBRARY,
     STATISTICS,
     HEALTH,
+    REVIEW,
     DUPLICATES,
     ORGANIZE,
     SETTINGS,
@@ -191,6 +193,10 @@ class AppState(
     var duplicateTrashing by mutableStateOf(false)
         private set
 
+    // Review screen: songs with issues across the whole library.
+    var reviewItems by mutableStateOf<List<SongDiagnostics>>(emptyList())
+        private set
+
     var updateStatus by mutableStateOf(UpdateStatus.IDLE)
         private set
 
@@ -278,6 +284,22 @@ class AppState(
         selectedSongPath = path
     }
 
+    /**
+     * Recomputes the per-song diagnosis for the whole library (pure in-memory
+     * checks — no file IO). Powers the Review screen.
+     */
+    fun refreshReview() {
+        if (songs.isEmpty()) {
+            reviewItems = emptyList()
+            return
+        }
+        uiScope.launch {
+            reviewItems = withContext(Dispatchers.Default) {
+                songs.map { QuickFixService.diagnose(it) }.filter { it.hasIssues }
+            }
+        }
+    }
+
     var pendingScrollPath by mutableStateOf<String?>(null)
         private set
 
@@ -342,6 +364,7 @@ class AppState(
                 songs = songs.map { if (it.path == updated.path) updated else it }
                 statistics = calculateStatistics(songs)
                 analytics = computeAnalytics(songs)
+                refreshReview()
                 showMessage("Tags updated · ${song.filename}")
             } catch (e: Exception) {
                 showMessage("Apply failed: ${e.message ?: e::class.simpleName}")
@@ -427,6 +450,7 @@ class AppState(
                 songs = found
                 statistics = calculateStatistics(found)
                 analytics = computeAnalytics(found)
+                refreshReview()
                 progressText = "Library synchronized · ${found.size} songs analyzed"
                 status = ScanStatus.DONE
                 if (result.added > 0 || result.updated > 0) {
@@ -461,6 +485,7 @@ class AppState(
                     songs = found
                     statistics = calculateStatistics(found)
                     analytics = computeAnalytics(found)
+                    refreshReview()
                     progressText = "Loaded ${found.size} songs from database"
                     status = ScanStatus.DONE
                 } else {
@@ -554,6 +579,7 @@ class AppState(
                     duplicateGroups = newGroups
                     statistics = calculateStatistics(remainingSongs)
                     analytics = computeAnalytics(remainingSongs)
+                    refreshReview()
                     showMessage("Moved ${moved.size} file(s) to trash")
                 }
             } catch (e: Exception) {
@@ -748,6 +774,7 @@ class AppState(
                 songs = found
                 statistics = calculateStatistics(found)
                 analytics = computeAnalytics(found)
+                refreshReview()
                 progressText = "Auto-sync: +${result.added} added, ${result.updated} updated, ${result.removed} removed"
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Auto-sync failed"
