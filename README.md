@@ -16,19 +16,23 @@ The project is also a way to practice software engineering: architecture before 
 
 | Item | Status |
 |------|--------|
-| Version | **v0.12.0-dev** |
+| Version | **v0.13.0-dev** |
 | Language | **Kotlin** (JVM 21) |
 | Core (scan, metadata, statistics) | ✅ Completed |
-| CLI (`melody-sync scan` / `health` / `duplicates` / `organize` / `export` / `enrich`) | ✅ Working |
-| Automated tests | 🎉 **133 passing** |
+| CLI (`melody-sync scan` / `health` / `duplicates` / `organize` / `export` / `enrich` / `update` / `doctor`) | ✅ Working |
+| Automated tests | 🎉 **233 passing** |
 | Database (SQLite) | ✅ Working |
 | GUI (Desktop) | ✅ Working (Compose, collapsible sidebar) |
 | Library health check | ✅ Working |
-| Duplicate detection | ✅ Working |
+| Review screen | ✅ Working |
+| Quick Fix HUD | ✅ Working (diagnose + local/YouTube suggestions, explicit Apply) |
+| Duplicate detection | ✅ Working (move to system trash) |
 | File watcher (auto re-sync) | ✅ Working |
 | Folder organization | ✅ Working |
 | Export (JSON/CSV) | ✅ Working |
 | YouTube enrichment | ✅ Working (needs API key) |
+| Opus metadata | ✅ Working (read + write) |
+| Release installer + update channels | ✅ Working |
 | Installation (Fedora) | ✅ Script (`scripts/install.sh`) |
 
 ---
@@ -38,33 +42,41 @@ The project is also a way to practice software engineering: architecture before 
 ### Implemented
 
 - ✅ Audio file discovery (`.mp3`, `.flac`, `.m4a`, `.ogg`, `.opus`, `.wav`, `.aac`)
-- ✅ Metadata extraction (title, artist, album, duration, bitrate, sample rate, channels, codec)
+- ✅ Metadata extraction (title, artist, album, duration, bitrate, sample rate, channels, codec) — including Opus via a built-in Ogg/OpusTags reader/writer
 - ✅ Library statistics (total songs, unique artists/albums, size, duration, formats, avg bitrate)
 - ✅ SQLite database — persistent metadata cache (`~/.config/melody-sync/library.db`)
 - ✅ Library sync — scan a folder and persist/update/remove songs in the database
-- ✅ CLI — `melody-sync scan <directory>`
+- ✅ CLI — `melody-sync scan`, `health`, `duplicates`, `organize`, `export`, `enrich`, `update`, `doctor`
 - ✅ Cross-format detection (uppercase extensions, nested directories)
-- ✅ Desktop GUI — scan, browse, search and filter songs (Compose Desktop, Material 3, dark/light toggle)
+- ✅ Desktop GUI — scan, browse, search, filter and review songs (Compose Desktop, Material 3, dark/light toggle)
 - ✅ Library health check — classify non-audio files, detect missing metadata, zero duration and orphaned entries (CLI + GUI)
-- ✅ Duplicate detection — group songs by normalized title/artist and similar duration (CLI + GUI, report-only)
+- ✅ Review screen — every song with an issue, filterable, opens the Quick Fix panel
+- ✅ Quick Fix HUD — per-song diagnosis with local (file/folder) and optional YouTube suggestions; every edit is user-approved
+- ✅ Duplicate detection — group songs by normalized title/artist and similar duration; move extras to the system trash (CLI + GUI)
 - ✅ File watcher — automatic re-sync when files change (GUI toggle, debounced)
 - ✅ Folder organization — plan `Artist/Album/` structure, apply with `--apply` (report-first, never automatic)
 - ✅ Export — library metadata to JSON or CSV (CLI)
-- ✅ YouTube enrichment — search candidates for songs missing metadata (CLI, report-only)
-- ✅ Navigation Rail (Material 3) — collapsible sidebar
-- ✅ Sortable song list with A–Z letter index
-- ✅ Distinct empty states (no songs / no search results)
-- ✅ Persistent preferences (directory, theme, section, sort, sidebar)
+- ✅ YouTube enrichment — search candidates for songs missing metadata (CLI + GUI, report-only)
+- ✅ Navigation Rail (Material 3) — collapsible sidebar with tooltips when collapsed
+- ✅ Sortable song list with letter grouping (opt-in) and a letter scrubber
+- ✅ Persistent preferences (directory, theme, section, sort, sidebar, grouping, update channel)
+- ✅ Single source of truth for the version + generated runtime version resource
+- ✅ Release installer — download a published jar, verify SHA-256, atomic install with rollback
+- ✅ Update channels — Stable / Beta / Nightly (CLI + GUI Settings)
+- ✅ `melody-sync doctor` — installation and metadata diagnostics
 - ✅ One-command installation on Fedora (`scripts/install.sh`)
+- ✅ GitHub Actions CI + automated release publishing
 - ✅ MIT license
 - ✅ System theme detection (KDE Plasma + GNOME)
-- ✅ 133 automated tests with real audio fixtures
+- ✅ 233 automated tests with real audio fixtures
 
 ### In Progress / Planned
 
+- 🚧 Metadata foundation — explicit per-format providers and typed write errors ([plan](docs/planning/metadata-foundation.md))
 - ⏳ YouTube enrichment: auto-apply metadata to songs (currently report-only)
 - ⏳ Cover art and lyrics fetching from matched videos
 - ⏳ AppImage / RPM packaging for easier distribution (currently install script)
+- ⏳ Unattended automatic updates
 
 ---
 
@@ -72,20 +84,26 @@ The project is also a way to practice software engineering: architecture before 
 
 ```
 melody-sync-core/          Business logic
-├── model/                 Domain objects: Song, LibraryStatistics, HealthReport, FileCategory, DuplicateGroup, OrganizationReport, YouTubeVideoResult
-├── scanner/               Discovery, Metadata, Scanner, Statistics
+├── model/                 Domain objects: Song, SongDiagnostics, TagSuggestion, LibraryStatistics, HealthReport, DuplicateGroup, OrganizationReport, YouTubeVideoResult
+├── scanner/               Discovery, Metadata (JAudioTagger + OpusMetadata), TagWriter, Scanner, Statistics
 ├── database/              SongsTable, MusicDatabase, MusicRepository
-└── service/               LibrarySyncService, LibraryHealthService, DuplicateDetectionService, LibraryWatcher, LibraryOrganizationService, LibraryExportService, YouTubeSearchService, SongEnrichmentService
+├── service/               LibrarySyncService, LibraryHealthService, DuplicateDetectionService, LibraryWatcher, LibraryOrganizationService, LibraryExportService, YouTubeSearchService, SongEnrichmentService, QuickFixService, SongMatcher, FixSuggestionSource, TrashService
+└── platform/              Frozen infrastructure layer (ADR-0009)
+    ├── installation/      InstallationService, ReleaseInstaller, InstallationValidator, ReleaseClient
+    ├── shell/             ShellExecutor, CommandResult
+    └── system/            VersionInfo, VersionComparator
 
 melody-sync-cli/           Command-line interface (clikt)
-└── cli/                   ScanCommand, VersionCommand
+└── cli/                   Scan, Health, Duplicates, Organize, Export, Enrich, Version, Update, Doctor commands
 
 melody-sync-desktop/       Desktop GUI (Compose Desktop)
-├── desktop/               Main.kt (window, theme state)
-├── theme/                 AppTheme (light/dark, system detection)
-├── state/                 AppState (state holder)
+├── desktop/               Main.kt (window, theme, window-geometry persistence)
+├── theme/                 AppTheme, ColorRoles, Colors, Typography, Shapes, Dimensions, Tokens
+├── state/                 AppState (state holder + prefs)
 └── ui/                    LibraryScreen + components
-    └── components/        TopBar, DirectoryBar, SearchBar, SongList
+    └── components/        Sidebar, TopBar, DirectoryBar, LibraryToolbar, SongList, LibraryHeader,
+                           StatisticsSection, HealthSection, ReviewSection, DuplicatesSection,
+                           OrganizeSection, SettingsSection, AboutSection, QuickFixPanel, SectionCard, StatusPill
 ```
 
 Data flow:
@@ -97,7 +115,7 @@ Directory
  discover()          → list of audio files
     │
     ▼
- readMetadata()      → enriched Song objects
+ readMetadata()      → enriched Song objects (per-format provider)
     │
     ▼
  scan()              → orchestration
@@ -124,7 +142,7 @@ Directory
 | CLI framework | **clikt** 5.1.0 |
 | GUI | **Compose Desktop** 1.11.1 |
 | Database | **SQLite** via **Exposed** 0.61.0 |
-| Testing | **JUnit 5** (133 tests, real audio fixtures) |
+| Testing | **JUnit 5** (233 tests, real audio fixtures) |
 
 ---
 
@@ -167,6 +185,8 @@ cd Melody-Sync
 ./gradlew :melody-sync-cli:run --args="export --format json /path/to/music"
 ./gradlew :melody-sync-cli:run --args="export --format csv -o library.csv /path/to/music"
 ./gradlew :melody-sync-cli:run --args="enrich --only-missing /path/to/music"  # needs YOUTUBE_API_KEY
+./gradlew :melody-sync-cli:run --args="update"                          # rebuild source or download release
+./gradlew :melody-sync-cli:run --args="doctor"                          # installation diagnostics
 
 # Run the Desktop GUI
 ./gradlew :melody-sync-desktop:run
@@ -187,19 +207,19 @@ cd Melody-Sync
 
 ## Testing
 
-**133 tests, all passing:**
+**233 tests, all passing:**
 
 | Module | Tests | Area |
 |--------|-------|------|
-| `core` | 107 | Models, Discovery, Metadata, Scanner, Statistics, Database, Sync, Health, Duplicates, Watcher, Organization, Export, Enrichment |
-| `cli` | 16 | Version, Scan, Health, Duplicates, Organize, Export, Enrich commands |
-| `desktop` | 10 | Theme, preferences, color schemes |
+| `core` | 201 | Models, Discovery, Metadata, Opus, TagWriter, Scanner, Statistics, Database, Sync, Health, Duplicates, Watcher, Organization, Export, Enrichment, Quick Fix, Suggestion sources, Platform (installation/shell/system) |
+| `cli` | 17 | Version, Scan, Health, Duplicates, Organize, Export, Enrich, Update commands |
+| `desktop` | 15 | Theme, preferences, state |
 
 ```bash
 ./gradlew test
 ```
 
-Test fixtures include real `.mp3` files with and without metadata tags.
+Test fixtures include real audio files (`.mp3` with and without tags) plus generated Opus pages.
 
 ---
 
@@ -210,6 +230,9 @@ Project documentation lives in the `docs/` directory. Key documents:
 | Document | Purpose |
 |----------|---------|
 | `INDEX.md` | Documentation entry point |
+| `ROADMAP.md` | Current project state, priorities and deferred work |
+| `planning/metadata-foundation.md` | Foundation plan for reliable metadata read/write |
+| `project/History.md` | Major milestones and architectural evolution |
 | `architecture/ADR/ADR-0001` | Project Vision |
 | `architecture/ADR/ADR-0002` | Programming Language (Kotlin) |
 | `architecture/ADR/ADR-0003` | Desktop GUI (Compose Desktop) |
@@ -217,6 +240,7 @@ Project documentation lives in the `docs/` directory. Key documents:
 | `architecture/ADR/ADR-0005` | Audio Metadata (JAudioTagger) |
 | `architecture/ADR/ADR-0007` | CLI Framework (clikt) |
 | `architecture/ADR/ADR-0008` | Build System (Gradle Kotlin DSL) |
+| `architecture/ADR/ADR-0009` | Platform Layer (installation / shell / system) |
 | `architecture/music-library-domain.md` | Domain model specification |
 
 ---
@@ -281,7 +305,7 @@ Project documentation lives in the `docs/` directory. Key documents:
 ### Milestone 11 — Sidebar UI & Preferences ✅
 - [x] Sidebar navigation (Library, Statistics, Health, Duplicates, Organize)
 - [x] Sortable song list (clickable column headers with ▲/▼)
-- [x] A–Z letter index with scroll-to-letter
+- [x] Letter scrubber showing the current letter (replaced the A–Z index)
 - [x] Persistent preferences (`~/.config/melody-sync/settings.properties`)
 
 ### Milestone 12 — Installation ✅
@@ -293,6 +317,39 @@ Project documentation lives in the `docs/` directory. Key documents:
 ### Milestone 13 — Enrichment ⏳
 - [ ] YouTube enrichment: auto-apply metadata to songs (currently report-only)
 - [ ] Cover art and lyrics fetching from matched videos
+
+### Milestone 14 — UX Foundation ✅
+- [x] Hi-Fi Editorial design system (colors, typography, shapes, tokens)
+- [x] Semantic color roles (ColorRoles) — accent for actions, green/amber/blue for status
+- [x] StatusPill, StatCard with icons, EmptyState with success variant, ProgressCard/ResultCard
+- [x] Sidebar tooltips when collapsed; Settings grouped into cards
+- [x] Letter grouping (opt-in) with letter scrubber
+
+### Milestone 15 — Quick Fix HUD ✅
+- [x] `TagWriter` (JAudioTagger + Opus) with re-read after write
+- [x] `SongDiagnostics`, `SongMatcher`, `QuickFixService`
+- [x] Pluggable suggestion sources (Local + YouTube)
+- [x] Library split-pane Quick Fix panel with explicit Apply
+- [x] Review screen — all songs with issues, filterable, opens Quick Fix
+- [x] Opus metadata read/write
+
+### Milestone 16 — Platform & Updates ✅
+- [x] Platform layer (installation / shell / system) frozen under ADR-0009
+- [x] Single version source + runtime version resource
+- [x] Release installer (download, SHA-256 verify, atomic install, rollback)
+- [x] Update channels Stable / Beta / Nightly (CLI + GUI)
+- [x] `melody-sync doctor`
+- [ ] Unattended automatic updates (deferred)
+
+### Milestone 17 — Metadata Foundation 🚧
+- [ ] `melody-sync metadata --write-test` diagnostic (Step 0)
+- [ ] Per-format `MetadataProvider` abstraction (Phase A)
+- [ ] Typed write errors (Phase B)
+- [ ] Doctor metadata section + integration tests (Phase C)
+- [ ] Database connection discipline (Phase D)
+- [ ] Format fixtures + capability matrix docs (Phase E)
+
+See [docs/planning/metadata-foundation.md](docs/planning/metadata-foundation.md).
 
 ---
 
