@@ -332,17 +332,19 @@ class AppState(
                 }
                 if (!result.success) {
                     showMessage("Could not write tags to ${song.filename}: ${result.error ?: "unknown error"}")
-                } else {
-                    val updated = result.updated!!
-                    withContext(Dispatchers.Default) {
-                        MusicDatabase.connect()
-                        MusicRepository.updateByPath(updated)
-                    }
-                    songs = songs.map { if (it.path == updated.path) updated else it }
-                    statistics = calculateStatistics(songs)
-                    analytics = computeAnalytics(songs)
-                    showMessage("Tags updated · ${song.filename}")
+                    return@launch
                 }
+                val updated = result.updated!!
+                withContext(Dispatchers.Default) {
+                    MusicDatabase.connect()
+                    MusicRepository.updateByPath(updated)
+                }
+                songs = songs.map { if (it.path == updated.path) updated else it }
+                statistics = calculateStatistics(songs)
+                analytics = computeAnalytics(songs)
+                showMessage("Tags updated · ${song.filename}")
+            } catch (e: Exception) {
+                showMessage("Apply failed: ${e.message ?: e::class.simpleName}")
             } finally {
                 quickFixApplying = false
             }

@@ -17,6 +17,14 @@ object TagWriter {
     fun writeTags(song: Song, suggestion: TagSuggestion): Song {
         if (!suggestion.hasChanges) return song
 
+        if (song.extension == "opus") {
+            val written = OpusMetadata.writeTags(song.path, suggestion)
+            if (!written) {
+                throw java.io.IOException("Unsupported Opus layout — could not write tags")
+            }
+            return readMetadata(song)
+        }
+
         val audio = AudioFileIO.read(song.path.toFile())
         val tag = audio.getTagOrCreateAndSetDefault()
 
