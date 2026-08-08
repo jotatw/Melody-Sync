@@ -1,0 +1,34 @@
+package com.melodysync.metadata
+
+import com.melodysync.model.Song
+import com.melodysync.model.TagSuggestion
+import java.io.IOException
+
+/**
+ * Resolves the [MetadataProvider] for a file extension. Higher-level code
+ * asks this registry instead of branching on the extension.
+ */
+object MetadataFormatRegistry {
+
+    private val providers: List<MetadataProvider> = listOf(JAudioTaggerProvider, OpusProvider)
+
+    private val byExtension: Map<String, MetadataProvider> =
+        providers.flatMap { provider ->
+            provider.formats.map { format -> format to provider }
+        }.toMap()
+
+    fun providerFor(extension: String): MetadataProvider? =
+        byExtension[extension.lowercase()]
+
+    fun read(song: Song): Song =
+        providerFor(song.extension)?.read(song) ?: song
+
+    fun write(song: Song, suggestion: TagSuggestion): Song {
+        val provider = providerFor(song.extension)
+            ?: throw IOException("Unsupported format for tag writing: .${song.extension}")
+        if (!provider.supportsWrite) {
+            throw IOException("Tag writing not supported for .${song.extension}")
+        }
+        return provider.write(song, suggestion)
+    }
+}

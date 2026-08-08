@@ -1,5 +1,8 @@
 package com.melodysync.scanner
 
+import com.melodysync.metadata.MetadataFormatRegistry
+import com.melodysync.metadata.MetadataProvider
+import com.melodysync.metadata.OpusProvider
 import com.melodysync.model.Song
 import com.melodysync.model.TagSuggestion
 import org.jaudiotagger.audio.AudioFileIO
@@ -37,23 +40,21 @@ data class MetadataDiagnostic(
  */
 object MetadataDiagnosticService {
 
-    private val jAudioTaggerFormats = setOf("mp3", "flac", "m4a", "wav", "ogg", "aac")
     private val supportedFields = listOf("title", "artist", "album")
 
     fun inspect(file: Path, runWriteTest: Boolean): MetadataDiagnostic {
         val format = file.fileName.toString().substringAfterLast('.', "").lowercase()
-        val provider = if (format == "opus") "OpusProvider" else "JAudioTagger"
-        val readSupported = provider == "OpusProvider" || format in jAudioTaggerFormats
+        val provider = MetadataFormatRegistry.providerFor(format)
 
-        val read = if (readSupported) attemptRead(file, provider) else null
-        val writeSupported = readSupported
-        val writeTest = if (runWriteTest && readSupported) runWriteTest(file) else null
+        val read = if (provider != null) attemptRead(file, provider) else null
+        val writeSupported = provider?.supportsWrite ?: false
+        val writeTest = if (runWriteTest && writeSupported) runWriteTest(file) else null
 
         return MetadataDiagnostic(
             file = file,
             format = format,
-            provider = provider,
-            readSupported = readSupported,
+            provider = provider?.id ?: "Unknown",
+            readSupported = provider != null,
             readOk = read?.first ?: false,
             readReason = read?.second,
             writeSupported = writeSupported,
@@ -62,9 +63,9 @@ object MetadataDiagnosticService {
         )
     }
 
-    private fun attemptRead(file: Path, provider: String): Pair<Boolean, String?> =
+    private fun attemptRead(file: Path, provider: MetadataProvider): Pair<Boolean, String?> =
         when (provider) {
-            "OpusProvider" -> {
+            OpusProvider -> {
                 if (OpusMetadata.read(file) != null) {
                     true to null
                 } else {

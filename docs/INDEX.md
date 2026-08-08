@@ -80,6 +80,7 @@ Historical project evolution is kept separately from planning so completed miles
 | Document | Purpose |
 |----------|---------|
 | [History](project/History.md) | Major milestones, architectural evolution and current state |
+| [Error Log](project/ErrorLog.md) | Bugs found during development and how they were fixed |
 
 ---
 
@@ -140,9 +141,10 @@ docs/
 ├── planning/                      # Detailed plans for large features
 │   └── metadata-foundation.md
 │
-├── project/                       # Project notes and history
+├── project/                       # Project notes, history and error log
 │   ├── DocumentationNotes.md
-│   └── History.md
+│   ├── History.md
+│   └── ErrorLog.md
 │
 ├── standards/
 │   ├── DesignSystem.md            # Hi-Fi Editorial visual identity
