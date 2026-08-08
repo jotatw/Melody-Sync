@@ -209,7 +209,13 @@ class AppState(
         private set
 
     // Quick-Fix HUD (see docs/research/quick-fix-hud.md)
-    private val youtubeApiKey = System.getenv("YOUTUBE_API_KEY") ?: ""
+    // The key is read from YOUTUBE_API_KEY, falling back to
+    // ~/.config/melody-sync/youtube-api-key (trimmed) so the installed
+    // launcher can use it without shell env setup.
+    private val youtubeApiKey: String =
+        (System.getenv("YOUTUBE_API_KEY") ?: "")
+            .ifBlank { readYoutubeKeyFile() }
+            .trim()
 
     var quickFixYoutubeSuggestion by mutableStateOf<EnrichmentSuggestion?>(null)
         private set
@@ -772,5 +778,15 @@ class AppState(
             } catch (_: Exception) {
                 InstallationChannel.STABLE
             }
+    }
+}
+
+private fun readYoutubeKeyFile(): String {
+    val home = System.getProperty("user.home") ?: "."
+    val file = java.nio.file.Path.of(home, ".config", "melody-sync", "youtube-api-key")
+    return try {
+        if (java.nio.file.Files.exists(file)) java.nio.file.Files.readString(file).trim() else ""
+    } catch (_: Exception) {
+        ""
     }
 }
