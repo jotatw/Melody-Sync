@@ -37,7 +37,7 @@ The project later migrated from the Python prototype to Kotlin, establishing the
 
 The core evolved into a reusable library scanner and model layer capable of discovering audio files, reading metadata and persisting the library in SQLite.
 
-The project adopted JAudioTagger for audio metadata, with defensive handling for missing and malformed metadata. This decision is recorded in ADR-0005. fileciteturn54file0L1-L2
+The project adopted JAudioTagger for audio metadata, with defensive handling for missing and malformed metadata. This decision is recorded in ADR-0005.
 
 ### CLI
 
@@ -126,7 +126,7 @@ The desktop Quick Fix HUD was then integrated into Library as a split pane. Ever
 
 Opus metadata support was subsequently added because JAudioTagger does not provide the required Opus behavior.
 
-The Review screen was added after Health and Quick Fix, creating a direct Health → Review → Quick Fix flow for songs with issues. The Review screen computes per-song diagnostics, provides filters and opens the Quick Fix panel for the selected song. fileciteturn47file0L3-L7
+The Review screen was added after Health and Quick Fix, creating a direct Health → Review → Quick Fix flow for songs with issues. The Review screen computes per-song diagnostics, provides filters and opens the Quick Fix panel for the selected song.
 
 ### Current Milestone — v0.13.0-dev
 

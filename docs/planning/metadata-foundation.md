@@ -39,7 +39,7 @@ Quick Fix already provides:
 - Review screen integration.
 - Opus metadata reading and writing.
 
-`TagWriter` currently routes Opus through a dedicated writer and other formats through JAudioTagger. The writer re-reads the file after a successful write. This is useful, but format capability and failure semantics still need to be made explicit. fileciteturn45file0L1-L6
+`TagWriter` currently routes Opus through a dedicated writer and other formats through JAudioTagger. The writer re-reads the file after a successful write. This is useful, but format capability and failure semantics still need to be made explicit.
 
 The project also has a real-world requirement: an Apply operation must never silently report success when the original file could not be modified.
 
