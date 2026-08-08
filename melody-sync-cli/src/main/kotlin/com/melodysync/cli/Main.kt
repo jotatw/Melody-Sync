@@ -32,5 +32,6 @@ fun main(args: Array<String>) =
             VersionCommand(),
             UpdateCommand(),
             DoctorCommand(),
+            MetadataCommand(),
         )
         .main(args)
