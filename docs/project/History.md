@@ -128,6 +128,36 @@ Opus metadata support was subsequently added because JAudioTagger does not provi
 
 The Review screen was added after Health and Quick Fix, creating a direct Health → Review → Quick Fix flow for songs with issues. The Review screen computes per-song diagnostics, provides filters and opens the Quick Fix panel for the selected song.
 
+### Documentation Consolidation
+
+The documentation was consolidated around a central roadmap, detailed metadata planning, project history and an official development methodology.
+
+The development methodology formalized the cycle:
+
+```text
+Need
+  ↓
+Planning
+  ↓
+Architecture
+  ↓
+Review
+  ↓
+Freeze
+  ↓
+Implementation
+  ↓
+Validation
+  ↓
+Documentation
+  ↓
+Approval
+  ↓
+Maintenance
+```
+
+The methodology is now an accepted handbook rather than a backlog item.
+
 ### Current Milestone — v0.13.0-dev
 
 The current project state is focused on consolidation rather than broad feature expansion.
@@ -142,7 +172,10 @@ Current reported project status:
 - Installation and release update flow: implemented
 - UX-1: completed
 - UX-2 Quick Fix: completed
+- Review screen: completed
+- Development methodology: accepted
 - Metadata foundation: next major reliability backlog
+- Unattended automatic updates: deferred
 
 ---
 
@@ -177,6 +210,9 @@ UX Foundation
        │
        ▼
 Quick Fix + Review
+       │
+       ▼
+Documentation Consolidation
        │
        ▼
 Metadata Foundation
@@ -218,9 +254,9 @@ Metadata Foundation
 | Update channels | ✅ Completed |
 | UX-2 Quick Fix | ✅ Completed |
 | Review screen | ✅ Completed |
+| Development methodology | ✅ Accepted |
 | Metadata foundation | 🚧 Planned |
 | Unattended automatic updates | ⏳ Deferred |
-| Development methodology | ⏳ Deferred |
 
 ---
 
@@ -248,6 +284,7 @@ The immediate planning reference is [Metadata Foundation](../planning/metadata-f
 
 - [Roadmap](../ROADMAP.md)
 - [Documentation Index](../INDEX.md)
+- [Development Methodology](../standards/handbook/DevelopmentMethodology.md)
 - [ADR-0009 — Platform Layer](../architecture/ADR/ADR-0009-PlatformLayer.md)
 - [ADR-0005 — Audio Metadata](../architecture/ADR/ADR-0005-Mutagen.md)
 - [Metadata Foundation](../planning/metadata-foundation.md)
@@ -261,6 +298,7 @@ The immediate planning reference is [Metadata Foundation](../planning/metadata-f
 | Version | Date | Description |
 |---------|------|-------------|
 | 1.0 | 2026-08-08 | Initial historical record consolidated from project milestones |
+| 1.1 | 2026-08-08 | Recorded documentation consolidation and accepted development methodology |
 
 ---
 
