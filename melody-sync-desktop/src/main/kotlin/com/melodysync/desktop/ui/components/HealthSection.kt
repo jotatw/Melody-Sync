@@ -191,7 +191,7 @@ private fun IssueBreakdown(state: AppState, report: HealthReport, success: Color
                 IssueSection(
                     title = "Without metadata",
                     total = report.songsWithoutMetadata.size,
-                    shown = report.songsWithoutMetadata.take(8).map { it.title ?: it.filename },
+                    shown = report.songsWithoutMetadata.map { it.title ?: it.filename },
                     paths = report.songsWithoutMetadata.map { it.path.toString() },
                 ),
             )
@@ -201,7 +201,7 @@ private fun IssueBreakdown(state: AppState, report: HealthReport, success: Color
                 IssueSection(
                     title = "Zero duration",
                     total = report.songsWithZeroDuration.size,
-                    shown = report.songsWithZeroDuration.take(8).map { it.title ?: it.filename },
+                    shown = report.songsWithZeroDuration.map { it.title ?: it.filename },
                     paths = report.songsWithZeroDuration.map { it.path.toString() },
                 ),
             )
@@ -211,7 +211,7 @@ private fun IssueBreakdown(state: AppState, report: HealthReport, success: Color
                 IssueSection(
                     title = "Orphaned entries",
                     total = report.orphanedEntries.size,
-                    shown = report.orphanedEntries.take(8),
+                    shown = report.orphanedEntries,
                     paths = report.orphanedEntries,
                 ),
             )
@@ -242,25 +242,28 @@ private fun IssueBreakdown(state: AppState, report: HealthReport, success: Color
                         modifier = Modifier.weight(1f),
                     )
                     TextButton(onClick = { state.reviewIssue(section.paths) }) {
-                        Text("Review songs")
+                        Text("Review all")
                     }
                 }
-                section.shown.forEach { item ->
-                    Text(
-                        item,
-                        style = TechnicalStyleSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        modifier = Modifier.padding(top = Spacing.xs),
-                    )
-                }
-                if (section.total > section.shown.size) {
-                    Text(
-                        "… and ${section.total - section.shown.size} more",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = Spacing.xs),
-                    )
+                section.shown.forEachIndexed { index, item ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(top = Spacing.xs),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            item,
+                            style = TechnicalStyleSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f),
+                        )
+                        TextButton(
+                            onClick = { state.reviewIssue(listOf(section.paths[index])) },
+                        ) {
+                            Text("Review")
+                        }
+                    }
                 }
             }
         }

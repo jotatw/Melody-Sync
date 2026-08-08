@@ -321,12 +321,13 @@ class AppState(
         quickFixApplying = true
         uiScope.launch {
             try {
-                val updated = withContext(Dispatchers.Default) {
+                val result = withContext(Dispatchers.Default) {
                     QuickFixService.apply(song, suggestion)
                 }
-                if (updated == null) {
-                    showMessage("Could not write tags to ${song.filename}")
+                if (!result.success) {
+                    showMessage("Could not write tags to ${song.filename}: ${result.error ?: "unknown error"}")
                 } else {
+                    val updated = result.updated!!
                     withContext(Dispatchers.Default) {
                         MusicDatabase.connect()
                         MusicRepository.updateByPath(updated)

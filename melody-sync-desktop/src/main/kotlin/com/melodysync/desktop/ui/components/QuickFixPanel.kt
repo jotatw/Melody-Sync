@@ -188,12 +188,19 @@ private fun YoutubeSuggestionSection(state: AppState, song: Song) {
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(top = Spacing.xs),
             )
-            Button(
-                onClick = { state.applyQuickFix(song, youtubeTagSuggestion(top)) },
-                enabled = !state.quickFixApplying,
-                modifier = Modifier.padding(top = Spacing.sm),
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = Spacing.sm),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
             ) {
-                Text(if (state.quickFixApplying) "Applying…" else "Apply from YouTube")
+                Button(
+                    onClick = { state.applyQuickFix(song, youtubeTagSuggestion(top)) },
+                    enabled = !state.quickFixApplying,
+                ) {
+                    Text(if (state.quickFixApplying) "Applying…" else "Apply from YouTube")
+                }
+                OutlinedButton(onClick = { openInBrowser(top.url) }) {
+                    Text("Open on YouTube")
+                }
             }
         }
         current != null -> {
@@ -250,6 +257,16 @@ private fun PreviewRow(label: String, value: String) {
 private fun flagLabel(flag: QualityFlag): String = when (flag) {
     QualityFlag.LOW_BITRATE -> "Low bitrate"
     QualityFlag.ZERO_DURATION -> "Zero duration"
+}
+
+private fun openInBrowser(url: String) {
+    try {
+        if (java.awt.Desktop.isDesktopSupported()) {
+            java.awt.Desktop.getDesktop().browse(java.net.URI(url))
+        }
+    } catch (_: Exception) {
+        // no browser available; the URL is still shown in the panel
+    }
 }
 
 private fun youtubeTagSuggestion(video: YouTubeVideoResult): TagSuggestion {

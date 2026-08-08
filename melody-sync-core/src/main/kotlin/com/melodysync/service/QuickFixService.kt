@@ -8,6 +8,19 @@ import com.melodysync.model.TagSuggestion
 import com.melodysync.scanner.TagWriter
 
 /**
+ * Outcome of a tag write. On failure [error] carries the underlying reason
+ * (e.g. JAudioTagger cannot write this specific file format), so the UI can
+ * tell the user why a fix could not be applied.
+ */
+data class TagApplyResult(
+    val updated: Song? = null,
+    val error: String? = null,
+) {
+    val success: Boolean
+        get() = updated != null
+}
+
+/**
  * Assists curation of a single song: diagnoses problems, suggests local and
  * YouTube fixes, and applies a chosen [TagSuggestion] to the file.
  *
@@ -49,10 +62,10 @@ object QuickFixService {
     fun youtubeSuggestion(song: Song, apiKey: String): EnrichmentSuggestion =
         SongEnrichmentService.findCandidates(song, apiKey)
 
-    fun apply(song: Song, suggestion: TagSuggestion): Song? =
+    fun apply(song: Song, suggestion: TagSuggestion): TagApplyResult =
         try {
-            TagWriter.writeTags(song, suggestion)
-        } catch (_: Exception) {
-            null
+            TagApplyResult(updated = TagWriter.writeTags(song, suggestion))
+        } catch (e: Exception) {
+            TagApplyResult(error = e.message ?: "Could not write tags")
         }
 }

@@ -81,11 +81,22 @@ class QuickFixServiceTest {
         Files.copy(Path.of(javaClass.getResource("/fixtures/audio/no_tags.mp3")!!.toURI()), path)
         val s = song(path, bitrate = null, duration = null)
 
-        val updated = QuickFixService.apply(s, TagSuggestion(title = "Title", artist = "Artist", album = "Album"))
+        val result = QuickFixService.apply(s, TagSuggestion(title = "Title", artist = "Artist", album = "Album"))
 
-        assertTrue(updated != null)
-        assertEquals("Title", updated!!.title)
-        assertEquals("Artist", updated.artist)
-        assertEquals("Album", updated.album)
+        assertTrue(result.success)
+        assertEquals("Title", result.updated!!.title)
+        assertEquals("Artist", result.updated.artist)
+        assertEquals("Album", result.updated.album)
+    }
+
+    @Test
+    fun `apply reports the error when the file cannot be written`() {
+        val path = tmp.resolve("fake.mp3")
+        Files.writeString(path, "this is not an audio file")
+
+        val result = QuickFixService.apply(song(path), TagSuggestion(title = "Title"))
+
+        assertFalse(result.success)
+        assertTrue(result.error.isNullOrBlank().not())
     }
 }
