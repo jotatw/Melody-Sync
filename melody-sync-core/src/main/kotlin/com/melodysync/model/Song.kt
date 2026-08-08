@@ -27,7 +27,7 @@ data class Song(
     val isLossless: Boolean
         get() = extension in setOf("flac", "wav", "aiff")
     
-    val directory: Path
+    val directory: Path?
         get() = path.parent
 
     val sizeMb: Double
