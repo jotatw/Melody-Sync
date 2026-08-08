@@ -250,6 +250,24 @@ class AppState(
         selectedSongPath = path
     }
 
+    var pendingScrollPath by mutableStateOf<String?>(null)
+        private set
+
+    fun clearPendingScroll() {
+        pendingScrollPath = null
+    }
+
+    /**
+     * Health → Library: jump to the Library section and highlight (and
+     * scroll to) the first affected song. Connects diagnosis with action.
+     */
+    fun reviewIssue(paths: List<String>) {
+        val target = paths.firstOrNull() ?: return
+        setSection(Section.LIBRARY)
+        selectSong(target)
+        pendingScrollPath = target
+    }
+
     fun updateArtistFilter(value: String) {
         artistFilter = value
     }

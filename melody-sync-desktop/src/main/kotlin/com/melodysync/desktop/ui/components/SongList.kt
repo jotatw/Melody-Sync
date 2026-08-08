@@ -106,6 +106,19 @@ fun SongList(state: AppState) {
         }
     }
 
+    LaunchedEffect(state.pendingScrollPath) {
+        val target = state.pendingScrollPath
+        if (target != null) {
+            val index = rows.indexOfFirst {
+                it is ListEntry.SongItem && it.song.path.toString() == target
+            }
+            if (index >= 0) {
+                listState.scrollToItem(index)
+            }
+            state.clearPendingScroll()
+        }
+    }
+
     val currentLetter by remember(rows) {
         derivedStateOf {
             val index = listState.firstVisibleItemIndex

@@ -4,6 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Album
+import androidx.compose.material.icons.filled.MusicNote
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,11 +31,11 @@ fun LibraryHeader(state: AppState) {
         modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.sm),
         horizontalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
-        StatCard("Songs", stats.totalSongs.toString(), modifier = Modifier.weight(1f))
-        StatCard("Artists", stats.uniqueArtists.toString(), modifier = Modifier.weight(1f))
-        StatCard("Albums", stats.uniqueAlbums.toString(), modifier = Modifier.weight(1f))
-        StatCard("Hours", "%.1f".format(stats.totalDurationHours), modifier = Modifier.weight(1f))
-        StatCard("Size", "%.2f GB".format(stats.totalSizeGb), modifier = Modifier.weight(1f))
+        StatCard("Songs", stats.totalSongs.toString(), modifier = Modifier.weight(1f), icon = Icons.Filled.MusicNote)
+        StatCard("Artists", stats.uniqueArtists.toString(), modifier = Modifier.weight(1f), icon = Icons.Filled.Person)
+        StatCard("Albums", stats.uniqueAlbums.toString(), modifier = Modifier.weight(1f), icon = Icons.Filled.Album)
+        StatCard("Hours", "%.1f".format(stats.totalDurationHours), modifier = Modifier.weight(1f), icon = Icons.Filled.Schedule)
+        StatCard("Size", "%.2f GB".format(stats.totalSizeGb), modifier = Modifier.weight(1f), icon = Icons.Filled.Storage)
     }
 
     Text(

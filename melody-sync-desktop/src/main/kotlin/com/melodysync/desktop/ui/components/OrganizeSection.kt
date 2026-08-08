@@ -11,10 +11,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -170,6 +174,7 @@ private fun MoveHeaderRow() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MoveRow(move: PlannedMove) {
     Row(
@@ -183,35 +188,30 @@ private fun MoveRow(move: PlannedMove) {
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f),
         )
-        Text(
-            move.to.toString(),
-            style = TechnicalStyleSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1.5f),
-        )
-        Text(
-            move.reason,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f),
-        )
-        Surface(
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
-            shape = MaterialTheme.shapes.small,
-            modifier = Modifier.width(64.dp),
+        TooltipBox(
+            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
+            tooltip = { PlainTooltip { Text(move.to.toString()) } },
+            state = rememberTooltipState(),
         ) {
             Text(
-                "MOVE",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.primary,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                modifier = Modifier.padding(vertical = Spacing.xs),
+                move.to.toString(),
+                style = TechnicalStyleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1.5f),
             )
         }
+        StatusPill(
+            text = move.reason,
+            tone = if (move.reason.contains("already")) PillTone.SUCCESS else PillTone.WARNING,
+            modifier = Modifier.weight(1f),
+        )
+        StatusPill(
+            text = "MOVE",
+            tone = PillTone.PRIMARY,
+            modifier = Modifier.width(64.dp),
+        )
     }
 }
 

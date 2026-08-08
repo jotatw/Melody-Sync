@@ -16,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,7 +34,12 @@ import com.melodysync.desktop.theme.Spacing
 import com.melodysync.desktop.theme.TechnicalStyleSmall
 import com.melodysync.model.HealthReport
 
-private data class IssueSection(val title: String, val total: Int, val shown: List<String>)
+private data class IssueSection(
+    val title: String,
+    val total: Int,
+    val shown: List<String>,
+    val paths: List<String>,
+)
 
 @Composable
 fun HealthSection(state: AppState) {
@@ -56,7 +62,7 @@ fun HealthSection(state: AppState) {
             HealthStatus.DONE -> {
                 state.healthReport?.let { report ->
                     HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.lg))
-                    HealthReportView(report)
+                    HealthReportView(state, report)
                 }
             }
             HealthStatus.ERROR -> {
@@ -75,7 +81,7 @@ fun HealthSection(state: AppState) {
 }
 
 @Composable
-private fun HealthReportView(report: HealthReport) {
+private fun HealthReportView(state: AppState, report: HealthReport) {
     val issues = report.songsWithMetadataIssues
     val score =
         (100.0 * (1.0 - issues.toDouble() / report.audioFiles.coerceAtLeast(1)))
@@ -133,7 +139,7 @@ private fun HealthReportView(report: HealthReport) {
                 .verticalScroll(rememberScrollState())
                 .padding(top = Spacing.lg),
         ) {
-            IssueBreakdown(report, success)
+            IssueBreakdown(state, report, success)
             Recommendations(report)
         }
     }
@@ -178,7 +184,7 @@ private fun HealthScoreRing(score: Int, color: Color, modifier: Modifier = Modif
 }
 
 @Composable
-private fun IssueBreakdown(report: HealthReport, success: Color) {
+private fun IssueBreakdown(state: AppState, report: HealthReport, success: Color) {
     val sections = buildList {
         if (report.songsWithoutMetadata.isNotEmpty()) {
             add(
@@ -186,6 +192,7 @@ private fun IssueBreakdown(report: HealthReport, success: Color) {
                     title = "Without metadata",
                     total = report.songsWithoutMetadata.size,
                     shown = report.songsWithoutMetadata.take(8).map { it.title ?: it.filename },
+                    paths = report.songsWithoutMetadata.map { it.path.toString() },
                 ),
             )
         }
@@ -195,6 +202,7 @@ private fun IssueBreakdown(report: HealthReport, success: Color) {
                     title = "Zero duration",
                     total = report.songsWithZeroDuration.size,
                     shown = report.songsWithZeroDuration.take(8).map { it.title ?: it.filename },
+                    paths = report.songsWithZeroDuration.map { it.path.toString() },
                 ),
             )
         }
@@ -204,6 +212,7 @@ private fun IssueBreakdown(report: HealthReport, success: Color) {
                     title = "Orphaned entries",
                     total = report.orphanedEntries.size,
                     shown = report.orphanedEntries.take(8),
+                    paths = report.orphanedEntries,
                 ),
             )
         }
@@ -222,11 +231,20 @@ private fun IssueBreakdown(report: HealthReport, success: Color) {
     sections.forEach { section ->
         Card(modifier = Modifier.fillMaxWidth().padding(top = Spacing.md)) {
             Column(modifier = Modifier.padding(Spacing.md).fillMaxWidth()) {
-                Text(
-                    "${section.title} (${section.total})",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.error,
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        "${section.title} (${section.total})",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.weight(1f),
+                    )
+                    TextButton(onClick = { state.reviewIssue(section.paths) }) {
+                        Text("Review songs")
+                    }
+                }
                 section.shown.forEach { item ->
                     Text(
                         item,

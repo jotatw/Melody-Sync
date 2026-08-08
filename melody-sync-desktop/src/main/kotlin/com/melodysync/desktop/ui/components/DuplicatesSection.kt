@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -16,7 +18,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -26,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
@@ -58,9 +58,11 @@ fun DuplicatesSection(state: AppState) {
             DuplicatesStatus.DONE -> {
                 HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.lg))
                 if (state.duplicateGroups.isEmpty()) {
-                    Text(
-                        "No duplicates found.",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    EmptyState(
+                        icon = Icons.Filled.CheckCircle,
+                        title = "No duplicates found",
+                        message = "Your library has no matching duplicate groups.",
+                        success = true,
                     )
                 } else {
                     DuplicatesView(state)
@@ -246,27 +248,11 @@ private fun CandidateRow(
                 onCheckedChange = null,
             )
         }
-        Surface(
-            color = if (isPrimary) {
-                MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
-            } else {
-                MaterialTheme.colorScheme.surfaceVariant
-            },
-            shape = MaterialTheme.shapes.small,
+        StatusPill(
+            text = if (isPrimary) "KEEP" else "DUP",
+            tone = if (isPrimary) PillTone.SUCCESS else PillTone.DANGER,
             modifier = Modifier.width(72.dp),
-        ) {
-            Text(
-                if (isPrimary) "KEEP" else "DUP",
-                style = MaterialTheme.typography.labelSmall,
-                color = if (isPrimary) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.error
-                },
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(vertical = Spacing.xs),
-            )
-        }
+        )
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 song.filename,

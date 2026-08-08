@@ -2,12 +2,15 @@ package com.melodysync.desktop.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -35,65 +38,65 @@ fun SettingsSection(state: AppState) {
             subtitle = "Application preferences",
         )
 
-        Text(
-            "Music directory",
-            style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.padding(top = Spacing.md),
-        )
-        Text(
-            "Set the music directory in the Library view (the path field above the Scan button).",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = Spacing.xs),
-        )
-        Text(
-            "Your library loads automatically from the database on startup — no rescan needed.",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = Spacing.xs),
-        )
+        SettingsCard("Application") {
+            Text("Music directory", style = MaterialTheme.typography.titleSmall)
+            note("Set the music directory in the Library view (the path field above the Scan button).")
+            note("Your library loads automatically from the database on startup — no rescan needed.")
 
-        Text(
-            "Theme",
-            style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.padding(top = Spacing.lg),
-        )
-        Text(
-            "Use the sun/moon icon in the top bar to switch between light and dark.",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = Spacing.xs),
-        )
+            Text(
+                "Theme",
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(top = Spacing.md),
+            )
+            note("Use the sun/moon icon in the top bar to switch between light and dark.")
 
-        Text(
-            "Library display",
-            style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.padding(top = Spacing.lg),
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(top = Spacing.sm),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text("Group songs by first letter", style = MaterialTheme.typography.bodyMedium)
-                Text(
-                    "Show a letter header above each alphabetical group in the library list.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = Spacing.xs),
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = Spacing.md),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Group songs by first letter", style = MaterialTheme.typography.bodyMedium)
+                    note("Show a letter header above each alphabetical group in the library list.")
+                }
+                Switch(
+                    checked = state.groupByLetter,
+                    onCheckedChange = { state.toggleGroupByLetter() },
                 )
             }
-            Switch(
-                checked = state.groupByLetter,
-                onCheckedChange = { state.toggleGroupByLetter() },
-            )
         }
 
-        HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.lg))
+        SettingsCard("Installation") {
+            InstallationInformationSection(state)
+        }
 
-        InstallationInformationSection(state)
-        UpdatesSection(state)
+        SettingsCard("Updates") {
+            UpdatesSection(state)
+        }
     }
+}
+
+@Composable
+private fun SettingsCard(
+    title: String,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Card(modifier = Modifier.fillMaxWidth().padding(top = Spacing.md)) {
+        Column(modifier = Modifier.padding(Spacing.md).fillMaxWidth()) {
+            Text(title, style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(Spacing.sm))
+            content()
+        }
+    }
+}
+
+@Composable
+private fun note(text: String) {
+    Text(
+        text,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(top = Spacing.xs),
+    )
 }
 
 @Composable
@@ -110,11 +113,7 @@ private fun InstallationInformationSection(state: AppState) {
         else -> MaterialTheme.colorScheme.tertiary
     }
 
-    Text(
-        "Installation Information",
-        style = MaterialTheme.typography.titleMedium,
-    )
-    Column(modifier = Modifier.padding(top = Spacing.sm)) {
+    Column(modifier = Modifier.padding(top = Spacing.xs)) {
         InfoRow("Version", VersionInfo.displayVersion)
         InfoRow("Installed", info?.let { "v${it.version}" } ?: "not detected")
         InfoRow("Channel", info?.channel?.ifBlank { "—" } ?: "—")
@@ -148,11 +147,6 @@ private fun InfoRow(label: String, value: String, valueColor: androidx.compose.u
 
 @Composable
 private fun UpdatesSection(state: AppState) {
-    Text(
-        "Updates",
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(top = Spacing.lg),
-    )
     Text(
         if (state.updateSourceBased) {
             "Rebuilds and reinstalls from the Melody Sync source checkout. Requires Java 21."

@@ -15,8 +15,10 @@ enum class AppTheme {
             LIGHT -> lightColorScheme(
                 primary = HiFiLightColors.Primary,
                 onPrimary = HiFiLightColors.Background,
-                secondary = HiFiLightColors.Secondary,
+                secondary = HiFiLightColors.Warning,
                 onSecondary = HiFiLightColors.Background,
+                tertiary = HiFiLightColors.Info,
+                onTertiary = HiFiLightColors.Background,
                 background = HiFiLightColors.Background,
                 onBackground = HiFiLightColors.TextPrimary,
                 surface = HiFiLightColors.Surface,
@@ -30,8 +32,10 @@ enum class AppTheme {
             DARK -> darkColorScheme(
                 primary = HiFiDarkColors.Primary,
                 onPrimary = HiFiDarkColors.Background,
-                secondary = HiFiDarkColors.Secondary,
+                secondary = HiFiDarkColors.Warning,
                 onSecondary = HiFiDarkColors.Background,
+                tertiary = HiFiDarkColors.Info,
+                onTertiary = HiFiDarkColors.Background,
                 background = HiFiDarkColors.Background,
                 onBackground = HiFiDarkColors.TextPrimary,
                 surface = HiFiDarkColors.Surface,

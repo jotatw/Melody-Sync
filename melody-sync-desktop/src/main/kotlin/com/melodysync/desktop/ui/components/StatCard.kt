@@ -3,6 +3,8 @@ package com.melodysync.desktop.ui.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -10,14 +12,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.theme.HiFiShapes
 import com.melodysync.desktop.theme.Spacing
 
 /**
- * Hi-Fi Editorial metric card: serif value, sans label, optional accent.
- * See docs/standards/DesignSystem.md §4.
+ * Hi-Fi Editorial metric card: serif value, sans label, optional leading
+ * icon and accent. See docs/standards/DesignSystem.md §4.
  */
 @Composable
 fun StatCard(
@@ -25,7 +28,7 @@ fun StatCard(
     value: String,
     modifier: Modifier = Modifier,
     accent: Color = MaterialTheme.colorScheme.primary,
-    technical: Boolean = false,
+    icon: ImageVector? = null,
 ) {
     Surface(
         color = MaterialTheme.colorScheme.surface,
@@ -40,6 +43,14 @@ fun StatCard(
             modifier = Modifier.padding(Spacing.lg),
             horizontalAlignment = Alignment.Start,
         ) {
+            if (icon != null) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = accent.copy(alpha = 0.85f),
+                    modifier = Modifier.size(18.dp),
+                )
+            }
             Text(
                 value,
                 style = MaterialTheme.typography.headlineMedium.copy(
@@ -48,6 +59,7 @@ fun StatCard(
                     color = accent,
                 ),
                 maxLines = 1,
+                modifier = if (icon != null) Modifier.padding(top = Spacing.xs) else Modifier,
             )
             Text(
                 label,
