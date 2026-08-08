@@ -8,6 +8,8 @@ fun readMetadata(song: Song): Song {
     val audio = try {
         AudioFileIO.read(song.path.toFile())
     } catch (e: Exception) {
+        // JAudioTagger has no Opus support; read Ogg/Opus comment tags instead.
+        if (song.extension == "opus") return readOpusFallback(song)
         return song
     }
 
@@ -33,6 +35,16 @@ fun readMetadata(song: Song): Song {
         sampleRate = sampleRate,
         channels = channels,
         codec = codec,
+    )
+}
+
+private fun readOpusFallback(song: Song): Song {
+    val tags = OpusMetadata.read(song.path) ?: return song
+    return song.copy(
+        title = tags.title ?: song.title,
+        artist = tags.artist,
+        album = tags.album,
+        codec = "Opus",
     )
 }
 

@@ -18,7 +18,7 @@ import com.melodysync.platform.installation.InstallationValidator
 import com.melodysync.platform.system.VersionInfo
 import com.melodysync.scanner.calculateStatistics
 import com.melodysync.service.DuplicateDetectionService
-import com.melodysync.service.EnrichmentSuggestion
+import com.melodysync.service.FixSuggestion
 import com.melodysync.service.LibraryHealthService
 import com.melodysync.service.LibraryOrganizationService
 import com.melodysync.service.LibrarySyncService
@@ -26,6 +26,7 @@ import com.melodysync.service.LibraryWatcher
 import com.melodysync.service.QuickFixService
 import com.melodysync.service.SyncResult
 import com.melodysync.service.TrashService
+import com.melodysync.service.YoutubeFixSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -217,10 +218,13 @@ class AppState(
             .ifBlank { readYoutubeKeyFile() }
             .trim()
 
-    var quickFixYoutubeSuggestion by mutableStateOf<EnrichmentSuggestion?>(null)
+    var quickFixYoutubeSuggestions by mutableStateOf<List<FixSuggestion>>(emptyList())
         private set
 
     var quickFixYoutubeLoading by mutableStateOf(false)
+        private set
+
+    var quickFixYoutubeLoaded by mutableStateOf(false)
         private set
 
     var quickFixApplying by mutableStateOf(false)
@@ -293,18 +297,20 @@ class AppState(
     }
 
     fun clearQuickFixYoutube() {
-        quickFixYoutubeSuggestion = null
+        quickFixYoutubeSuggestions = emptyList()
         quickFixYoutubeLoading = false
+        quickFixYoutubeLoaded = false
     }
 
-    fun loadYoutubeSuggestion(song: Song) {
+    fun loadYoutubeSuggestions(song: Song) {
         if (quickFixYoutubeLoading || youtubeApiKey.isBlank()) return
         quickFixYoutubeLoading = true
         uiScope.launch {
             try {
-                quickFixYoutubeSuggestion = withContext(Dispatchers.Default) {
-                    QuickFixService.youtubeSuggestion(song, youtubeApiKey)
+                quickFixYoutubeSuggestions = withContext(Dispatchers.Default) {
+                    YoutubeFixSource(youtubeApiKey).suggest(song)
                 }
+                quickFixYoutubeLoaded = true
             } finally {
                 quickFixYoutubeLoading = false
             }

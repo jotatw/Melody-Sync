@@ -33,19 +33,19 @@ import com.melodysync.model.MissingField
 import com.melodysync.model.QualityFlag
 import com.melodysync.model.Song
 import com.melodysync.model.SongDiagnostics
-import com.melodysync.model.TagSuggestion
-import com.melodysync.model.YouTubeVideoResult
+import com.melodysync.service.FixSuggestion
+import com.melodysync.service.LocalFixSource
 import com.melodysync.service.QuickFixService
 
 /**
- * Quick-Fix HUD right panel: diagnosis for the selected song plus local and
- * YouTube suggestions. The user validates every edit — nothing is applied
- * automatically (report-first philosophy).
+ * Quick-Fix HUD right panel: diagnosis for the selected song plus suggestions
+ * rendered by source (local heuristics, YouTube, and future sources). The
+ * user validates every edit — nothing is applied automatically.
  */
 @Composable
 fun QuickFixPanel(state: AppState, song: Song) {
     val diagnostics = remember(song) { QuickFixService.diagnose(song) }
-    val localSuggestion = remember(song) { QuickFixService.localSuggestion(song) }
+    val localSuggestions = remember(song) { LocalFixSource.suggest(song) }
 
     LaunchedEffect(song.path) { state.clearQuickFixYoutube() }
 
@@ -71,9 +71,9 @@ fun QuickFixPanel(state: AppState, song: Song) {
             HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.md))
 
             DiagnosisSection(diagnostics)
-            LocalSuggestionSection(state, song, localSuggestion)
+            LocalSuggestionsSection(state, song, localSuggestions)
             if (state.youtubeEnabled) {
-                YoutubeSuggestionSection(state, song)
+                YoutubeSuggestionsSection(state, song)
             }
         }
     }
@@ -123,13 +123,13 @@ private fun DiagnosisSection(diagnostics: SongDiagnostics) {
 }
 
 @Composable
-private fun LocalSuggestionSection(state: AppState, song: Song, suggestion: TagSuggestion) {
+private fun LocalSuggestionsSection(state: AppState, song: Song, suggestions: List<FixSuggestion>) {
     Text(
         "Local suggestion",
         style = MaterialTheme.typography.titleSmall,
         modifier = Modifier.padding(top = Spacing.md),
     )
-    if (!suggestion.hasChanges) {
+    if (suggestions.isEmpty()) {
         Text(
             "No fix available from the file name or folder.",
             style = MaterialTheme.typography.bodySmall,
@@ -138,24 +138,18 @@ private fun LocalSuggestionSection(state: AppState, song: Song, suggestion: TagS
         )
         return
     }
-    SuggestionPreview(suggestion)
-    Button(
-        onClick = { state.applyQuickFix(song, suggestion) },
-        enabled = !state.quickFixApplying,
-        modifier = Modifier.padding(top = Spacing.sm),
-    ) {
-        Text(if (state.quickFixApplying) "Applying…" else "Apply")
+    suggestions.forEach { suggestion ->
+        SuggestionItemCard(state, song, suggestion)
     }
 }
 
 @Composable
-private fun YoutubeSuggestionSection(state: AppState, song: Song) {
+private fun YoutubeSuggestionsSection(state: AppState, song: Song) {
     Text(
         "YouTube suggestion",
         style = MaterialTheme.typography.titleSmall,
         modifier = Modifier.padding(top = Spacing.md),
     )
-    val current = state.quickFixYoutubeSuggestion
     when {
         state.quickFixYoutubeLoading -> {
             Row(
@@ -171,39 +165,12 @@ private fun YoutubeSuggestionSection(state: AppState, song: Song) {
                 )
             }
         }
-        current != null && current.results.isNotEmpty() -> {
-            val top = current.results.first()
-            Text(
-                top.title,
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(top = Spacing.xs),
-            )
-            Text(
-                top.channel,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(top = Spacing.xs),
-            )
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(top = Spacing.sm),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
-            ) {
-                Button(
-                    onClick = { state.applyQuickFix(song, youtubeTagSuggestion(top)) },
-                    enabled = !state.quickFixApplying,
-                ) {
-                    Text(if (state.quickFixApplying) "Applying…" else "Apply from YouTube")
-                }
-                OutlinedButton(onClick = { openInBrowser(top.url) }) {
-                    Text("Open on YouTube")
-                }
+        state.quickFixYoutubeSuggestions.isNotEmpty() -> {
+            state.quickFixYoutubeSuggestions.forEach { suggestion ->
+                SuggestionItemCard(state, song, suggestion)
             }
         }
-        current != null -> {
+        state.quickFixYoutubeLoaded -> {
             Text(
                 "No YouTube results.",
                 style = MaterialTheme.typography.bodySmall,
@@ -213,7 +180,7 @@ private fun YoutubeSuggestionSection(state: AppState, song: Song) {
         }
         else -> {
             OutlinedButton(
-                onClick = { state.loadYoutubeSuggestion(song) },
+                onClick = { state.loadYoutubeSuggestions(song) },
                 enabled = !state.quickFixApplying,
                 modifier = Modifier.padding(top = Spacing.sm),
             ) {
@@ -224,33 +191,40 @@ private fun YoutubeSuggestionSection(state: AppState, song: Song) {
 }
 
 @Composable
-private fun SuggestionPreview(suggestion: TagSuggestion) {
-    Column(modifier = Modifier.padding(top = Spacing.xs)) {
-        suggestion.title?.let { PreviewRow("Title", it) }
-        suggestion.artist?.let { PreviewRow("Artist", it) }
-        suggestion.album?.let { PreviewRow("Album", it) }
-    }
-}
-
-@Composable
-private fun PreviewRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(top = Spacing.xs),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
+private fun SuggestionItemCard(state: AppState, song: Song, suggestion: FixSuggestion) {
+    Column(modifier = Modifier.padding(top = Spacing.sm)) {
         Text(
-            "$label:",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.width(48.dp),
-        )
-        Text(
-            value,
+            suggestion.title,
             style = MaterialTheme.typography.bodyMedium,
-            maxLines = 1,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f),
         )
+        suggestion.subtitle?.let {
+            Text(
+                it,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(top = Spacing.xs),
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(top = Spacing.sm),
+            horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+        ) {
+            Button(
+                onClick = { state.applyQuickFix(song, suggestion.tagSuggestion) },
+                enabled = !state.quickFixApplying,
+            ) {
+                Text(if (state.quickFixApplying) "Applying…" else "Apply")
+            }
+            if (suggestion.openUrl != null) {
+                OutlinedButton(onClick = { openInBrowser(suggestion.openUrl!!) }) {
+                    Text("Open")
+                }
+            }
+        }
     }
 }
 
@@ -267,14 +241,4 @@ private fun openInBrowser(url: String) {
     } catch (_: Exception) {
         // no browser available; the URL is still shown in the panel
     }
-}
-
-private fun youtubeTagSuggestion(video: YouTubeVideoResult): TagSuggestion {
-    val cleanedTitle = Regex("\\s*\\((Official (Audio|Video|Lyric Video)|Audio|Official)\\)\\s*$")
-        .replace(video.title, "")
-        .trim()
-    return TagSuggestion(
-        title = cleanedTitle.ifBlank { video.title },
-        artist = video.channel.removeSuffix(" - Topic").trim().ifBlank { null },
-    )
 }
