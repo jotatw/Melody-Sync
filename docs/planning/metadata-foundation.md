@@ -47,6 +47,8 @@ The project also has a real-world requirement: an Apply operation must never sil
 
 # Step 0 — Metadata Diagnostic
 
+> **Status: Implemented** (`melody-sync metadata [--write-test] <file>`).
+
 ## Objective
 
 Create a diagnostic operation exposed by the CLI as:

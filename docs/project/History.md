@@ -165,7 +165,7 @@ The current project state is focused on consolidation rather than broad feature 
 Current reported project status:
 
 - Version: **v0.13.0-dev**
-- Automated tests: **233 passing**
+- Automated tests: **238 passing**
 - Core: functional and stable enough for continued feature work
 - Desktop GUI: functional with UX refinement ongoing
 - CLI: functional
@@ -174,7 +174,7 @@ Current reported project status:
 - UX-2 Quick Fix: completed
 - Review screen: completed
 - Development methodology: accepted
-- Metadata foundation: next major reliability backlog
+- Metadata foundation: in progress — Step 0 (`metadata --write-test`) done
 - Unattended automatic updates: deferred
 
 ---

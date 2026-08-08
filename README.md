@@ -20,7 +20,7 @@ The project is also a way to practice software engineering: architecture before 
 | Language | **Kotlin** (JVM 21) |
 | Core (scan, metadata, statistics) | ✅ Completed |
 | CLI (`melody-sync scan` / `health` / `duplicates` / `organize` / `export` / `enrich` / `update` / `doctor`) | ✅ Working |
-| Automated tests | 🎉 **233 passing** |
+| Automated tests | 🎉 **238 passing** |
 | Database (SQLite) | ✅ Working |
 | GUI (Desktop) | ✅ Working (Compose, collapsible sidebar) |
 | Library health check | ✅ Working |
@@ -68,7 +68,7 @@ The project is also a way to practice software engineering: architecture before 
 - ✅ GitHub Actions CI + automated release publishing
 - ✅ MIT license
 - ✅ System theme detection (KDE Plasma + GNOME)
-- ✅ 233 automated tests with real audio fixtures
+- ✅ 238 automated tests with real audio fixtures
 
 ### In Progress / Planned
 
@@ -142,7 +142,7 @@ Directory
 | CLI framework | **clikt** 5.1.0 |
 | GUI | **Compose Desktop** 1.11.1 |
 | Database | **SQLite** via **Exposed** 0.61.0 |
-| Testing | **JUnit 5** (233 tests, real audio fixtures) |
+| Testing | **JUnit 5** (238 tests, real audio fixtures) |
 
 ---
 
@@ -207,12 +207,12 @@ cd Melody-Sync
 
 ## Testing
 
-**233 tests, all passing:**
+**238 tests, all passing:**
 
 | Module | Tests | Area |
 |--------|-------|------|
-| `core` | 201 | Models, Discovery, Metadata, Opus, TagWriter, Scanner, Statistics, Database, Sync, Health, Duplicates, Watcher, Organization, Export, Enrichment, Quick Fix, Suggestion sources, Platform (installation/shell/system) |
-| `cli` | 17 | Version, Scan, Health, Duplicates, Organize, Export, Enrich, Update commands |
+| `core` | 206 | Models, Discovery, Metadata, Opus, TagWriter, Scanner, Statistics, Database, Sync, Health, Duplicates, Watcher, Organization, Export, Enrichment, Quick Fix, Suggestion sources, Platform (installation/shell/system) |
+| `cli` | 17 | Version, Scan, Health, Duplicates, Organize, Export, Enrich, Update, Doctor, Metadata commands |
 | `desktop` | 15 | Theme, preferences, state |
 
 ```bash
@@ -342,7 +342,7 @@ Project documentation lives in the `docs/` directory. Key documents:
 - [ ] Unattended automatic updates (deferred)
 
 ### Milestone 17 — Metadata Foundation 🚧
-- [ ] `melody-sync metadata --write-test` diagnostic (Step 0)
+- [x] `melody-sync metadata --write-test` diagnostic (Step 0)
 - [ ] Per-format `MetadataProvider` abstraction (Phase A)
 - [ ] Typed write errors (Phase B)
 - [ ] Doctor metadata section + integration tests (Phase C)
