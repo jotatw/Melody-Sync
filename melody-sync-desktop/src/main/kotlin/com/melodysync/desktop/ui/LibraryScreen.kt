@@ -1,5 +1,6 @@
 package com.melodysync.desktop.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +9,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -23,6 +25,7 @@ import com.melodysync.desktop.ui.components.HealthSection
 import com.melodysync.desktop.ui.components.LibraryHeader
 import com.melodysync.desktop.ui.components.LibraryToolbar
 import com.melodysync.desktop.ui.components.OrganizeSection
+import com.melodysync.desktop.ui.components.QuickFixPanel
 import com.melodysync.desktop.ui.components.SettingsSection
 import com.melodysync.desktop.ui.components.Sidebar
 import com.melodysync.desktop.ui.components.SongList
@@ -73,7 +76,18 @@ fun LibraryScreen(
                         DirectoryBar(state)
                         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                         LibraryToolbar(state)
-                        SongList(state)
+                        val selectedSong = state.songs.firstOrNull {
+                            it.path.toString() == state.selectedSongPath
+                        }
+                        Row(modifier = Modifier.fillMaxSize()) {
+                            Box(modifier = Modifier.weight(1f).fillMaxSize()) {
+                                SongList(state)
+                            }
+                            if (selectedSong != null) {
+                                VerticalDivider()
+                                QuickFixPanel(state, selectedSong)
+                            }
+                        }
                     }
                     Section.STATISTICS -> {
                         DirectoryBar(state)

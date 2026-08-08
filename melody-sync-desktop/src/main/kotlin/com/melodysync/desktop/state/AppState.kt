@@ -10,6 +10,7 @@ import com.melodysync.model.HealthReport
 import com.melodysync.model.LibraryStatistics
 import com.melodysync.model.OrganizationReport
 import com.melodysync.model.Song
+import com.melodysync.model.TagSuggestion
 import com.melodysync.platform.installation.InstallationChannel
 import com.melodysync.platform.installation.InstallationInfo
 import com.melodysync.platform.installation.InstallationService
@@ -17,10 +18,12 @@ import com.melodysync.platform.installation.InstallationValidator
 import com.melodysync.platform.system.VersionInfo
 import com.melodysync.scanner.calculateStatistics
 import com.melodysync.service.DuplicateDetectionService
+import com.melodysync.service.EnrichmentSuggestion
 import com.melodysync.service.LibraryHealthService
 import com.melodysync.service.LibraryOrganizationService
 import com.melodysync.service.LibrarySyncService
 import com.melodysync.service.LibraryWatcher
+import com.melodysync.service.QuickFixService
 import com.melodysync.service.SyncResult
 import com.melodysync.service.TrashService
 import kotlinx.coroutines.CoroutineScope
@@ -205,6 +208,21 @@ class AppState(
     var updateChannel by mutableStateOf(channelFromString(prefs.updateChannel))
         private set
 
+    // Quick-Fix HUD (see docs/research/quick-fix-hud.md)
+    private val youtubeApiKey = System.getenv("YOUTUBE_API_KEY") ?: ""
+
+    var quickFixYoutubeSuggestion by mutableStateOf<EnrichmentSuggestion?>(null)
+        private set
+
+    var quickFixYoutubeLoading by mutableStateOf(false)
+        private set
+
+    var quickFixApplying by mutableStateOf(false)
+        private set
+
+    val youtubeEnabled: Boolean
+        get() = youtubeApiKey.isNotBlank()
+
     var installationInfo by mutableStateOf<InstallationInfo?>(null)
         private set
 
@@ -266,6 +284,56 @@ class AppState(
         setSection(Section.LIBRARY)
         selectSong(target)
         pendingScrollPath = target
+    }
+
+    fun clearQuickFixYoutube() {
+        quickFixYoutubeSuggestion = null
+        quickFixYoutubeLoading = false
+    }
+
+    fun loadYoutubeSuggestion(song: Song) {
+        if (quickFixYoutubeLoading || youtubeApiKey.isBlank()) return
+        quickFixYoutubeLoading = true
+        uiScope.launch {
+            try {
+                quickFixYoutubeSuggestion = withContext(Dispatchers.Default) {
+                    QuickFixService.youtubeSuggestion(song, youtubeApiKey)
+                }
+            } finally {
+                quickFixYoutubeLoading = false
+            }
+        }
+    }
+
+    /**
+     * Writes the suggested tags to the file, updates the database cache and
+     * refreshes the in-memory library. The user validates every edit by
+     * clicking Apply — nothing is applied automatically.
+     */
+    fun applyQuickFix(song: Song, suggestion: TagSuggestion) {
+        if (quickFixApplying || !suggestion.hasChanges) return
+        quickFixApplying = true
+        uiScope.launch {
+            try {
+                val updated = withContext(Dispatchers.Default) {
+                    QuickFixService.apply(song, suggestion)
+                }
+                if (updated == null) {
+                    showMessage("Could not write tags to ${song.filename}")
+                } else {
+                    withContext(Dispatchers.Default) {
+                        MusicDatabase.connect()
+                        MusicRepository.updateByPath(updated)
+                    }
+                    songs = songs.map { if (it.path == updated.path) updated else it }
+                    statistics = calculateStatistics(songs)
+                    analytics = computeAnalytics(songs)
+                    showMessage("Tags updated · ${song.filename}")
+                }
+            } finally {
+                quickFixApplying = false
+            }
+        }
     }
 
     fun updateArtistFilter(value: String) {
