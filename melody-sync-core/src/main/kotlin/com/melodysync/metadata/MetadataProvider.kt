@@ -7,8 +7,8 @@ import com.melodysync.model.TagSuggestion
  * A per-format metadata backend. Higher-level code resolves a provider through
  * [MetadataFormatRegistry] instead of branching on the file extension.
  *
- * [write] throws on failure so callers surface the real reason (typed write
- * errors arrive in Phase B of the metadata foundation).
+ * [write] reports failures through a typed [WriteResult] rather than throwing,
+ * so the UI can explain the class of failure (see [TagWriteError]).
  */
 interface MetadataProvider {
     val id: String
@@ -16,5 +16,5 @@ interface MetadataProvider {
     val supportsWrite: Boolean
     val supportedFields: List<String>
     fun read(song: Song): Song
-    fun write(song: Song, suggestion: TagSuggestion): Song
+    fun write(song: Song, suggestion: TagSuggestion): WriteResult
 }

@@ -29,6 +29,7 @@ import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.theme.Spacing
 import com.melodysync.desktop.theme.TechnicalStyle
 import com.melodysync.desktop.theme.colorRoles
+import com.melodysync.metadata.MetadataFormatRegistry
 import com.melodysync.model.MissingField
 import com.melodysync.model.QualityFlag
 import com.melodysync.model.Song
@@ -46,6 +47,9 @@ import com.melodysync.service.QuickFixService
 fun QuickFixPanel(state: AppState, song: Song) {
     val diagnostics = remember(song) { QuickFixService.diagnose(song) }
     val localSuggestions = remember(song) { LocalFixSource.suggest(song) }
+    val writeSupported = remember(song) {
+        MetadataFormatRegistry.providerFor(song.extension)?.supportsWrite ?: false
+    }
 
     LaunchedEffect(song.path) { state.clearQuickFixYoutube() }
 
@@ -71,9 +75,17 @@ fun QuickFixPanel(state: AppState, song: Song) {
             HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.md))
 
             DiagnosisSection(diagnostics)
-            LocalSuggestionsSection(state, song, localSuggestions)
+            if (!writeSupported) {
+                Text(
+                    "Tag writing is not supported for this format.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = Spacing.sm),
+                )
+            }
+            LocalSuggestionsSection(state, song, localSuggestions, writeSupported)
             if (state.youtubeEnabled) {
-                YoutubeSuggestionsSection(state, song)
+                YoutubeSuggestionsSection(state, song, writeSupported)
             }
         }
     }
@@ -123,7 +135,7 @@ private fun DiagnosisSection(diagnostics: SongDiagnostics) {
 }
 
 @Composable
-private fun LocalSuggestionsSection(state: AppState, song: Song, suggestions: List<FixSuggestion>) {
+private fun LocalSuggestionsSection(state: AppState, song: Song, suggestions: List<FixSuggestion>, writeSupported: Boolean) {
     Text(
         "Local suggestion",
         style = MaterialTheme.typography.titleSmall,
@@ -139,12 +151,12 @@ private fun LocalSuggestionsSection(state: AppState, song: Song, suggestions: Li
         return
     }
     suggestions.forEach { suggestion ->
-        SuggestionItemCard(state, song, suggestion)
+        SuggestionItemCard(state, song, suggestion, writeSupported)
     }
 }
 
 @Composable
-private fun YoutubeSuggestionsSection(state: AppState, song: Song) {
+private fun YoutubeSuggestionsSection(state: AppState, song: Song, writeSupported: Boolean) {
     Text(
         "YouTube suggestion",
         style = MaterialTheme.typography.titleSmall,
@@ -167,7 +179,7 @@ private fun YoutubeSuggestionsSection(state: AppState, song: Song) {
         }
         state.quickFixYoutubeSuggestions.isNotEmpty() -> {
             state.quickFixYoutubeSuggestions.forEach { suggestion ->
-                SuggestionItemCard(state, song, suggestion)
+                SuggestionItemCard(state, song, suggestion, writeSupported)
             }
         }
         state.quickFixYoutubeLoaded -> {
@@ -191,7 +203,7 @@ private fun YoutubeSuggestionsSection(state: AppState, song: Song) {
 }
 
 @Composable
-private fun SuggestionItemCard(state: AppState, song: Song, suggestion: FixSuggestion) {
+private fun SuggestionItemCard(state: AppState, song: Song, suggestion: FixSuggestion, writeSupported: Boolean) {
     Column(modifier = Modifier.padding(top = Spacing.sm)) {
         Text(
             suggestion.title,
@@ -215,7 +227,7 @@ private fun SuggestionItemCard(state: AppState, song: Song, suggestion: FixSugge
         ) {
             Button(
                 onClick = { state.applyQuickFix(song, suggestion.tagSuggestion) },
-                enabled = !state.quickFixApplying,
+                enabled = !state.quickFixApplying && writeSupported,
             ) {
                 Text(if (state.quickFixApplying) "Applying…" else "Apply")
             }

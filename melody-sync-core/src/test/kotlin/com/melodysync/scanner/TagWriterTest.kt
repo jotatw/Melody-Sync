@@ -3,6 +3,7 @@ package com.melodysync.scanner
 import com.melodysync.model.Song
 import com.melodysync.model.TagSuggestion
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.nio.file.Files
@@ -25,14 +26,15 @@ class TagWriterTest {
         val path = copyFixture("with_tags.mp3", "song.mp3")
         val original = Song(path = path, size = Files.size(path))
 
-        val updated = TagWriter.writeTags(
+        val result = TagWriter.writeTags(
             original,
             TagSuggestion(title = "New Title", artist = "New Artist", album = "New Album"),
         )
 
-        assertEquals("New Title", updated.title)
-        assertEquals("New Artist", updated.artist)
-        assertEquals("New Album", updated.album)
+        assertTrue(result.success)
+        assertEquals("New Title", result.updated!!.title)
+        assertEquals("New Artist", result.updated.artist)
+        assertEquals("New Album", result.updated.album)
     }
 
     @Test
@@ -40,10 +42,11 @@ class TagWriterTest {
         val path = copyFixture("no_tags.mp3", "untagged.mp3")
         val song = Song(path = path, size = Files.size(path))
 
-        val updated = TagWriter.writeTags(song, TagSuggestion(title = "Title", artist = "Artist"))
+        val result = TagWriter.writeTags(song, TagSuggestion(title = "Title", artist = "Artist"))
 
-        assertEquals("Title", updated.title)
-        assertEquals("Artist", updated.artist)
+        assertTrue(result.success)
+        assertEquals("Title", result.updated!!.title)
+        assertEquals("Artist", result.updated.artist)
     }
 
     @Test
@@ -51,8 +54,9 @@ class TagWriterTest {
         val path = copyFixture("with_tags.mp3", "song.mp3")
         val original = Song(path = path, size = Files.size(path), title = "Original")
 
-        val updated = TagWriter.writeTags(original, TagSuggestion())
+        val result = TagWriter.writeTags(original, TagSuggestion())
 
-        assertEquals("Original", updated.title)
+        assertTrue(result.success)
+        assertEquals("Original", result.updated!!.title)
     }
 }

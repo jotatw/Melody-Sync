@@ -2,7 +2,6 @@ package com.melodysync.metadata
 
 import com.melodysync.model.Song
 import com.melodysync.model.TagSuggestion
-import java.io.IOException
 
 /**
  * Resolves the [MetadataProvider] for a file extension. Higher-level code
@@ -23,11 +22,11 @@ object MetadataFormatRegistry {
     fun read(song: Song): Song =
         providerFor(song.extension)?.read(song) ?: song
 
-    fun write(song: Song, suggestion: TagSuggestion): Song {
+    fun write(song: Song, suggestion: TagSuggestion): WriteResult {
         val provider = providerFor(song.extension)
-            ?: throw IOException("Unsupported format for tag writing: .${song.extension}")
+            ?: return WriteResult(error = TagWriteError.Unsupported)
         if (!provider.supportsWrite) {
-            throw IOException("Tag writing not supported for .${song.extension}")
+            return WriteResult(error = TagWriteError.Unsupported)
         }
         return provider.write(song, suggestion)
     }

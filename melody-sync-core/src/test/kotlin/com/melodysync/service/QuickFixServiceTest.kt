@@ -1,5 +1,6 @@
 package com.melodysync.service
 
+import com.melodysync.metadata.TagWriteError
 import com.melodysync.model.MissingField
 import com.melodysync.model.QualityFlag
 import com.melodysync.model.Song
@@ -90,13 +91,14 @@ class QuickFixServiceTest {
     }
 
     @Test
-    fun `apply reports the error when the file cannot be written`() {
+    fun `apply reports a typed error when the file cannot be written`() {
         val path = tmp.resolve("fake.mp3")
         Files.writeString(path, "this is not an audio file")
 
         val result = QuickFixService.apply(song(path), TagSuggestion(title = "Title"))
 
         assertFalse(result.success)
-        assertTrue(result.error.isNullOrBlank().not())
+        assertTrue(result.error is TagWriteError.Parse)
+        assertTrue(result.error!!.userMessage.isNotBlank())
     }
 }

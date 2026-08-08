@@ -151,6 +151,8 @@ The provider should preserve the current title/artist/album scope. Genre is inte
 
 # Phase B — Typed Write Results
 
+> **Status: Implemented** (`WriteResult` + sealed `TagWriteError`).
+
 ## Objective
 
 Make metadata write failures explicit and user-readable.

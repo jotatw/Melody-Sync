@@ -353,7 +353,7 @@ class AppState(
                     QuickFixService.apply(song, suggestion)
                 }
                 if (!result.success) {
-                    showMessage("Could not write tags to ${song.filename}: ${result.error ?: "unknown error"}")
+                    showMessage("Cannot write tags to ${song.filename}: ${result.error?.userMessage ?: "unknown error"}")
                     return@launch
                 }
                 val updated = result.updated!!

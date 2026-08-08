@@ -160,7 +160,7 @@ Keep a searchable record of the problems we hit so the same class of error is no
 | ID | Area | Issue | Plan |
 |----|------|-------|------|
 | K-01 | Database | `MusicDatabase.connect()` is called ad-hoc in seven places from background threads; connection lifecycle and write serialization are implicit. | Metadata foundation Phase D (single `DatabaseConnection` + `Mutex`) |
-| K-02 | Metadata | Some M4A/MP4 files can still fail to write depending on the container layout (JAudioTagger limitation). | Metadata foundation Phases A–B expose typed capabilities; `metadata --write-test` reports per-file truth |
+| K-02 | Metadata | Some M4A/MP4 files can still fail to write depending on the container layout (JAudioTagger limitation). | Phases A–B (done) expose typed capabilities and `WriteResult`; `metadata --write-test` reports the per-file truth — monitor for format-specific fixtures |
 
 ## Related Documents
 

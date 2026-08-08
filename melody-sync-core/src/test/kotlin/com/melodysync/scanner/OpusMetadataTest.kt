@@ -69,14 +69,15 @@ class OpusMetadataTest {
         val file = tmp.resolve("song.opus")
         Files.write(file, twoPageOpus("Song", "Artist", "Album"))
 
-        val song = com.melodysync.scanner.TagWriter.writeTags(
+        val result = com.melodysync.scanner.TagWriter.writeTags(
             com.melodysync.model.Song(path = file, size = Files.size(file)),
             com.melodysync.model.TagSuggestion(title = "Applied", artist = "From Test"),
         )
 
-        assertEquals("Applied", song.title)
-        assertEquals("From Test", song.artist)
-        assertEquals("Album", song.album)
+        assertTrue(result.success)
+        assertEquals("Applied", result.updated!!.title)
+        assertEquals("From Test", result.updated.artist)
+        assertEquals("Album", result.updated.album)
     }
 
     private fun twoPageOpus(title: String, artist: String, album: String): ByteArray {

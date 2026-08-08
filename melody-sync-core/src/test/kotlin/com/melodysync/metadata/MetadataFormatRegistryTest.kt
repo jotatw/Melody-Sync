@@ -4,8 +4,8 @@ import com.melodysync.model.Song
 import com.melodysync.model.TagSuggestion
 import com.melodysync.scanner.TagWriter
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
@@ -49,33 +49,56 @@ class MetadataFormatRegistryTest {
     @Test
     fun `write delegates and re-reads for mp3`() {
         val mp3 = fixture("no_tags.mp3", tmp.resolve("a.mp3"))
-        val updated = TagWriter.writeTags(
+        val result = TagWriter.writeTags(
             Song(path = mp3, size = Files.size(mp3)),
             TagSuggestion(title = "Title", artist = "Artist", album = "Album"),
         )
-        assertEquals("Title", updated.title)
-        assertEquals("Artist", updated.artist)
-        assertEquals("Album", updated.album)
+        assertTrue(result.success)
+        assertEquals("Title", result.updated!!.title)
+        assertEquals("Artist", result.updated.artist)
+        assertEquals("Album", result.updated.album)
     }
 
     @Test
     fun `write delegates for opus`() {
         val opus = tmp.resolve("b.opus")
         Files.write(opus, twoPageOpus("Song", "Artist", "Album"))
-        val updated = TagWriter.writeTags(
+        val result = TagWriter.writeTags(
             Song(path = opus, size = Files.size(opus)),
             TagSuggestion(title = "New Title", artist = "New Artist"),
         )
-        assertEquals("New Title", updated.title)
-        assertEquals("New Artist", updated.artist)
+        assertTrue(result.success)
+        assertEquals("New Title", result.updated!!.title)
+        assertEquals("New Artist", result.updated.artist)
     }
 
     @Test
-    fun `write throws for an unknown format`() {
+    fun `write returns Unsupported for an unknown format`() {
         val song = Song(path = tmp.resolve("notes.xyz"), size = 0)
-        assertThrows(java.io.IOException::class.java) {
-            MetadataFormatRegistry.write(song, TagSuggestion(title = "t"))
-        }
+        val result = MetadataFormatRegistry.write(song, TagSuggestion(title = "t"))
+
+        assertFalse(result.success)
+        assertEquals(TagWriteError.Unsupported, result.error)
+    }
+
+    @Test
+    fun `write returns NotFound for a missing file`() {
+        val song = Song(path = tmp.resolve("missing.mp3"), size = 0)
+        val result = MetadataFormatRegistry.write(song, TagSuggestion(title = "t"))
+
+        assertTrue(result.error is TagWriteError.NotFound)
+    }
+
+    @Test
+    fun `write returns Parse for an unreadable file`() {
+        val file = tmp.resolve("fake.mp3")
+        Files.writeString(file, "this is not an audio file")
+        val result = MetadataFormatRegistry.write(
+            Song(path = file, size = Files.size(file)),
+            TagSuggestion(title = "t"),
+        )
+
+        assertTrue(result.error is TagWriteError.Parse)
     }
 
     @Test

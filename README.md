@@ -20,7 +20,7 @@ The project is also a way to practice software engineering: architecture before 
 | Language | **Kotlin** (JVM 21) |
 | Core (scan, metadata, statistics) | ✅ Completed |
 | CLI (`melody-sync scan` / `health` / `duplicates` / `organize` / `export` / `enrich` / `update` / `doctor`) | ✅ Working |
-| Automated tests | 🎉 **238 passing** |
+| Automated tests | 🎉 **246 passing** |
 | Database (SQLite) | ✅ Working |
 | GUI (Desktop) | ✅ Working (Compose, collapsible sidebar) |
 | Library health check | ✅ Working |
@@ -68,7 +68,7 @@ The project is also a way to practice software engineering: architecture before 
 - ✅ GitHub Actions CI + automated release publishing
 - ✅ MIT license
 - ✅ System theme detection (KDE Plasma + GNOME)
-- ✅ 238 automated tests with real audio fixtures
+- ✅ 246 automated tests with real audio fixtures
 
 ### In Progress / Planned
 
@@ -142,7 +142,7 @@ Directory
 | CLI framework | **clikt** 5.1.0 |
 | GUI | **Compose Desktop** 1.11.1 |
 | Database | **SQLite** via **Exposed** 0.61.0 |
-| Testing | **JUnit 5** (238 tests, real audio fixtures) |
+| Testing | **JUnit 5** (246 tests, real audio fixtures) |
 
 ---
 
@@ -207,11 +207,11 @@ cd Melody-Sync
 
 ## Testing
 
-**238 tests, all passing:**
+**246 tests, all passing:**
 
 | Module | Tests | Area |
 |--------|-------|------|
-| `core` | 206 | Models, Discovery, Metadata, Opus, TagWriter, Scanner, Statistics, Database, Sync, Health, Duplicates, Watcher, Organization, Export, Enrichment, Quick Fix, Suggestion sources, Platform (installation/shell/system) |
+| `core` | 214 | Models, Discovery, Metadata, Opus, TagWriter, Scanner, Statistics, Database, Sync, Health, Duplicates, Watcher, Organization, Export, Enrichment, Quick Fix, Suggestion sources, Platform (installation/shell/system) |
 | `cli` | 17 | Version, Scan, Health, Duplicates, Organize, Export, Enrich, Update, Doctor, Metadata commands |
 | `desktop` | 15 | Theme, preferences, state |
 

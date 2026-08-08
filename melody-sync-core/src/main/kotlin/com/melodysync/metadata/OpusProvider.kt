@@ -3,6 +3,7 @@ package com.melodysync.metadata
 import com.melodysync.model.Song
 import com.melodysync.model.TagSuggestion
 import com.melodysync.scanner.OpusMetadata
+import java.nio.file.Files
 
 /**
  * Metadata backend for Opus via the built-in Ogg/OpusTags reader/writer
@@ -25,11 +26,14 @@ object OpusProvider : MetadataProvider {
         )
     }
 
-    override fun write(song: Song, suggestion: TagSuggestion): Song {
+    override fun write(song: Song, suggestion: TagSuggestion): WriteResult {
+        if (!Files.exists(song.path)) {
+            return WriteResult(error = TagWriteError.NotFound(song.path.toString()))
+        }
         val written = OpusMetadata.writeTags(song.path, suggestion)
         if (!written) {
-            throw java.io.IOException("Unsupported Opus layout — could not write tags")
+            return WriteResult(error = TagWriteError.Parse("unsupported Opus layout"))
         }
-        return read(song)
+        return WriteResult(updated = read(song))
     }
 }
