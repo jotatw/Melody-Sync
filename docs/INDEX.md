@@ -55,7 +55,7 @@ Visual identity and interaction standards.
 | Document | Purpose | Status |
 |----------|---------|--------|
 | Design System | Hi-Fi Editorial visual identity (colors, typography, layout) | ✅ Implemented |
-| [Application Design Research](research/app-design.md) | Design and UX best practices applied to the app | 📚 Active reference |
+| [Application Design Research](research/app-design.md) | Design and UX best practices applied to the app | 📚 Draft / Active reference |
 | [Quick-Fix HUD](research/quick-fix-hud.md) | Assisted curation interaction model and implementation history | ✅ Implemented |
 | [Update Channels](research/update-channels.md) | Release installer and update-channel architecture | ✅ Implemented; unattended updates backlog |
 
