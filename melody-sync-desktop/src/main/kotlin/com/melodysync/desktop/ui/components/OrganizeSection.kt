@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -47,7 +46,7 @@ fun OrganizeSection(state: AppState) {
 
         when (state.organizeStatus) {
             OrganizeStatus.RUNNING -> {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(top = Spacing.md))
+                ProgressCard("Planning folder structure…")
             }
             OrganizeStatus.DONE -> {
                 state.organizationReport?.let { report ->
@@ -76,19 +75,24 @@ private fun OrganizeReportView(report: OrganizationReport) {
     val moves = report.plannedMoves.filter { it.from != it.to }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
-            StatCard(
-                "To move",
-                report.toMove.toString(),
-                modifier = Modifier.weight(1f),
-                accent = if (report.toMove > 0) MaterialTheme.colorScheme.primary else success,
-            )
-            StatCard(
-                "Already organized",
-                report.alreadyOrganized.toString(),
-                modifier = Modifier.weight(1f),
-            )
-            StatCard("Skipped", report.skipped.toString(), modifier = Modifier.weight(1f))
+        ResultCard(
+            headline = "Plan: ${report.toMove} move(s) · ${report.alreadyOrganized} already organized",
+            accent = if (report.toMove > 0) MaterialTheme.colorScheme.primary else success,
+        ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
+                StatCard(
+                    "To move",
+                    report.toMove.toString(),
+                    modifier = Modifier.weight(1f),
+                    accent = if (report.toMove > 0) MaterialTheme.colorScheme.primary else success,
+                )
+                StatCard(
+                    "Already organized",
+                    report.alreadyOrganized.toString(),
+                    modifier = Modifier.weight(1f),
+                )
+                StatCard("Skipped", report.skipped.toString(), modifier = Modifier.weight(1f))
+            }
         }
 
         Text(

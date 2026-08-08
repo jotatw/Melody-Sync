@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,7 +14,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,7 +37,7 @@ private data class IssueSection(val title: String, val total: Int, val shown: Li
 
 @Composable
 fun HealthSection(state: AppState) {
-    Column(modifier = Modifier.fillMaxWidth().padding(top = Spacing.sm)) {
+    Column(modifier = Modifier.fillMaxSize().padding(top = Spacing.sm)) {
         SectionHeader(
             title = "Library Health",
             subtitle = "Missing metadata, zero duration and orphaned entries.",
@@ -51,7 +51,7 @@ fun HealthSection(state: AppState) {
 
         when (state.healthStatus) {
             HealthStatus.RUNNING -> {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(top = Spacing.md))
+                ProgressCard("Checking library health…")
             }
             HealthStatus.DONE -> {
                 state.healthReport?.let { report ->
@@ -87,42 +87,55 @@ private fun HealthReportView(report: HealthReport) {
         score >= 60 -> MaterialTheme.colorScheme.secondary
         else -> MaterialTheme.colorScheme.error
     }
+    val headline = if (issues == 0) {
+        "Library healthy"
+    } else {
+        "Score $score/100 · $issues issue(s) found"
+    }
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState()),
-    ) {
-        Row(
+    Column(modifier = Modifier.fillMaxWidth()) {
+        ResultCard(
+            headline = headline,
+            accent = scoreColor,
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(Spacing.xl),
         ) {
-            HealthScoreRing(score, scoreColor)
-            Column(modifier = Modifier.weight(1f)) {
-                Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
-                    StatCard("Audio files", report.audioFiles.toString(), modifier = Modifier.weight(1f), accent = success)
-                    StatCard("Non-audio", report.totalNonAudio.toString(), modifier = Modifier.weight(1f))
-                }
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(Spacing.md),
-                    modifier = Modifier.padding(top = Spacing.md),
-                ) {
-                    StatCard(
-                        "Issues",
-                        issues.toString(),
-                        modifier = Modifier.weight(1f),
-                        accent = if (issues > 0) MaterialTheme.colorScheme.error else success,
-                    )
-                    StatCard("Total files", report.totalFiles.toString(), modifier = Modifier.weight(1f))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Spacing.xl),
+            ) {
+                HealthScoreRing(score, scoreColor)
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
+                        StatCard("Audio files", report.audioFiles.toString(), modifier = Modifier.weight(1f), accent = success)
+                        StatCard("Non-audio", report.totalNonAudio.toString(), modifier = Modifier.weight(1f))
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+                        modifier = Modifier.padding(top = Spacing.md),
+                    ) {
+                        StatCard(
+                            "Issues",
+                            issues.toString(),
+                            modifier = Modifier.weight(1f),
+                            accent = if (issues > 0) MaterialTheme.colorScheme.error else success,
+                        )
+                        StatCard("Total files", report.totalFiles.toString(), modifier = Modifier.weight(1f))
+                    }
                 }
             }
         }
 
-        HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.lg))
-
-        IssueBreakdown(report, success)
-        Recommendations(report)
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(top = Spacing.lg),
+        ) {
+            IssueBreakdown(report, success)
+            Recommendations(report)
+        }
     }
 }
 

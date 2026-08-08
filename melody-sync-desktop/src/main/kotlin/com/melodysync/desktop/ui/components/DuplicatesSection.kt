@@ -53,7 +53,7 @@ fun DuplicatesSection(state: AppState) {
 
         when (state.duplicatesStatus) {
             DuplicatesStatus.RUNNING -> {
-                LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(top = Spacing.md))
+                ProgressCard("Checking for duplicates…")
             }
             DuplicatesStatus.DONE -> {
                 HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.lg))
@@ -93,20 +93,25 @@ private fun DuplicatesView(state: AppState) {
     val selected = state.duplicateTrashSelection
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
-            StatCard("Groups", groups.size.toString(), modifier = Modifier.weight(1f))
-            StatCard(
-                "Extra files",
-                extraFiles.toString(),
-                modifier = Modifier.weight(1f),
-                accent = MaterialTheme.colorScheme.error,
-            )
-            StatCard(
-                "Recoverable",
-                formatSize(recoverable),
-                modifier = Modifier.weight(1f),
-                accent = MaterialTheme.colorScheme.primary,
-            )
+        ResultCard(
+            headline = "${groups.size} duplicate group(s) · $extraFiles extra file(s)",
+            accent = MaterialTheme.colorScheme.error,
+        ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
+                StatCard("Groups", groups.size.toString(), modifier = Modifier.weight(1f))
+                StatCard(
+                    "Extra files",
+                    extraFiles.toString(),
+                    modifier = Modifier.weight(1f),
+                    accent = MaterialTheme.colorScheme.error,
+                )
+                StatCard(
+                    "Recoverable",
+                    formatSize(recoverable),
+                    modifier = Modifier.weight(1f),
+                    accent = MaterialTheme.colorScheme.primary,
+                )
+            }
         }
 
         Row(
