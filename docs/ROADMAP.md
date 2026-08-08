@@ -43,6 +43,8 @@ Large features should have a dedicated document under `docs/planning/` before im
 | Platform layer | Frozen under ADR-0009 |
 | UX-1 Consistency | Completed |
 | UX-2 Quick Fix | Completed |
+| Review screen | Completed |
+| Development Methodology | Accepted |
 
 The current priority is stabilization and consolidation rather than opening additional large UI features.
 
@@ -50,14 +52,14 @@ The current priority is stabilization and consolidation rather than opening addi
 
 ## Planning Areas
 
-| Area | Priority | Status | Planning |
-|------|----------|--------|----------|
-| Metadata & Quick Fix | High | 🚧 Foundation backlog | [Metadata Foundation](planning/metadata-foundation.md) |
-| Review / Analysis | Medium | ✅ Review implemented; Health actionable | — |
-| Updates & Installation | Medium | 🚧 Automatic unattended update backlog; release installer and channels completed | — |
+| Area | Priority | Status | Planning / Research |
+|------|----------|--------|---------------------|
+| Metadata & Quick Fix | High | 🚧 Foundation backlog | [Metadata Foundation](planning/metadata-foundation.md) · [Quick-Fix HUD](research/quick-fix-hud.md) |
+| Review / Analysis | Medium | ✅ Review implemented; Health actionable | [Application Design Research](research/app-design.md) |
+| Updates & Installation | Medium | 🚧 Automatic unattended update backlog; release installer and channels completed | [Update Channels](research/update-channels.md) |
 | Platform | Low | 🔒 Frozen | [ADR-0009](architecture/ADR/ADR-0009-PlatformLayer.md) |
-| UX / Design | Medium | 🚧 Continuous refinement | — |
-| Docs / Tests | Medium | 🚧 CI completed; methodology backlog | — |
+| UX / Design | Medium | 🚧 Continuous refinement | [Application Design Research](research/app-design.md) |
+| Docs / Tests | Medium | 🚧 CI completed; methodology accepted | [Development Methodology](standards/handbook/DevelopmentMethodology.md) |
 
 ---
 
@@ -84,6 +86,8 @@ Primary open problem:
 > Applying metadata to some original files can still fail because format capabilities differ, particularly for formats handled through JAudioTagger.
 
 The foundation plan must therefore establish explicit format capabilities and typed write failures before expanding Quick Fix further.
+
+The implemented interaction model is documented in [Quick-Fix HUD research](research/quick-fix-hud.md).
 
 ---
 
@@ -125,7 +129,7 @@ Deferred:
 - Automatic background checking/install policy.
 - Restart/relaunch orchestration after an update.
 
-The existing update system should remain stable while unattended update behavior stays in backlog.
+The current implementation and the real unattended-update backlog are documented in [Update Channels research](research/update-channels.md).
 
 ---
 
@@ -177,16 +181,42 @@ Completed:
 - Documentation standard and templates.
 - Architecture Decision Records.
 - Research and project documentation structure.
+- Official development methodology.
 
-Backlog:
+Active / ongoing:
 
-- `DevelopmentMethodology.md` describing the project's development cycle.
 - Continued expansion of integration tests where real filesystem/database behavior matters.
-- Metadata format fixtures and capability tests.
+- Metadata format fixtures and capability tests as part of the metadata foundation.
 
 ---
 
 ## Planning Rules
+
+The project follows the official development cycle defined in [`DevelopmentMethodology.md`](standards/handbook/DevelopmentMethodology.md):
+
+```text
+Need
+  ↓
+Planning
+  ↓
+Architecture
+  ↓
+Review
+  ↓
+Freeze
+  ↓
+Implementation
+  ↓
+Validation
+  ↓
+Documentation
+  ↓
+Approval
+  ↓
+Maintenance
+```
+
+Practical roadmap rules:
 
 1. Stabilize existing functionality before opening a new feature area.
 2. A large feature receives a planning document under `docs/planning/` before implementation.
@@ -215,9 +245,11 @@ The following remain intentionally deferred:
 
 - [Documentation Index](INDEX.md)
 - [Metadata Foundation](planning/metadata-foundation.md)
-- [ADR-0009 — Platform Layer](architecture/ADR/ADR-0009-PlatformLayer.md)
 - [Quick-Fix HUD research](research/quick-fix-hud.md)
+- [Application Design Research](research/app-design.md)
 - [Update Channels research](research/update-channels.md)
+- [Development Methodology](standards/handbook/DevelopmentMethodology.md)
+- [ADR-0009 — Platform Layer](architecture/ADR/ADR-0009-PlatformLayer.md)
 - [History](project/History.md)
 
 ---
@@ -227,6 +259,7 @@ The following remain intentionally deferred:
 | Version | Date | Description |
 |---------|------|-------------|
 | 1.0 | 2026-08-08 | Initial roadmap consolidating current implementation and planning |
+| 1.1 | 2026-08-08 | Consolidated research links and adopted the official development methodology |
 
 ---
 
