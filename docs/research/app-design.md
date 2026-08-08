@@ -13,8 +13,8 @@
 | Category         | Architecture / Design  |
 | Audience         | Developers             |
 | Status           | Draft                  |
-| Project Version  | v0.12.0-dev            |
-| Last Updated     | 2026-08-03             |
+| Project Version  | v0.13.0-dev            |
+| Last Updated     | 2026-08-08             |
 
 ---
 
