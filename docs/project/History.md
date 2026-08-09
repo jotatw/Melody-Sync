@@ -131,6 +131,8 @@ Navigation consolidation (Block 01 + Block 02): contextual navigation now distin
 
 Health consolidation (Block 03): Health now shows a duplicate-groups summary card and opens the full duplicate workflow from there, keeping duplicate findings within the Health/review experience while preserving inspection, confirmation, trash and progress.
 
+Statistics expansion (Block 04): album navigation to Library with a preserved album filter (alongside artist/format), a Library album filter field, and a proper no-data empty state with a Go to Library action.
+
 ### Metadata Foundation
 
 The metadata foundation was completed through the documented Steps 0–E. The work established diagnostic tooling, metadata-provider abstractions and registry support, typed write errors, metadata checks in `doctor`, headless Apply integration coverage, serialized database access, and per-format fixtures with a capability matrix.

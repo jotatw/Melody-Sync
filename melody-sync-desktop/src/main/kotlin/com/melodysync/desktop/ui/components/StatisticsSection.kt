@@ -15,6 +15,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Insights
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.RankedItem
+import com.melodysync.desktop.state.Section
 import com.melodysync.desktop.theme.HiFiDarkColors
 import com.melodysync.desktop.theme.HiFiLightColors
 import com.melodysync.desktop.theme.Spacing
@@ -36,20 +40,19 @@ import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
 
 @Composable
 fun StatisticsSection(state: AppState) {
-    val stats = state.statistics ?: run {
-        Text(
-            "No statistics yet. Scan a library first.",
-            modifier = Modifier.padding(top = 24.dp),
-            style = MaterialTheme.typography.bodyMedium,
-        )
-        return
-    }
+    val stats = state.statistics
+    val analytics = state.analytics
 
-    val analytics = state.analytics ?: run {
-        Text(
-            "No analytics yet. Scan a library first.",
-            modifier = Modifier.padding(top = 24.dp),
-            style = MaterialTheme.typography.bodyMedium,
+    if (stats == null || analytics == null) {
+        EmptyState(
+            icon = Icons.Filled.Insights,
+            title = "No library data available",
+            message = "Scan a music directory to build your library.",
+            action = {
+                Button(onClick = { state.setSection(Section.LIBRARY) }) {
+                    Text("Go to Library")
+                }
+            },
         )
         return
     }
@@ -96,8 +99,12 @@ fun StatisticsSection(state: AppState) {
 
         HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.lg))
 
-        // Album navigation is deferred until the state layer supports it (Block 01).
-        TopListCard("Top Albums", analytics.topAlbums)
+        // Top albums navigate to Library with the album filter preserved (Block 04).
+        TopListCard(
+            title = "Top Albums",
+            items = analytics.topAlbums,
+            onClick = { state.exploreAlbum(it) },
+        )
     }
 }
 

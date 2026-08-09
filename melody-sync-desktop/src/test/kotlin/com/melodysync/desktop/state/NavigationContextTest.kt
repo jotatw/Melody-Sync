@@ -40,9 +40,9 @@ class NavigationContextTest {
 
     private fun seed(dbFile: Path, audioDir: Path) {
         MusicDatabase.connectToFile(dbFile)
-        MusicRepository.insert(Song(path = audioDir.resolve("a.mp3"), size = 1, artist = "Alpha"))
-        MusicRepository.insert(Song(path = audioDir.resolve("b.flac"), size = 1, artist = "Alpha"))
-        MusicRepository.insert(Song(path = audioDir.resolve("c.mp3"), size = 1, artist = "Beta"))
+        MusicRepository.insert(Song(path = audioDir.resolve("a.mp3"), size = 1, artist = "Alpha", album = "One"))
+        MusicRepository.insert(Song(path = audioDir.resolve("b.flac"), size = 1, artist = "Alpha", album = "Two"))
+        MusicRepository.insert(Song(path = audioDir.resolve("c.mp3"), size = 1, artist = "Beta", album = "One"))
     }
 
     @Test
@@ -78,6 +78,24 @@ class NavigationContextTest {
 
         assertEquals(Section.LIBRARY, appState.currentSection)
         assertEquals("mp3", appState.formatFilter)
+        assertEquals(setOf("a.mp3", "c.mp3"), appState.filteredSongs.map { it.filename }.toSet())
+    }
+
+    @Test
+    fun `statistics exploreAlbum opens Library filtered by album`() {
+        val dbFile = tmp.resolve("db.db")
+        val audioDir = Files.createDirectory(tmp.resolve("music"))
+        seed(dbFile, audioDir)
+
+        val appState = state(dbFile, tmp.resolve("prefs.properties"))
+        appState.updateDirectory(audioDir.toString())
+        appState.loadLibraryFromDatabase()
+        await { appState.songs.size == 3 }
+
+        appState.exploreAlbum("One")
+
+        assertEquals(Section.LIBRARY, appState.currentSection)
+        assertEquals("One", appState.albumFilter)
         assertEquals(setOf("a.mp3", "c.mp3"), appState.filteredSongs.map { it.filename }.toSet())
     }
 

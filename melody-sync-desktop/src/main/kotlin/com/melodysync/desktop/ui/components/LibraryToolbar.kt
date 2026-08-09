@@ -57,6 +57,13 @@ fun LibraryToolbar(state: AppState) {
                 modifier = Modifier.weight(1f),
             )
             OutlinedTextField(
+                value = state.albumFilter,
+                onValueChange = state::updateAlbumFilter,
+                label = { Text("Album") },
+                singleLine = true,
+                modifier = Modifier.weight(1f),
+            )
+            OutlinedTextField(
                 value = state.formatFilter,
                 onValueChange = state::updateFormatFilter,
                 label = { Text("Format") },

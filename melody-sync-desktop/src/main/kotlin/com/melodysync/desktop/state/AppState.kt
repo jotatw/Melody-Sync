@@ -168,6 +168,9 @@ class AppState(
     var formatFilter by mutableStateOf("")
         private set
 
+    var albumFilter by mutableStateOf("")
+        private set
+
     /** Multi-song Health context: shows only the affected songs in Library. */
     var issueContext by mutableStateOf<IssueContext?>(null)
         private set
@@ -295,6 +298,7 @@ class AppState(
             val q = query.trim().lowercase()
             val artist = artistFilter.trim().lowercase()
             val format = formatFilter.trim().lowercase()
+            val album = albumFilter.trim().lowercase()
 
             val filtered = songs.filter { song ->
                 val matchesQuery = q.isEmpty() ||
@@ -304,8 +308,10 @@ class AppState(
                 val matchesArtist = artist.isEmpty() ||
                     song.artist?.lowercase()?.contains(artist) == true
                 val matchesFormat = format.isEmpty() || song.extension.lowercase() == format
+                val matchesAlbum = album.isEmpty() ||
+                    song.album?.lowercase()?.contains(album) == true
                 val matchesIssue = issueContext?.let { song.path.toString() in it.paths } ?: true
-                matchesQuery && matchesArtist && matchesFormat && matchesIssue
+                matchesQuery && matchesArtist && matchesFormat && matchesAlbum && matchesIssue
             }
             val comparator = comparatorFor(sortColumn, sortAscending)
             return filtered.sortedWith(comparator)
@@ -383,6 +389,12 @@ class AppState(
     fun exploreFormat(format: String) {
         setSection(Section.LIBRARY)
         formatFilter = format
+    }
+
+    /** Statistics → Library: open Library filtered by the selected album. */
+    fun exploreAlbum(album: String) {
+        setSection(Section.LIBRARY)
+        albumFilter = album
     }
 
     fun clearQuickFixYoutube() {
@@ -466,6 +478,10 @@ class AppState(
 
     fun updateFormatFilter(value: String) {
         formatFilter = value
+    }
+
+    fun updateAlbumFilter(value: String) {
+        albumFilter = value
     }
 
     fun setSection(section: Section) {

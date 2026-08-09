@@ -8,7 +8,7 @@
 |---|---|
 | Category | Design / Screen Specification |
 | Audience | Developers / UX |
-| Status | Defined / Target Interaction |
+| Status | Implemented / refining |
 | Project Version | v0.13.0-dev |
 | Primary navigation | Statistics |
 | Related screens | Library, Health |
