@@ -1,11 +1,11 @@
 package com.melodysync.desktop.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Visibility
@@ -15,102 +15,105 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.ScanStatus
 import com.melodysync.desktop.state.WatchStatus
+import com.melodysync.desktop.theme.Heights
+import com.melodysync.desktop.theme.Spacing
 import javax.swing.JFileChooser
 
+/**
+ * Directory-scoped control strip. The layout deliberately treats Scan as the
+ * primary action and Watch as a persistent state, matching the Hi-Fi console
+ * metaphor without turning controls into literal hardware replicas.
+ */
 @Composable
 fun DirectoryBar(state: AppState) {
-    Row(
+    Surface(
+        color = MaterialTheme.colorScheme.surface,
+        shape = MaterialTheme.shapes.small,
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.outline.copy(alpha = 0.7f),
+        ),
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        OutlinedTextField(
-            value = state.directory,
-            onValueChange = state::updateDirectory,
-            label = { Text("Music directory") },
-            placeholder = { Text("/home/you/Music") },
-            singleLine = true,
-            trailingIcon = {
-                IconButton(onClick = { chooseDirectory()?.let(state::updateDirectory) }) {
-                    Icon(Icons.Filled.Folder, contentDescription = "Choose directory")
+        Column(modifier = Modifier.padding(Spacing.md)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+            ) {
+                OutlinedTextField(
+                    value = state.directory,
+                    onValueChange = state::updateDirectory,
+                    label = { Text("Music directory") },
+                    placeholder = { Text("/home/you/Music") },
+                    singleLine = true,
+                    trailingIcon = {
+                        IconButton(onClick = { chooseDirectory()?.let(state::updateDirectory) }) {
+                            Icon(Icons.Filled.Folder, contentDescription = "Choose directory")
+                        }
+                    },
+                    modifier = Modifier.weight(1f),
+                )
+
+                Button(
+                    onClick = state::scan,
+                    enabled = state.directory.isNotBlank() && state.status != ScanStatus.SCANNING,
+                    modifier = Modifier.padding(vertical = Spacing.xs),
+                ) {
+                    Text(
+                        when {
+                            state.status == ScanStatus.SCANNING -> "Scanning…"
+                            state.songs.isNotEmpty() -> "Rescan Library"
+                            else -> "Scan Library"
+                        },
+                    )
                 }
-            },
-            modifier = Modifier.weight(1f),
-        )
-        Button(
-            onClick = state::scan,
-            enabled = state.directory.isNotBlank() && state.status != ScanStatus.SCANNING,
-            modifier = Modifier.padding(vertical = 4.dp),
-        ) {
-            Text(
-                when {
-                    state.status == ScanStatus.SCANNING -> "Scanning…"
-                    state.songs.isNotEmpty() -> "Rescan"
-                    else -> "Scan Library"
-                },
-            )
-        }
-        Spacer(modifier = Modifier.width(8.dp))
-        WatchToggle(state)
-    }
 
-    when (state.status) {
-        ScanStatus.SCANNING -> Text(
-            "Scanning library…",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(top = 4.dp),
-        )
-        ScanStatus.DONE -> {
-            if (state.progressText.isNotBlank()) {
-                Text(
-                    state.progressText,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 4.dp),
-                )
+                WatchToggle(state)
             }
-        }
-        ScanStatus.ERROR -> {
-            state.errorMessage?.let {
-                Text(
-                    it,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(top = 4.dp),
-                )
-            }
-        }
-        ScanStatus.IDLE -> Unit
-    }
 
-    when (state.watchStatus) {
-        WatchStatus.WATCHING -> Text(
-            "File watcher active — library stays in sync automatically",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(top = 4.dp),
-        )
-        WatchStatus.ERROR -> {
-            state.errorMessage?.let {
-                Text(
-                    it,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(top = 4.dp),
+            when (state.status) {
+                ScanStatus.SCANNING -> StatusPill("SCANNING", PillTone.PRIMARY, Modifier.padding(top = Spacing.sm))
+                ScanStatus.DONE -> {
+                    if (state.progressText.isNotBlank()) {
+                        StatusPill(
+                            state.progressText,
+                            PillTone.SUCCESS,
+                            Modifier.padding(top = Spacing.sm),
+                        )
+                    }
+                }
+                ScanStatus.ERROR -> {
+                    state.errorMessage?.let {
+                        StatusPill(it, PillTone.DANGER, Modifier.padding(top = Spacing.sm))
+                    }
+                }
+                ScanStatus.IDLE -> Unit
+            }
+
+            when (state.watchStatus) {
+                WatchStatus.WATCHING -> StatusPill(
+                    "WATCHING · library stays in sync",
+                    PillTone.INFO,
+                    Modifier.padding(top = Spacing.sm),
                 )
+                WatchStatus.ERROR -> {
+                    state.errorMessage?.let {
+                        StatusPill(it, PillTone.DANGER, Modifier.padding(top = Spacing.sm))
+                    }
+                }
+                WatchStatus.STOPPED -> Unit
             }
         }
-        WatchStatus.STOPPED -> Unit
     }
 }
 
@@ -119,7 +122,7 @@ private fun WatchToggle(state: AppState) {
     val watching = state.watchStatus == WatchStatus.WATCHING
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
     ) {
         Icon(
             imageVector = if (watching) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
