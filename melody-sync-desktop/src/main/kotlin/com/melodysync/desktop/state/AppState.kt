@@ -228,6 +228,9 @@ class AppState(
     var updateChannel by mutableStateOf(channelFromString(prefs.updateChannel))
         private set
 
+    var autoUpdate by mutableStateOf(prefs.autoUpdate)
+        private set
+
     // Quick-Fix HUD (see docs/research/quick-fix-hud.md)
     // The key is read from YOUTUBE_API_KEY, falling back to
     // ~/.config/melody-sync/youtube-api-key (trimmed) so the installed
@@ -433,6 +436,39 @@ class AppState(
     fun selectUpdateChannel(channel: InstallationChannel) {
         updateChannel = channel
         savePrefs()
+    }
+
+    fun setAutoUpdateEnabled(enabled: Boolean) {
+        autoUpdate = enabled
+        savePrefs()
+    }
+
+    /**
+     * Unattended updates: called once at startup. When enabled and running a
+     * release install (not a source checkout), checks the selected channel and
+     * installs a newer release automatically. The new build takes effect on the
+     * next launch.
+     */
+    fun autoUpdateIfEnabled() {
+        if (!autoUpdate) return
+        if (updateStatus == UpdateStatus.RUNNING || updateStatus == UpdateStatus.CHECKING) return
+
+        val projectDir = Path.of(System.getProperty("user.dir") ?: ".")
+        if (InstallationValidator().isSourceCheckout(projectDir)) return
+
+        uiScope.launch {
+            val service = InstallationService()
+            try {
+                val check = withContext(Dispatchers.Default) {
+                    service.checkForReleaseUpdate(channel = updateChannel)
+                }
+                if (check.updateAvailable && check.availableVersion != null) {
+                    runUpdate(force = false)
+                }
+            } catch (_: Exception) {
+                // offline or transient failure: skip silently, manual update remains available
+            }
+        }
     }
 
     fun showMessage(message: String) {
@@ -768,6 +804,7 @@ class AppState(
             visibleColumns = visibleColumns.joinToString(",") { it.name.lowercase() },
             groupByLetter = groupByLetter,
             updateChannel = updateChannel.name.lowercase(),
+            autoUpdate = autoUpdate,
         ).save(prefsFile ?: AppPreferences.defaultFile())
     }
 

@@ -56,7 +56,7 @@ The current priority is stabilization and consolidation rather than opening addi
 |------|----------|--------|---------------------|
 | Metadata & Quick Fix | High | ✅ Foundation complete (Steps 0, A–E done) | [Metadata Foundation](planning/metadata-foundation.md) · [Formats](planning/metadata-formats.md) · [Quick-Fix HUD](research/quick-fix-hud.md) |
 | Review / Analysis | Medium | ✅ Review implemented; Health actionable | [Application Design Research](research/app-design.md) |
-| Updates & Installation | Medium | 🚧 Automatic unattended update backlog; release installer and channels completed | [Update Channels](research/update-channels.md) |
+| Updates & Installation | Medium | ✅ Auto-update on startup implemented; relaunch orchestration backlog | [Update Channels](research/update-channels.md) |
 | Platform | Low | 🔒 Frozen | [ADR-0009](architecture/ADR/ADR-0009-PlatformLayer.md) |
 | UX / Design | Medium | 🚧 Continuous refinement | [Application Design Research](research/app-design.md) |
 | Docs / Tests | Medium | 🚧 CI completed; methodology accepted | [Development Methodology](standards/handbook/DevelopmentMethodology.md) |
@@ -122,14 +122,13 @@ Completed:
 - Release installer with checksum verification and rollback support.
 - Stable / Beta / Nightly channel selection.
 - GUI update flow using source rebuild or release installation as appropriate.
+- Auto-update on startup (Settings toggle; release installs only).
 
 Deferred:
 
-- Fully automatic unattended update behavior.
-- Automatic background checking/install policy.
-- Restart/relaunch orchestration after an update.
+- Automatic relaunch into the new build after an update (takes effect on the next manual launch).
 
-The current implementation and the real unattended-update backlog are documented in [Update Channels research](research/update-channels.md).
+The current implementation and the remaining relaunch backlog are documented in [Update Channels research](research/update-channels.md).
 
 ---
 
@@ -236,7 +235,7 @@ The following remain intentionally deferred:
 - Album cover extraction/cache.
 - Timeline by year based on a real `year` field.
 - Large-scale metadata schema expansion without a foundation review.
-- Unattended automatic updates.
+- Automatic relaunch into the new build after an update.
 - New major desktop sections unrelated to the current review/metadata flow.
 
 ---

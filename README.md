@@ -63,6 +63,7 @@ The project is also a way to practice software engineering: architecture before 
 - ✅ Single source of truth for the version + generated runtime version resource
 - ✅ Release installer — download a published jar, verify SHA-256, atomic install with rollback
 - ✅ Update channels — Stable / Beta / Nightly (CLI + GUI Settings)
+- ✅ Auto-update on startup — checks and installs newer releases automatically (release installs only, Settings toggle)
 - ✅ `melody-sync doctor` — installation and metadata diagnostics
 - ✅ One-command installation on Fedora (`scripts/install.sh`)
 - ✅ GitHub Actions CI + automated release publishing
@@ -76,7 +77,7 @@ The project is also a way to practice software engineering: architecture before 
 - ⏳ YouTube enrichment: auto-apply metadata to songs (currently report-only)
 - ⏳ Cover art and lyrics fetching from matched videos
 - ⏳ AppImage / RPM packaging for easier distribution (currently install script)
-- ⏳ Unattended automatic updates
+- ⏳ Automatic relaunch into the new build after an update
 
 ---
 
@@ -339,7 +340,7 @@ Project documentation lives in the `docs/` directory. Key documents:
 - [x] Release installer (download, SHA-256 verify, atomic install, rollback)
 - [x] Update channels Stable / Beta / Nightly (CLI + GUI)
 - [x] `melody-sync doctor`
-- [ ] Unattended automatic updates (deferred)
+- [x] Auto-update on startup (release installs only)
 
 ### Milestone 17 — Metadata Foundation 🚧
 - [x] `melody-sync metadata --write-test` diagnostic (Step 0)

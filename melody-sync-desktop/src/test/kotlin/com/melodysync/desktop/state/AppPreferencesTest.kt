@@ -26,6 +26,7 @@ class AppPreferencesTest {
         assertTrue(prefs.sortAscending)
         assertFalse(prefs.groupByLetter)
         assertEquals("stable", prefs.updateChannel)
+        assertFalse(prefs.autoUpdate)
     }
 
     @Test
@@ -39,6 +40,7 @@ class AppPreferencesTest {
             visibleColumns = "title,artist,bitrate",
             groupByLetter = true,
             updateChannel = "beta",
+            autoUpdate = true,
             windowWidth = 1280.0,
             windowHeight = 800.0,
             windowPositionX = 40.0,

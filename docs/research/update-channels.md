@@ -1,6 +1,6 @@
 # Update Channels & Release Installer — Implemented
 
-> Implemented release installer and Stable/Beta/Nightly update-channel architecture; unattended updates remain backlog.
+> Implemented release installer, Stable/Beta/Nightly channels and auto-update on startup (release installs only).
 
 ---
 
@@ -30,17 +30,22 @@
 - The release installer downloads, verifies and installs published builds
   with rollback support.
 
+### Auto-update on startup (implemented)
+
+When enabled in Settings → Updates, the GUI checks the selected channel at
+startup and installs a newer release automatically. It applies only to
+release installs (not a source checkout) and skips silently when offline.
+The new build takes effect on the next launch.
+
 ### Remaining backlog
 
-The installed update system is not yet an unattended automatic-update
-system. The following remain intentionally deferred:
+The following remain intentionally deferred:
 
-- routine unattended background update checks;
-- automatic installation policy;
-- restart/relaunch orchestration after an unattended update.
+- restart/relaunch orchestration that relaunches the app into the new build
+  automatically after an update.
 
 These items are backlog work and do not change the implemented release
-installer or channel architecture.
+installer, channel architecture or the auto-update-on-startup flow.
 
 ## What this is
 

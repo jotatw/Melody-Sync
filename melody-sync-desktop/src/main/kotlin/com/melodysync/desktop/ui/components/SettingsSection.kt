@@ -183,6 +183,25 @@ private fun UpdatesSection(state: AppState) {
             }
     }
 
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(top = Spacing.md),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text("Auto-update on startup", style = MaterialTheme.typography.bodyMedium)
+            Text(
+                "Check and install newer releases automatically (release installs only — not from a source checkout).",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = Spacing.xs),
+            )
+        }
+        Switch(
+            checked = state.autoUpdate,
+            onCheckedChange = { state.setAutoUpdateEnabled(it) },
+        )
+    }
+
     when (state.updateStatus) {
         UpdateStatus.IDLE -> {
             Button(

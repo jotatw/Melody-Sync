@@ -14,6 +14,7 @@ data class AppPreferences(
     val visibleColumns: String = "title,artist,album,duration,format,bitrate",
     val groupByLetter: Boolean = false,
     val updateChannel: String = "stable",
+    val autoUpdate: Boolean = false,
     val windowWidth: Double? = null,
     val windowHeight: Double? = null,
     val windowPositionX: Double? = null,
@@ -30,6 +31,7 @@ data class AppPreferences(
         props.setProperty("visibleColumns", visibleColumns)
         props.setProperty("groupByLetter", groupByLetter.toString())
         props.setProperty("updateChannel", updateChannel)
+        props.setProperty("autoUpdate", autoUpdate.toString())
         windowWidth?.let { props.setProperty("windowWidth", it.toString()) }
         windowHeight?.let { props.setProperty("windowHeight", it.toString()) }
         windowPositionX?.let { props.setProperty("windowPositionX", it.toString()) }
@@ -63,6 +65,7 @@ data class AppPreferences(
                         ?: "title,artist,album,duration,format,bitrate",
                     groupByLetter = props.getProperty("groupByLetter")?.toBoolean() ?: false,
                     updateChannel = props.getProperty("updateChannel") ?: "stable",
+                    autoUpdate = props.getProperty("autoUpdate")?.toBoolean() ?: false,
                     windowWidth = props.getProperty("windowWidth")?.toDoubleOrNull(),
                     windowHeight = props.getProperty("windowHeight")?.toDoubleOrNull(),
                     windowPositionX = props.getProperty("windowPositionX")?.toDoubleOrNull(),

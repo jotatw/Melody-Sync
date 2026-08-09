@@ -175,7 +175,7 @@ Current reported project status:
 - Review screen: completed
 - Development methodology: accepted
 - Metadata foundation: completed (Steps 0, A-E, per-format fixtures and capability matrix)
-- Unattended automatic updates: deferred
+- Auto-update on startup: completed; relaunch orchestration: deferred
 
 ---
 
@@ -256,7 +256,7 @@ Metadata Foundation
 | Review screen | ✅ Completed |
 | Development methodology | ✅ Accepted |
 | Metadata foundation | ✅ Completed |
-| Unattended automatic updates | ⏳ Deferred |
+| Auto-update on startup | ✅ Completed |
 
 ---
 
@@ -276,7 +276,7 @@ The immediate planning reference is [Metadata Foundation](../planning/metadata-f
 2. Add verified format fixtures and capability tests.
 3. Keep the platform layer frozen.
 4. Continue UX refinement without opening another major UI architecture branch.
-5. Keep unattended update behavior deferred until the installation/release flow is stable.
+5. Keep relaunch orchestration deferred; auto-update on startup is complete.
 
 ---
 

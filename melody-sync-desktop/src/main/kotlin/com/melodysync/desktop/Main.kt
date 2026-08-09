@@ -51,6 +51,7 @@ fun main() = application {
     }
 
     LaunchedEffect(Unit) { appState.loadLibraryFromDatabase() }
+    LaunchedEffect(Unit) { appState.autoUpdateIfEnabled() }
 
     fun savePrefs() {
         val position = windowState.position as? WindowPosition.Absolute
@@ -63,6 +64,8 @@ fun main() = application {
             sidebarExpanded = appState.sidebarExpanded,
             visibleColumns = appState.visibleColumns.joinToString(",") { it.name.lowercase() },
             groupByLetter = appState.groupByLetter,
+            updateChannel = appState.updateChannel.name.lowercase(),
+            autoUpdate = appState.autoUpdate,
             windowWidth = windowState.size.width.value.toDouble(),
             windowHeight = windowState.size.height.value.toDouble(),
             windowPositionX = position?.x?.value?.toDouble(),
