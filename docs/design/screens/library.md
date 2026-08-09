@@ -8,10 +8,10 @@
 |---|---|
 | Category | Design / Screen Specification |
 | Audience | Developers / UX |
-| Status | Defined |
+| Status | Defined / refining |
 | Project Version | v0.13.0-dev |
 | Primary navigation | Library |
-| Related screens | Health, Statistics, Organize, Settings |
+| Related screens | Health, Statistics, Organize, Settings, Review, Duplicates |
 | Last Updated | 2026-08-09 |
 
 ---
@@ -262,7 +262,7 @@ When the user chooses to review an issue category:
 - preserve enough context for the user to understand why the library was opened;
 - do not automatically modify anything.
 
-When the issue is a multi-file duplicate group, Health remains the review surface until Library supports an appropriate multi-selection workflow.
+When the issue is a multi-file duplicate group, Health/duplicates context remains the review surface until Library supports an appropriate multi-selection workflow.
 
 ### Statistics → Library
 
@@ -281,6 +281,12 @@ Format → Library filtered by format
 ### Organize → Library
 
 After an organization operation is successfully applied, Library should refresh and reflect the resulting paths and collection state.
+
+### Review / Duplicates → Library
+
+Review and Duplicates are currently separate workspaces, but the approved navigation direction is contextual rather than permanent primary destinations.
+
+When a contextual workflow points to one song, Library should open with that song selected. Multi-file contexts should remain in their dedicated workflow until an appropriate multi-selection interaction exists.
 
 ### Watch
 
@@ -308,7 +314,11 @@ Sidebar navigation changes the primary screen. It should not be overloaded with 
 
 ### Review
 
-`Review` is not a primary Library sub-destination. It is a contextual workflow reached from Health or song-level problem handling.
+Review is a contextual workflow reached from Health or song-level problem handling. Its current implementation remains documented separately until navigation consolidation is implemented.
+
+### Duplicates
+
+Duplicates is a contextual workflow for duplicate groups. Its current implementation remains documented separately until navigation consolidation is implemented.
 
 ---
 
@@ -343,7 +353,7 @@ Library must not treat the UI list as the authoritative source of persistent dat
 6. **Do not expose implementation terminology unnecessarily.** The user should see synchronization results rather than database operation names.
 7. **Primary action hierarchy matters.** Scanning is the main library operation; secondary controls should remain visually subordinate.
 8. **Selection is explicit.** A song must be selected before song-level correction actions become active.
-9. **Destructive operations remain outside the normal browsing flow.** File movement and similar changes belong to explicit workflows such as Organize.
+9. **Destructive operations remain outside the normal browsing flow.** File movement and similar changes belong to explicit workflows such as Organize or Duplicates.
 10. **Empty and loading states are designed states, not missing content.**
 
 ---
