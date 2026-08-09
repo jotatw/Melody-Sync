@@ -58,6 +58,7 @@ Design documentation defines how the application should look, behave and guide t
 | Document | Purpose | Status |
 |---|---|---|
 | [Application Design](design/app-design.md) | Application-wide navigation, hierarchy and interaction model | Target design |
+| [Navigation](design/navigation.md) | Official navigation contract, context preservation and screen transitions | Defined / target navigation |
 | [Design System](standards/DesignSystem.md) | Visual identity, colors, typography, shapes and reusable components | Implemented / evolving |
 | [Screen Specifications](design/screens/) | One document per application screen | Active |
 
@@ -205,6 +206,7 @@ docs/
 │
 ├── design/
 │   ├── app-design.md           # Application-wide UX and navigation
+│   ├── navigation.md           # Navigation contract and context rules
 │   └── screens/                # One document per screen
 │
 ├── planning/                   # Detailed plans and foundation records
@@ -239,4 +241,4 @@ docs/
 
 **Last Updated**
 
-2026-08-09 — Added current Review and Duplicates screen specifications and linked them from the documentation map while preserving the current-vs-target navigation distinction.
+2026-08-09 — Added the navigation contract and current/target navigation distinction while preserving the existing screen specifications.
