@@ -98,11 +98,11 @@ Review is intended to become a contextual review workflow connected to Health/Li
 | [Library](design/screens/library.md) | Main workspace for browsing, inspecting and curating songs | Implemented / refining |
 | [Health](design/screens/health.md) | Identify library issues and guide the user to review them | Implemented / refining |
 | [Statistics](design/screens/statistics.md) | Explore library data and navigate to contextual views | Implemented / refining |
+| [Review](design/screens/review.md) | Current review workspace for inspecting issues and opening Quick Fix | Implemented / navigation consolidation pending |
+| [Duplicates](design/screens/duplicates.md) | Current duplicate-management workspace | Implemented / navigation consolidation pending |
 | [Organize](design/screens/organize.md) | Plan and apply filesystem organization | Implemented / refining |
 | [Settings](design/screens/settings.md) | Application, installation and update configuration | Implemented / refining |
 | [About](design/screens/about.md) | Project and application information | Implemented |
-| Review | Current review workspace; target is contextual Health/Library workflow | Implemented / navigation consolidation pending |
-| Duplicates | Current duplicate-management workspace; target is contextual workflow | Implemented / navigation consolidation pending |
 
 ### Design Research & Feature History
 
@@ -239,4 +239,4 @@ docs/
 
 **Last Updated**
 
-2026-08-09 — Reconciled navigation, metadata status, architecture references and current-vs-target documentation state against the current project source.
+2026-08-09 — Added current Review and Duplicates screen specifications and linked them from the documentation map while preserving the current-vs-target navigation distinction.
