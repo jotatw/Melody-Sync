@@ -11,16 +11,22 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,6 +40,7 @@ import com.melodysync.model.MissingField
 import com.melodysync.model.QualityFlag
 import com.melodysync.model.Song
 import com.melodysync.model.SongDiagnostics
+import com.melodysync.model.TagSuggestion
 import com.melodysync.service.FixSuggestion
 import com.melodysync.service.LocalFixSource
 import com.melodysync.service.QuickFixService
@@ -50,10 +57,12 @@ fun QuickFixPanel(state: AppState, song: Song) {
     val writeSupported = remember(song) {
         MetadataFormatRegistry.providerFor(song.extension)?.supportsWrite ?: false
     }
+    var reviewing by remember { mutableStateOf<FixSuggestion?>(null) }
 
     LaunchedEffect(song.path) {
         state.clearQuickFixYoutube()
         state.clearLyrics()
+        reviewing = null
     }
 
     Surface(
@@ -86,12 +95,25 @@ fun QuickFixPanel(state: AppState, song: Song) {
                     modifier = Modifier.padding(top = Spacing.sm),
                 )
             }
-            LocalSuggestionsSection(state, song, localSuggestions, writeSupported)
+            val onReview: (FixSuggestion) -> Unit = { reviewing = it }
+            LocalSuggestionsSection(state, song, localSuggestions, writeSupported, onReview)
             if (state.youtubeEnabled) {
-                YoutubeSuggestionsSection(state, song, writeSupported)
+                YoutubeSuggestionsSection(state, song, writeSupported, onReview)
             }
             LyricsSection(state, song)
         }
+    }
+
+    reviewing?.let { suggestion ->
+        SuggestionReviewDialog(
+            song = song,
+            suggestion = suggestion,
+            onDismiss = { reviewing = null },
+            onApply = { edited ->
+                reviewing = null
+                state.applyQuickFix(song, edited)
+            },
+        )
     }
 }
 
@@ -187,7 +209,7 @@ private fun DiagnosisSection(diagnostics: SongDiagnostics) {
 }
 
 @Composable
-private fun LocalSuggestionsSection(state: AppState, song: Song, suggestions: List<FixSuggestion>, writeSupported: Boolean) {
+private fun LocalSuggestionsSection(state: AppState, song: Song, suggestions: List<FixSuggestion>, writeSupported: Boolean, onReview: (FixSuggestion) -> Unit) {
     Text(
         "Local suggestion",
         style = MaterialTheme.typography.titleSmall,
@@ -203,12 +225,12 @@ private fun LocalSuggestionsSection(state: AppState, song: Song, suggestions: Li
         return
     }
     suggestions.forEach { suggestion ->
-        SuggestionItemCard(state, song, suggestion, writeSupported)
+        SuggestionItemCard(state, song, suggestion, writeSupported, onReview)
     }
 }
 
 @Composable
-private fun YoutubeSuggestionsSection(state: AppState, song: Song, writeSupported: Boolean) {
+private fun YoutubeSuggestionsSection(state: AppState, song: Song, writeSupported: Boolean, onReview: (FixSuggestion) -> Unit) {
     Text(
         "YouTube suggestion",
         style = MaterialTheme.typography.titleSmall,
@@ -231,7 +253,7 @@ private fun YoutubeSuggestionsSection(state: AppState, song: Song, writeSupporte
         }
         state.quickFixYoutubeSuggestions.isNotEmpty() -> {
             state.quickFixYoutubeSuggestions.forEach { suggestion ->
-                SuggestionItemCard(state, song, suggestion, writeSupported)
+                SuggestionItemCard(state, song, suggestion, writeSupported, onReview)
             }
         }
         state.quickFixYoutubeLoaded -> {
@@ -255,7 +277,7 @@ private fun YoutubeSuggestionsSection(state: AppState, song: Song, writeSupporte
 }
 
 @Composable
-private fun SuggestionItemCard(state: AppState, song: Song, suggestion: FixSuggestion, writeSupported: Boolean) {
+private fun SuggestionItemCard(state: AppState, song: Song, suggestion: FixSuggestion, writeSupported: Boolean, onReview: (FixSuggestion) -> Unit) {
     Column(modifier = Modifier.padding(top = Spacing.sm)) {
         Text(
             suggestion.title,
@@ -278,10 +300,10 @@ private fun SuggestionItemCard(state: AppState, song: Song, suggestion: FixSugge
             horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
             Button(
-                onClick = { state.applyQuickFix(song, suggestion.tagSuggestion) },
+                onClick = { onReview(suggestion) },
                 enabled = !state.quickFixApplying && writeSupported,
             ) {
-                Text(if (state.quickFixApplying) "Applying…" else "Apply")
+                Text(if (state.quickFixApplying) "Applying…" else "Review & Apply")
             }
             if (suggestion.openUrl != null) {
                 OutlinedButton(onClick = { openInBrowser(suggestion.openUrl!!) }) {
@@ -295,6 +317,93 @@ private fun SuggestionItemCard(state: AppState, song: Song, suggestion: FixSugge
 private fun flagLabel(flag: QualityFlag): String = when (flag) {
     QualityFlag.LOW_BITRATE -> "Low bitrate"
     QualityFlag.ZERO_DURATION -> "Zero duration"
+}
+
+/**
+ * Editable review of a suggestion before Apply (metadata workflow §5, §7):
+ * the current values are shown separately from the editable suggestion, and
+ * the source is visible. The user can edit or reject; nothing is written
+ * without the explicit Apply action.
+ */
+@Composable
+private fun SuggestionReviewDialog(
+    song: Song,
+    suggestion: FixSuggestion,
+    onDismiss: () -> Unit,
+    onApply: (TagSuggestion) -> Unit,
+) {
+    var title by remember(suggestion) { mutableStateOf(suggestion.tagSuggestion.title ?: "") }
+    var artist by remember(suggestion) { mutableStateOf(suggestion.tagSuggestion.artist ?: "") }
+    var album by remember(suggestion) { mutableStateOf(suggestion.tagSuggestion.album ?: "") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Review suggestion") },
+        text = {
+            Column {
+                Text(
+                    "Source: ${suggestion.sourceLabel}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    "Current",
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(top = Spacing.sm),
+                )
+                Text("Title: ${song.title ?: "—"}", style = MaterialTheme.typography.bodySmall)
+                Text("Artist: ${song.artist ?: "—"}", style = MaterialTheme.typography.bodySmall)
+                Text("Album: ${song.album ?: "—"}", style = MaterialTheme.typography.bodySmall)
+
+                Text(
+                    "Suggested values (editable)",
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(top = Spacing.md),
+                )
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    label = { Text("Title") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth().padding(top = Spacing.xs),
+                )
+                OutlinedTextField(
+                    value = artist,
+                    onValueChange = { artist = it },
+                    label = { Text("Artist") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth().padding(top = Spacing.xs),
+                )
+                OutlinedTextField(
+                    value = album,
+                    onValueChange = { album = it },
+                    label = { Text("Album") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth().padding(top = Spacing.xs),
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onApply(
+                        TagSuggestion(
+                            title = title.trim().ifBlank { null },
+                            artist = artist.trim().ifBlank { null },
+                            album = album.trim().ifBlank { null },
+                        ),
+                    )
+                },
+            ) {
+                Text("Apply")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        },
+    )
 }
 
 private fun openInBrowser(url: String) {

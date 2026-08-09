@@ -121,6 +121,8 @@ Opus metadata support was added because JAudioTagger did not provide the require
 
 A lyrics source was added to the Quick Fix panel as a view-only fetch through the Lyrics.ovh API, alongside local and YouTube suggestion sources.
 
+Quick Fix suggestions are now reviewed before Apply: the panel opens an editable review showing the current values separately from the suggestion, with the source visible. The user can edit or reject; nothing is written without the explicit Apply action (metadata workflow §5, §7).
+
 The Review screen was added after Health and Quick Fix, creating a direct Health → Review → Quick Fix flow for songs with issues. The Review screen computes per-song diagnostics, provides filters, and opens the Quick Fix panel for the selected song.
 
 ### Metadata Foundation
