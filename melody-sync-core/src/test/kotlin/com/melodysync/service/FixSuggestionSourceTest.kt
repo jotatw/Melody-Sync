@@ -3,6 +3,7 @@ package com.melodysync.service
 import com.melodysync.model.Song
 import com.melodysync.model.YouTubeVideoResult
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.nio.file.Path
@@ -38,7 +39,7 @@ class FixSuggestionSourceTest {
     }
 
     @Test
-    fun `youtube tag suggestion strips official suffix and topic channel`() {
+    fun `youtube tag suggestion strips title suffix and never maps the channel to artist`() {
         val video = YouTubeVideoResult(
             videoId = "x",
             title = "Nirvana - Smells Like Teen Spirit (Official Audio)",
@@ -48,6 +49,6 @@ class FixSuggestionSourceTest {
         val suggestion = youtubeTagSuggestion(video)
 
         assertEquals("Nirvana - Smells Like Teen Spirit", suggestion.title)
-        assertEquals("Nirvana", suggestion.artist)
+        assertNull(suggestion.artist)
     }
 }

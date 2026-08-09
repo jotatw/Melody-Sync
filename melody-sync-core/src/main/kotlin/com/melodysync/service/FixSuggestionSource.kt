@@ -83,8 +83,12 @@ class YoutubeFixSource(private val apiKey: String) : FixSuggestionSource {
 
 /**
  * Builds a tag suggestion from a YouTube result: strips common title
- * suffixes ("(Official Audio)", "(Official Music Video)") and drops the
- * " - Topic" channel suffix used by auto-generated uploads.
+ * suffixes ("(Official Audio)", "(Official Music Video)") so the title can be
+ * presented as an editable candidate.
+ *
+ * The channel/uploader is NEVER mapped to Artist (reuploads make channel ≠
+ * artist); it is exposed as identification context only via the suggestion
+ * subtitle. See docs/integrations/youtube-identification.md.
  */
 fun youtubeTagSuggestion(video: YouTubeVideoResult): TagSuggestion {
     val cleanedTitle = Regex("\\s*\\((Official (Audio|Video|Lyric Video)|Audio|Official)\\)\\s*$")
@@ -92,6 +96,6 @@ fun youtubeTagSuggestion(video: YouTubeVideoResult): TagSuggestion {
         .trim()
     return TagSuggestion(
         title = cleanedTitle.ifBlank { video.title },
-        artist = video.channel.removeSuffix(" - Topic").trim().ifBlank { null },
+        artist = null,
     )
 }
