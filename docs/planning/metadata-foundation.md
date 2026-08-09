@@ -1,47 +1,55 @@
 # Metadata Foundation
 
-> Foundation plan for reliable, diagnosable and testable metadata read/write operations behind Quick Fix.
+> Foundation record for reliable, diagnosable and testable metadata read/write operations behind Quick Fix.
 
 ---
 
 ## Document Information
 
-| Item             | Value |
-|------------------|-------|
-| Document ID      | PLAN-METADATA-001 |
-| Category         | Planning |
-| Audience         | Core and desktop developers |
-| Status           | Planned |
-| Project Version  | v0.13.0-dev |
+| Item | Value |
+|---|---|
+| Document ID | PLAN-METADATA-001 |
+| Category | Planning / Foundation Record |
+| Audience | Core and desktop developers |
+| Status | **Implemented / Refinement** |
+| Project Version | v0.13.0-dev |
 | Template Version | BaseDocument v1.0 |
-| Last Updated     | 2026-08-08 |
-| Maintainer       | Melody Sync Project |
+| Last Updated | 2026-08-09 |
+| Maintainer | Melody Sync Project |
 
 ---
 
 ## Purpose
 
-Define the next foundation work for metadata writing without expanding the domain model unnecessarily.
+Record the foundation that makes metadata read/write operations explicit about format capabilities, failure reasons, persistence and testability.
 
-The goal is not to add more metadata fields immediately. The goal is to make the existing title, artist and album write path explicit about format capabilities, failure reasons, persistence and testability.
+The foundation described here is implemented. Remaining work belongs to reliability refinement, additional verified format coverage, and future metadata capabilities rather than rebuilding this architecture.
+
+The scope remains intentionally limited to the existing title, artist and album write path. Genre, year and album artwork are outside this foundation.
 
 ---
 
-## Current Context
+## Implemented Foundation
 
-Quick Fix already provides:
+Quick Fix and the metadata subsystem now provide:
 
-- `TagWriter` for title/artist/album writes.
-- `SongDiagnostics` for missing fields and quality flags.
-- `SongMatcher` for local path/filename suggestions.
-- `QuickFixService` for diagnosis, suggestions and Apply.
-- Local and optional YouTube suggestion sources.
-- Review screen integration.
-- Opus metadata reading and writing.
+- `TagWriter` for title/artist/album writes;
+- `SongDiagnostics` for missing fields and quality flags;
+- `SongMatcher` for local path/filename suggestions;
+- `QuickFixService` for diagnosis, suggestions and Apply;
+- local and optional YouTube suggestion sources;
+- Review screen integration;
+- Opus metadata reading and writing;
+- `MetadataProvider` abstraction;
+- `MetadataFormatRegistry`;
+- `JAudioTaggerProvider`;
+- `OpusProvider`;
+- typed `WriteResult` / `TagWriteError` handling;
+- metadata diagnostics and safe write tests;
+- provider capability fixtures and verified format records;
+- controlled database connection behavior for the Apply path.
 
-`TagWriter` currently routes Opus through a dedicated writer and other formats through JAudioTagger. The writer re-reads the file after a successful write. This is useful, but format capability and failure semantics still need to be made explicit.
-
-The project also has a real-world requirement: an Apply operation must never silently report success when the original file could not be modified.
+`TagWriter` routes supported formats through the metadata provider registry and re-reads the file after a successful write. The user must explicitly confirm Apply.
 
 ---
 
@@ -49,67 +57,17 @@ The project also has a real-world requirement: an Apply operation must never sil
 
 > **Status: Implemented** (`melody-sync metadata [--write-test] <file>`).
 
-## Objective
+The diagnostic inspects the target without changing the original file and reports the detected format, provider, read/write capability and failure reason where applicable.
 
-Create a diagnostic operation exposed by the CLI as:
-
-```text
-melody-sync metadata --write-test <file>
-```
-
-The operation must inspect the target without changing the original file.
-
-## Output
-
-The diagnostic should report, at minimum:
-
-- detected format;
-- metadata reader/provider selected;
-- read capability;
-- write capability;
-- requested write fields supported by the provider;
-- whether a safe write test can be performed;
-- typed reason when it cannot.
-
-Example:
-
-```text
-Format: m4a
-Provider: JAudioTagger
-Read: yes
-Write: limited
-Write test: unavailable
-Reason: UnsupportedContainer
-```
-
-For a supported fixture:
-
-```text
-Format: opus
-Provider: OpusProvider
-Read: yes
-Write: yes
-Write test: passed
-```
-
-The diagnostic must never modify the user's original file.
-
-## Acceptance
-
-- The command exits successfully when diagnosis itself succeeds.
-- Unsupported formats produce a typed reason rather than a generic exception.
-- The original file remains unchanged.
-- The operation can be exercised in automated tests against temporary fixtures.
+Write tests operate against a temporary copy.
 
 ---
 
 # Phase A — Metadata Provider Abstraction
 
-## Objective
+> **Status: Implemented.**
 
-Replace format-specific branching in higher-level metadata code with a provider abstraction.
-
-### Components
+The metadata subsystem uses:
 
 ```text
 MetadataProvider
@@ -118,123 +76,35 @@ MetadataProvider
 └── MetadataFormatRegistry
 ```
 
-`MetadataFormatRegistry` is responsible for selecting the provider for a file format.
+Higher-level code resolves a provider through the registry rather than maintaining format-specific branches.
 
-Higher-level code should ask the registry for a provider instead of maintaining conditions such as:
+Providers expose the capabilities and fields they support and keep format-specific behavior inside the provider boundary.
 
-```text
-if extension == "opus"
-```
-
-### Provider responsibilities
-
-Each provider should explicitly describe:
-
-- supported formats;
-- read capability;
-- write capability;
-- supported fields;
-- read operation;
-- write operation.
-
-The provider should preserve the current title/artist/album scope. Genre is intentionally not part of this foundation.
-
-### Acceptance
-
-- Quick Fix no longer owns format-specific selection logic.
-- Each supported format has one clear provider.
-- Unsupported formats produce a typed capability result.
-- Existing Opus behavior remains covered by tests.
-- Existing JAudioTagger behavior remains covered by tests.
+The current write scope remains title, artist and album.
 
 ---
 
 # Phase B — Typed Write Results
 
-> **Status: Implemented** (`WriteResult` + sealed `TagWriteError`).
+> **Status: Implemented.**
 
-## Objective
+Metadata writes return explicit results and typed failures rather than exposing raw library exceptions as the application contract.
 
-Make metadata write failures explicit and user-readable.
+The error model distinguishes categories such as unsupported format/capability, parsing, I/O, locking, missing files and permission failures where applicable.
 
-Introduce:
+Quick Fix can therefore present a meaningful result without parsing exception strings.
 
-```text
-WriteResult
-```
-
-and a sealed error hierarchy such as:
-
-```text
-TagWriteError
-├── Unsupported
-├── Parse
-├── Io
-├── Locked
-├── NotFound
-└── Permission
-```
-
-The exact Kotlin representation can be refined during implementation, but callers must be able to distinguish capability, parsing, filesystem and permission failures.
-
-## UI behavior
-
-Before Apply, the UI should know whether the selected provider can write the requested fields.
-
-After a failed Apply, the user should receive a message that explains the actual class of failure rather than a raw library exception.
-
-Examples:
-
-```text
-Cannot write tags: format is not supported.
-```
-
-```text
-Cannot write tags: file is locked or unavailable.
-```
-
-```text
-Cannot write tags: permission denied.
-```
-
-```text
-Cannot write tags: metadata could not be parsed.
-```
-
-## Acceptance
-
-- No metadata write failure is silently swallowed.
-- Quick Fix can render a meaningful error without parsing exception strings.
-- Capabilities are available before the user confirms Apply.
-- Successful Apply still re-reads the file before updating the database cache.
+Successful Apply re-reads the file before the application updates its database/cache representation.
 
 ---
 
 # Phase C — Doctor and Integration Testing
 
-> **Status: Implemented** (`doctor` Metadata section + headless `ApplyIntegrationTest`).
+> **Status: Implemented.**
 
-## Objective
+The CLI doctor flow includes metadata-related checks, and the Apply path has headless integration coverage using an injectable/testable database path.
 
-Expose metadata health in `melody-sync doctor` and make Apply integration-testable without depending on the production database singleton.
-
-### Doctor
-
-Add a Metadata section containing checks such as:
-
-```text
-Metadata
-✓ Registry available
-✓ JAudioTagger provider available
-✓ Opus provider available
-✓ Required write capabilities registered
-```
-
-The exact checks should reflect the providers actually compiled into the application.
-
-### AppState / database injection
-
-The desktop state should be able to receive a test database/repository dependency so the Apply flow can be exercised headlessly:
+The integration path verifies the relationship between:
 
 ```text
 suggestion
@@ -245,90 +115,34 @@ TagWriter / MetadataProvider
     ↓
 read back
     ↓
-MusicRepository.updateByPath
+MusicRepository
     ↓
-AppState refresh
+application state
 ```
-
-The integration test must verify both the filesystem result and the database result.
 
 ---
 
 # Phase D — Database Connection Discipline
 
-> **Status: Implemented** (`DatabaseConnection`: idempotent single connection + serialized writes).
+> **Status: Implemented.**
 
-## Objective
+The application uses the controlled `DatabaseConnection` abstraction for the relevant persistence path rather than opening independent ad-hoc connections during Apply.
 
-Remove ad-hoc database connections from the metadata Apply path and establish one controlled connection lifecycle.
+Database writes are coordinated to avoid inconsistent concurrent state.
 
-Introduce a single `DatabaseConnection` abstraction/factory for the application.
-
-The current plan is to remove the seven ad-hoc `connect()` call sites identified during review.
-
-Writes should be serialized where necessary using a `Mutex` so concurrent tag application cannot produce inconsistent database state.
-
-## Doctor
-
-`melody-sync doctor` should detect multiple/legacy connection paths when practical and report the installation as unhealthy if the expected connection discipline is violated.
-
-## Acceptance
-
-- One controlled database connection strategy exists.
-- Apply does not create arbitrary independent connections.
-- Concurrent writes are serialized where required.
-- Existing SQLite WAL/busy-timeout behavior remains intact.
-- Existing database tests continue to pass.
+Existing SQLite behavior and database tests remain part of the validation surface.
 
 ---
 
 # Phase E — Documentation and Fixtures
 
-> **Status: Implemented.** Real per-format fixtures generated with ffmpeg and the verified capability matrix documented in [metadata-formats.md](metadata-formats.md).
+> **Status: Implemented.**
 
-## Objective
+The metadata capability matrix is recorded in [`metadata-formats.md`](metadata-formats.md), and real per-format fixtures are used for metadata validation.
 
-Document the metadata subsystem and make format behavior reproducible through fixtures.
+The verified matrix and fixtures are the source of truth for current format behavior; assumptions about third-party library support should not be treated as capabilities.
 
-Create:
-
-```text
-MetadataFormats.md
-```
-
-with a read/write capability matrix.
-
-Example:
-
-| Format | Read | Write | Provider | Fields |
-|--------|------|-------|----------|--------|
-| M4A | ✓ | provider-dependent | JAudioTagger | title, artist, album |
-| MP3 | ✓ | ✓ | JAudioTagger | title, artist, album |
-| Opus | ✓ | ✓ | OpusProvider | title, artist, album |
-```
-
-The final matrix must be based on verified behavior, not assumptions.
-
-### Fixtures
-
-Maintain isolated fixtures for each supported format:
-
-```text
-fixtures/
-├── mp3/
-│   ├── with_tags
-│   └── no_tags
-├── m4a/
-│   ├── with_tags
-│   └── no_tags
-└── opus/
-    ├── with_tags
-    └── no_tags
-```
-
-Fixtures should be copied into temporary directories before destructive/write tests.
-
-Tests must verify:
+Tests cover, where supported:
 
 1. read;
 2. diagnose;
@@ -340,23 +154,31 @@ Tests must verify:
 
 ---
 
-# Implementation Order
+# Current Refinement Scope
 
-```text
-Step 0 — Diagnostic
-       ↓
-Phase A — Providers
-       ↓
-Phase B — Typed Results
-       ↓
-Phase C — Doctor + Integration Tests
-       ↓
-Phase D — Database Connection Discipline
-       ↓
-Phase E — Documentation + Fixtures
-```
+The foundation is complete. Remaining metadata work should be handled as focused refinement rather than reopening the architecture.
 
-Do not begin the next phase if the previous phase has unresolved correctness issues.
+Current areas include:
+
+- improve reliability of writes for individual formats;
+- expand or correct fixtures when a real format edge case is discovered;
+- improve user-facing error messages when a provider reports a specific failure;
+- validate new metadata fields only when their domain/database requirements are explicitly approved;
+- keep provider capabilities synchronized with the verified format matrix.
+
+---
+
+# Future Metadata Extensions
+
+These are deliberately outside the current foundation:
+
+- genre field/database migration;
+- year field/database migration;
+- album cover extraction and caching;
+- broader metadata fields;
+- bulk destructive tag rewriting.
+
+Any of these should receive a separate plan when a concrete requirement exists.
 
 ---
 
@@ -364,14 +186,12 @@ Do not begin the next phase if the previous phase has unresolved correctness iss
 
 This foundation does not include:
 
-- genre field/database migration;
-- year field/database migration;
-- album cover extraction;
 - automatic metadata application;
 - automatic YouTube acceptance;
-- bulk destructive tag rewriting;
+- automatic lyrics tagging;
 - replacing JAudioTagger wholesale;
-- redesigning the Quick Fix UI.
+- turning Quick Fix into a generic automatic enrichment engine;
+- redesigning the entire Quick Fix UI.
 
 Quick Fix remains explicitly user-approved: suggestions are reports, and Apply is an explicit user action.
 
@@ -382,7 +202,7 @@ Quick Fix remains explicitly user-approved: suggestions are reports, and Apply i
 - [Roadmap](../ROADMAP.md)
 - [Quick-Fix HUD research](../research/quick-fix-hud.md)
 - [Security & Resilience Guide](../architecture/SecurityAndResilienceGuide.md)
-- [ADR-0005 — Audio Metadata](../architecture/ADR/ADR-0005-Mutagen.md)
+- [Metadata Formats](metadata-formats.md)
 - [Documentation Index](../INDEX.md)
 
 ---
@@ -390,8 +210,9 @@ Quick Fix remains explicitly user-approved: suggestions are reports, and Apply i
 ## Revision History
 
 | Version | Date | Description |
-|---------|------|-------------|
+|---|---|---|
 | 1.0 | 2026-08-08 | Initial metadata foundation plan |
+| 1.1 | 2026-08-09 | Reclassified the foundation as implemented and separated remaining reliability refinement from the completed architecture |
 
 ---
 
