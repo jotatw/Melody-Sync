@@ -241,7 +241,7 @@ private fun IssueBreakdown(state: AppState, report: HealthReport, success: Color
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.weight(1f),
                     )
-                    TextButton(onClick = { state.reviewIssue(section.paths) }) {
+                    TextButton(onClick = { state.reviewIssue(section.paths, section.title) }) {
                         Text("Review all")
                     }
                 }

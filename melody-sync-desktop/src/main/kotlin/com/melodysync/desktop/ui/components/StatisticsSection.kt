@@ -1,6 +1,7 @@
 package com.melodysync.desktop.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -80,19 +81,33 @@ fun StatisticsSection(state: AppState) {
         HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.lg))
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Spacing.lg)) {
-            FormatDonut(analytics.formats, modifier = Modifier.weight(1f))
-            TopListCard("Top Artists", analytics.topArtists, modifier = Modifier.weight(1f))
+            FormatDonut(
+                formats = analytics.formats,
+                onFormatClick = { state.exploreFormat(it) },
+                modifier = Modifier.weight(1f),
+            )
+            TopListCard(
+                title = "Top Artists",
+                items = analytics.topArtists,
+                onClick = { state.exploreArtist(it) },
+                modifier = Modifier.weight(1f),
+            )
         }
 
         HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.lg))
 
+        // Album navigation is deferred until the state layer supports it (Block 01).
         TopListCard("Top Albums", analytics.topAlbums)
     }
 }
 
 @OptIn(ExperimentalKoalaPlotApi::class)
 @Composable
-private fun FormatDonut(formats: List<RankedItem>, modifier: Modifier = Modifier) {
+private fun FormatDonut(
+    formats: List<RankedItem>,
+    onFormatClick: ((String) -> Unit)? = null,
+    modifier: Modifier = Modifier,
+) {
     Card(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(Spacing.md).fillMaxWidth()) {
             Text("Formats", style = MaterialTheme.typography.titleMedium)
@@ -134,8 +149,13 @@ private fun FormatDonut(formats: List<RankedItem>, modifier: Modifier = Modifier
 
             formats.forEach { item ->
                 val pct = item.count / total * 100
+                val clickModifier = if (onFormatClick != null) {
+                    Modifier.clickable { onFormatClick(item.name) }
+                } else {
+                    Modifier
+                }
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = Spacing.xs),
+                    modifier = clickModifier.fillMaxWidth().padding(top = Spacing.xs),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
@@ -152,7 +172,12 @@ private fun FormatDonut(formats: List<RankedItem>, modifier: Modifier = Modifier
 }
 
 @Composable
-private fun TopListCard(title: String, items: List<RankedItem>, modifier: Modifier = Modifier) {
+private fun TopListCard(
+    title: String,
+    items: List<RankedItem>,
+    modifier: Modifier = Modifier,
+    onClick: ((String) -> Unit)? = null,
+) {
     Card(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(Spacing.md).fillMaxWidth()) {
             Text(title, style = MaterialTheme.typography.titleMedium)
@@ -166,8 +191,13 @@ private fun TopListCard(title: String, items: List<RankedItem>, modifier: Modifi
             val accent = if (isDark()) HiFiDarkColors.Primary else HiFiLightColors.Primary
 
             items.forEach { item ->
+                val clickModifier = if (onClick != null) {
+                    Modifier.clickable { onClick(item.name) }
+                } else {
+                    Modifier
+                }
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = Spacing.sm),
+                    modifier = clickModifier.fillMaxWidth().padding(top = Spacing.sm),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
                 ) {

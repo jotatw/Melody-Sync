@@ -149,6 +149,8 @@ This is a filter/context operation, not a single-song selection.
 
 The existing implementation must not silently interpret `Review all` as "open the first affected song". If the current state cannot support the multi-song context yet, the implementation should expose that limitation rather than claim the flow is complete.
 
+**Chosen implementation (Block 01):** `reviewIssue(paths, label)` uses a *selection* context for a single affected song and a *filter* context for multiple affected songs. The multi-song case sets `issueContext` (label + path set), clears the selection, and Library shows only the affected songs with a visible indicator and a way to clear it. Album navigation from Statistics is deferred because the state layer does not currently support an album filter.
+
 ### Completion condition
 
 A user can move from a Health issue to Library and immediately work on the affected content without reconstructing the issue manually.

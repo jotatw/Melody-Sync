@@ -107,6 +107,15 @@ enum class UpdateStatus {
     ERROR,
 }
 
+/**
+ * Multi-song Health navigation context: Library shows only the affected songs.
+ * A single affected song uses a selection context instead (see [AppState.reviewIssue]).
+ */
+data class IssueContext(
+    val label: String,
+    val paths: Set<String>,
+)
+
 class AppState(
     // State writes must happen on the Compose main thread to avoid
     // snapshot corruption when recomposition is concurrent (e.g. tab
@@ -157,6 +166,10 @@ class AppState(
         private set
 
     var formatFilter by mutableStateOf("")
+        private set
+
+    /** Multi-song Health context: shows only the affected songs in Library. */
+    var issueContext by mutableStateOf<IssueContext?>(null)
         private set
 
     var transientMessage by mutableStateOf<String?>(null)
@@ -291,7 +304,8 @@ class AppState(
                 val matchesArtist = artist.isEmpty() ||
                     song.artist?.lowercase()?.contains(artist) == true
                 val matchesFormat = format.isEmpty() || song.extension.lowercase() == format
-                matchesQuery && matchesArtist && matchesFormat
+                val matchesIssue = issueContext?.let { song.path.toString() in it.paths } ?: true
+                matchesQuery && matchesArtist && matchesFormat && matchesIssue
             }
             val comparator = comparatorFor(sortColumn, sortAscending)
             return filtered.sortedWith(comparator)
@@ -334,14 +348,41 @@ class AppState(
     }
 
     /**
-     * Health → Library: jump to the Library section and highlight (and
-     * scroll to) the first affected song. Connects diagnosis with action.
+     * Health → Library contextual navigation (Block 01).
+     *
+     * A single affected song is a **selection** context: the song is selected
+     * and scrolled into view. Multiple affected songs are a **filter** context:
+     * Library shows only those songs, without implying a multi-selection that
+     * the application does not support.
      */
-    fun reviewIssue(paths: List<String>) {
-        val target = paths.firstOrNull() ?: return
+    fun reviewIssue(paths: List<String>, label: String? = null) {
+        if (paths.isEmpty()) return
         setSection(Section.LIBRARY)
-        selectSong(target)
-        pendingScrollPath = target
+        if (paths.size == 1) {
+            issueContext = null
+            selectSong(paths.first())
+            pendingScrollPath = paths.first()
+        } else {
+            issueContext = IssueContext(label = label ?: "Issue", paths = paths.toSet())
+            selectSong(null)
+            pendingScrollPath = null
+        }
+    }
+
+    fun clearIssueContext() {
+        issueContext = null
+    }
+
+    /** Statistics → Library: open Library filtered by the selected artist. */
+    fun exploreArtist(artist: String) {
+        setSection(Section.LIBRARY)
+        artistFilter = artist
+    }
+
+    /** Statistics → Library: open Library filtered by the selected format. */
+    fun exploreFormat(format: String) {
+        setSection(Section.LIBRARY)
+        formatFilter = format
     }
 
     fun clearQuickFixYoutube() {
