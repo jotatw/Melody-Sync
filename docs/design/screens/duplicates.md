@@ -89,7 +89,7 @@ If a last-analysis timestamp is available, it may be shown as supporting informa
 
 ## Navigation Status
 
-Duplicates is no longer a primary navigation destination. It is reached contextually through Health (Health → "Review duplicate groups"), preserving group inspection, explicit confirmation, trash/recovery behavior and progress feedback.
+Duplicates is no longer a primary navigation destination. Health shows a duplicate-groups summary card (group count + action), and the full workflow — group inspection, explicit confirmation, trash/recovery behavior and progress feedback — opens from there.
 
 ## Consolidation
 

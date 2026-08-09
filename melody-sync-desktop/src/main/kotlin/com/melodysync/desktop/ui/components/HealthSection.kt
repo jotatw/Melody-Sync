@@ -56,21 +56,6 @@ fun HealthSection(state: AppState) {
             Text(if (state.healthStatus == HealthStatus.RUNNING) "Checking…" else "Analyze Health")
         }
 
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(top = Spacing.sm),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                "Duplicate groups are reviewed here as a Health concern.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.weight(1f),
-            )
-            TextButton(onClick = { state.setSection(Section.DUPLICATES) }) {
-                Text("Review duplicate groups")
-            }
-        }
-
         when (state.healthStatus) {
             HealthStatus.RUNNING -> {
                 ProgressCard("Checking library health…")
@@ -92,6 +77,44 @@ fun HealthSection(state: AppState) {
                 }
             }
             HealthStatus.IDLE -> Unit
+        }
+
+        // Block 03 — duplicate findings are a Health concern. A summary card
+        // keeps them visible here; the full workflow (inspection, confirmation,
+        // trash) is one action away.
+        HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.lg))
+        DuplicateGroupsCard(state)
+    }
+}
+
+@Composable
+private fun DuplicateGroupsCard(state: AppState) {
+    val count = state.duplicateGroups.size
+    ResultCard(
+        headline = if (count > 0) {
+            "$count duplicate group(s) found"
+        } else {
+            "Duplicate groups"
+        },
+        accent = if (count > 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                if (count > 0) {
+                    "Review the duplicate groups and decide what to keep or move to trash."
+                } else {
+                    "Detect duplicate groups and review them before any file is moved to trash."
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f),
+            )
+            TextButton(onClick = { state.setSection(Section.DUPLICATES) }) {
+                Text(if (count > 0) "Review groups" else "Detect")
+            }
         }
     }
 }
