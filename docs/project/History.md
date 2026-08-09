@@ -123,6 +123,8 @@ A lyrics source was added to the Quick Fix panel as a view-only fetch through th
 
 Quick Fix suggestions are now reviewed before Apply: the panel opens an editable review showing the current values separately from the suggestion, with the source visible. The user can edit or reject; nothing is written without the explicit Apply action (metadata workflow §5, §7).
 
+YouTube suggestions now present candidate results with explicit selection: the user picks the candidate that best matches the file, then reviews/edits and applies it (youtube-identification.md §9, §16).
+
 The Review screen was added after Health and Quick Fix, creating a direct Health → Review → Quick Fix flow for songs with issues. The Review screen computes per-song diagnostics, provides filters, and opens the Quick Fix panel for the selected song.
 
 ### Metadata Foundation

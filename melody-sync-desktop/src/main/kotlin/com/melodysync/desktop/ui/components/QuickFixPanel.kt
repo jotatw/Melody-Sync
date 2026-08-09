@@ -1,5 +1,7 @@
 package com.melodysync.desktop.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,10 +13,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -236,6 +242,9 @@ private fun YoutubeSuggestionsSection(state: AppState, song: Song, writeSupporte
         style = MaterialTheme.typography.titleSmall,
         modifier = Modifier.padding(top = Spacing.md),
     )
+    val suggestions = state.quickFixYoutubeSuggestions
+    var selectedIndex by remember(suggestions) { mutableStateOf(0) }
+
     when {
         state.quickFixYoutubeLoading -> {
             Row(
@@ -251,9 +260,65 @@ private fun YoutubeSuggestionsSection(state: AppState, song: Song, writeSupporte
                 )
             }
         }
-        state.quickFixYoutubeSuggestions.isNotEmpty() -> {
-            state.quickFixYoutubeSuggestions.forEach { suggestion ->
-                SuggestionItemCard(state, song, suggestion, writeSupported, onReview)
+        suggestions.isNotEmpty() -> {
+            Text(
+                "Select the candidate that best matches this file.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = Spacing.xs),
+            )
+            suggestions.forEachIndexed { index, suggestion ->
+                val selected = index == selectedIndex
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = Spacing.xs)
+                        .background(
+                            if (selected) {
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
+                            } else {
+                                MaterialTheme.colorScheme.surface
+                            },
+                            MaterialTheme.shapes.small,
+                        )
+                        .clickable { selectedIndex = index }
+                        .padding(horizontal = Spacing.sm, vertical = Spacing.sm),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            suggestion.title,
+                            style = MaterialTheme.typography.bodyMedium,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        suggestion.subtitle?.let {
+                            Text(
+                                it,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                    if (suggestion.openUrl != null) {
+                        IconButton(onClick = { openInBrowser(suggestion.openUrl!!) }) {
+                            Icon(
+                                Icons.Filled.OpenInNew,
+                                contentDescription = "Open on YouTube",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                }
+            }
+            Button(
+                onClick = { onReview(suggestions[selectedIndex]) },
+                enabled = !state.quickFixApplying && writeSupported,
+                modifier = Modifier.padding(top = Spacing.sm),
+            ) {
+                Text(if (state.quickFixApplying) "Applying…" else "Review & Apply")
             }
         }
         state.quickFixYoutubeLoaded -> {
