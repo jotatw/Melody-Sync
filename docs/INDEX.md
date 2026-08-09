@@ -137,6 +137,7 @@ Planning documents describe work that is not yet fully implemented. A large feat
 | Document | Purpose | Status |
 |---|---|---|
 | [ROADMAP](ROADMAP.md) | Current project direction, priorities and deferred work | Active |
+| [Implementation Block 01 — Navigation Context](planning/implementation-block-01-navigation-context.md) | First bounded implementation block for contextual navigation and context preservation | Approved for implementation |
 | [Metadata Foundation](planning/metadata-foundation.md) | Metadata provider, diagnostics, typed write results, persistence discipline and fixtures | Implemented / refinement |
 | [Metadata Formats](planning/metadata-formats.md) | Verified read/write capability matrix by format | Reference |
 
