@@ -248,6 +248,36 @@ For a single affected song, the song should be selected so that its contextual a
 
 For duplicate groups, Health retains the group-level review context until a dedicated multi-selection experience exists in Library.
 
+### Decision — `Review all` uses a filter context
+
+For an issue category containing multiple affected songs, `Review all` means **show the complete affected set in Library**. It does not mean opening the first song and implicitly treating that as the whole review.
+
+```text
+Health
+  ↓
+Without metadata · 14
+  ↓
+Review all
+  ↓
+Library
+  ↓
+issue filter/context = those 14 songs
+```
+
+This is intentionally different from the single-item `Review` action:
+
+```text
+Review one
+  → selection context
+
+Review all
+  → filter/context for the affected set
+```
+
+The user can then select one song from the affected set and open Quick Fix without losing the issue context unnecessarily.
+
+This decision keeps Health responsible for diagnosis and Library responsible for working through the resulting set. It also avoids creating a separate review queue before the project has demonstrated that such a queue is necessary.
+
 ---
 
 ## 10. Contextual Interactions
@@ -380,3 +410,4 @@ The interface should favor clear dividers, strong typography, restrained cards, 
 - A correction is not considered complete until the affected library state and health result can be refreshed.
 - No health score is shown as current when the underlying analysis has failed.
 - No new diagnostic category is introduced without corresponding backend/data support.
+- `Review all` means the complete affected set, represented as Library filter/context; it does not silently collapse to the first song.
