@@ -34,7 +34,7 @@ Large features should have a dedicated document under `docs/planning/` before im
 | Item | Status |
 |------|--------|
 | Project version | **v0.13.0-dev** |
-| Automated tests | **253 passing** |
+| Automated tests | **257 passing** |
 | Core | Stable and actively used |
 | Desktop GUI | Functional and in UX refinement |
 | CLI | Functional |
@@ -76,6 +76,7 @@ Current implementation includes:
 - `SongMatcher` for local filename/path suggestions.
 - `QuickFixService` orchestration.
 - Local and optional YouTube suggestion sources.
+- Lyrics source (view-only) in the Quick Fix panel.
 - Review screen connected to the Health → song → fix flow.
 - Opus metadata read/write support.
 

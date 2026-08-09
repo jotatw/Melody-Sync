@@ -126,6 +126,8 @@ The desktop Quick Fix HUD was then integrated into Library as a split pane. Ever
 
 Opus metadata support was subsequently added because JAudioTagger does not provide the required Opus behavior.
 
+A lyrics source was added to the Quick Fix panel (view-only fetch via the Lyrics.ovh API), alongside the local and YouTube suggestion sources.
+
 The Review screen was added after Health and Quick Fix, creating a direct Health → Review → Quick Fix flow for songs with issues. The Review screen computes per-song diagnostics, provides filters and opens the Quick Fix panel for the selected song.
 
 ### Documentation Consolidation
@@ -165,7 +167,7 @@ The current project state is focused on consolidation rather than broad feature 
 Current reported project status:
 
 - Version: **v0.13.0-dev**
-- Automated tests: **253 passing**
+- Automated tests: **257 passing**
 - Core: functional and stable enough for continued feature work
 - Desktop GUI: functional with UX refinement ongoing
 - CLI: functional
@@ -225,7 +227,7 @@ Metadata Foundation
 | Metric | Value |
 |--------|-------|
 | Project Version | v0.13.0-dev |
-| Automated Tests | 253 |
+| Automated Tests | 257 |
 | Architecture Decision Records | 9 |
 | Desktop Sections | Library, Statistics, Health, Review, Duplicates, Organize, Settings, About |
 | Release Installer | Completed |

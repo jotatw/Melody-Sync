@@ -20,12 +20,12 @@ The project is also a way to practice software engineering: architecture before 
 | Language | **Kotlin** (JVM 21) |
 | Core (scan, metadata, statistics) | ✅ Completed |
 | CLI (`melody-sync scan` / `health` / `duplicates` / `organize` / `export` / `enrich` / `update` / `doctor`) | ✅ Working |
-| Automated tests | 🎉 **253 passing** |
+| Automated tests | 🎉 **257 passing** |
 | Database (SQLite) | ✅ Working |
 | GUI (Desktop) | ✅ Working (Compose, collapsible sidebar) |
 | Library health check | ✅ Working |
 | Review screen | ✅ Working |
-| Quick Fix HUD | ✅ Working (diagnose + local/YouTube suggestions, explicit Apply) |
+| Quick Fix HUD | ✅ Working (diagnose + local/YouTube/lyrics, explicit Apply) |
 | Duplicate detection | ✅ Working (move to system trash) |
 | File watcher (auto re-sync) | ✅ Working |
 | Folder organization | ✅ Working |
@@ -51,7 +51,7 @@ The project is also a way to practice software engineering: architecture before 
 - ✅ Desktop GUI — scan, browse, search, filter and review songs (Compose Desktop, Material 3, dark/light toggle)
 - ✅ Library health check — classify non-audio files, detect missing metadata, zero duration and orphaned entries (CLI + GUI)
 - ✅ Review screen — every song with an issue, filterable, opens the Quick Fix panel
-- ✅ Quick Fix HUD — per-song diagnosis with local (file/folder) and optional YouTube suggestions; every edit is user-approved
+- ✅ Quick Fix HUD — per-song diagnosis with local, optional YouTube and lyrics sources; every edit is user-approved
 - ✅ Duplicate detection — group songs by normalized title/artist and similar duration; move extras to the system trash (CLI + GUI)
 - ✅ File watcher — automatic re-sync when files change (GUI toggle, debounced)
 - ✅ Folder organization — plan `Artist/Album/` structure, apply with `--apply` (report-first, never automatic)
@@ -69,7 +69,7 @@ The project is also a way to practice software engineering: architecture before 
 - ✅ GitHub Actions CI + automated release publishing
 - ✅ MIT license
 - ✅ System theme detection (KDE Plasma + GNOME)
-- ✅ 253 automated tests with real audio fixtures
+- ✅ 257 automated tests with real audio fixtures
 
 ### In Progress / Planned
 
@@ -143,7 +143,7 @@ Directory
 | CLI framework | **clikt** 5.1.0 |
 | GUI | **Compose Desktop** 1.11.1 |
 | Database | **SQLite** via **Exposed** 0.61.0 |
-| Testing | **JUnit 5** (253 tests, real audio fixtures) |
+| Testing | **JUnit 5** (257 tests, real audio fixtures) |
 
 ---
 
@@ -208,11 +208,11 @@ cd Melody-Sync
 
 ## Testing
 
-**253 tests, all passing:**
+**257 tests, all passing:**
 
 | Module | Tests | Area |
 |--------|-------|------|
-| `core` | 220 | Models, Discovery, Metadata, Opus, TagWriter, Scanner, Statistics, Database, Sync, Health, Duplicates, Watcher, Organization, Export, Enrichment, Quick Fix, Suggestion sources, Platform (installation/shell/system) |
+| `core` | 224 | Models, Discovery, Metadata, Opus, TagWriter, Scanner, Statistics, Database, Sync, Health, Duplicates, Watcher, Organization, Export, Enrichment, Quick Fix, Suggestion sources, Platform (installation/shell/system) |
 | `cli` | 17 | Version, Scan, Health, Duplicates, Organize, Export, Enrich, Update, Doctor, Metadata commands |
 | `desktop` | 16 | Theme, preferences, state |
 

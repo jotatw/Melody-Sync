@@ -51,7 +51,10 @@ fun QuickFixPanel(state: AppState, song: Song) {
         MetadataFormatRegistry.providerFor(song.extension)?.supportsWrite ?: false
     }
 
-    LaunchedEffect(song.path) { state.clearQuickFixYoutube() }
+    LaunchedEffect(song.path) {
+        state.clearQuickFixYoutube()
+        state.clearLyrics()
+    }
 
     Surface(
         modifier = Modifier.fillMaxHeight().width(320.dp),
@@ -86,6 +89,55 @@ fun QuickFixPanel(state: AppState, song: Song) {
             LocalSuggestionsSection(state, song, localSuggestions, writeSupported)
             if (state.youtubeEnabled) {
                 YoutubeSuggestionsSection(state, song, writeSupported)
+            }
+            LyricsSection(state, song)
+        }
+    }
+}
+
+@Composable
+private fun LyricsSection(state: AppState, song: Song) {
+    Text(
+        "Lyrics",
+        style = MaterialTheme.typography.titleSmall,
+        modifier = Modifier.padding(top = Spacing.md),
+    )
+    when {
+        state.lyricsLoading -> {
+            Row(
+                modifier = Modifier.padding(top = Spacing.sm),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+            ) {
+                CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+                Text(
+                    "Fetching lyrics…",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        state.lyricsLoaded && !state.lyrics.isNullOrBlank() -> {
+            Text(
+                state.lyrics!!,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(top = Spacing.sm),
+            )
+        }
+        state.lyricsLoaded -> {
+            Text(
+                "No lyrics found.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = Spacing.sm),
+            )
+        }
+        else -> {
+            OutlinedButton(
+                onClick = { state.loadLyrics(song) },
+                modifier = Modifier.padding(top = Spacing.sm),
+            ) {
+                Text("Get lyrics")
             }
         }
     }

@@ -24,6 +24,7 @@ import com.melodysync.service.LibraryHealthService
 import com.melodysync.service.LibraryOrganizationService
 import com.melodysync.service.LibrarySyncService
 import com.melodysync.service.LibraryWatcher
+import com.melodysync.service.LyricsService
 import com.melodysync.service.QuickFixService
 import com.melodysync.service.SyncResult
 import com.melodysync.service.TrashService
@@ -252,6 +253,15 @@ class AppState(
     var quickFixApplying by mutableStateOf(false)
         private set
 
+    var lyrics by mutableStateOf<String?>(null)
+        private set
+
+    var lyricsLoading by mutableStateOf(false)
+        private set
+
+    var lyricsLoaded by mutableStateOf(false)
+        private set
+
     val youtubeEnabled: Boolean
         get() = youtubeApiKey.isNotBlank()
 
@@ -338,6 +348,25 @@ class AppState(
         quickFixYoutubeSuggestions = emptyList()
         quickFixYoutubeLoading = false
         quickFixYoutubeLoaded = false
+    }
+
+    fun clearLyrics() {
+        lyrics = null
+        lyricsLoading = false
+        lyricsLoaded = false
+    }
+
+    fun loadLyrics(song: Song) {
+        if (lyricsLoading) return
+        lyricsLoading = true
+        uiScope.launch {
+            try {
+                lyrics = withContext(Dispatchers.Default) { LyricsService.fetch(song) }
+                lyricsLoaded = true
+            } finally {
+                lyricsLoading = false
+            }
+        }
     }
 
     fun loadYoutubeSuggestions(song: Song) {
