@@ -22,9 +22,32 @@ The navigation model separates **primary destinations** from **contextual workfl
 
 Primary navigation represents stable user goals. Contextual workflows represent actions that arise from those goals and should not automatically become permanent sidebar destinations.
 
+This document is a **design contract**, not a description that every part of the current implementation already satisfies.
+
 ---
 
-## 2. Primary Navigation
+## 2. Documentation State Model
+
+Navigation decisions use three explicit states:
+
+```text
+CURRENT
+What the application does now.
+
+TARGET
+The approved interaction model we intend to reach.
+
+PLANNED
+An idea that has not yet been approved as part of the target behavior.
+```
+
+A navigation change must not be considered implemented merely because it is documented here.
+
+The current source still exposes Review and Duplicates as primary sections, while the target model treats them as contextual workflows. fileciteturn157file18
+
+---
+
+## 3. Primary Navigation — Target
 
 The target primary navigation is:
 
@@ -49,11 +72,11 @@ About
 | Settings | Configure application behavior |
 | About | Learn about the application/project |
 
-The current implementation may still expose Review and Duplicates as sidebar items. Those are treated as **navigation-consolidation work**, not as additional long-term primary goals.
+The current implementation may still expose Review and Duplicates as sidebar items. Those are treated as **navigation-consolidation work**, not as additional long-term primary goals. fileciteturn157file18
 
 ---
 
-## 3. Contextual Workflows
+## 4. Contextual Workflows
 
 Contextual workflows are entered from a primary destination and preserve the reason the user started the action.
 
@@ -73,9 +96,11 @@ Statistics
 
 These workflows should not require the user to manually reconstruct context after navigation.
 
+The current implementation already supports part of this model, especially Health issue review routing into Library and Library-level Quick Fix. Remaining contextual filtering and consolidation are target behavior rather than claims of completion. fileciteturn157file18
+
 ---
 
-## 4. Core Navigation Model
+## 5. Core Navigation Model
 
 ```text
                     ┌─────────────┐
@@ -102,11 +127,13 @@ The Library is the central operational workspace. Health and Statistics may rout
 
 ---
 
-## 5. Context Preservation
+## 6. Context Preservation
 
 Whenever navigation is caused by an action on data, the destination must preserve the relevant context.
 
 ### Health → Library
+
+Target behavior:
 
 ```text
 Health
@@ -122,7 +149,11 @@ issue filter = missing metadata
 
 If only one song is affected, that song may also be selected and the Quick Fix context may be opened.
 
+The current implementation already has a Health issue path that routes into Library and selects an affected song. The multi-song filtering behavior remains a target interaction. fileciteturn157file18
+
 ### Statistics → Library
+
+Target behavior:
 
 ```text
 Statistics
@@ -136,15 +167,17 @@ Library
 artist filter = Queen
 ```
 
-The same rule applies to album and format exploration.
+The same rule applies to album and format exploration where the corresponding Library context exists.
 
 ### Duplicates → Library
 
 When a duplicate group is inspected, navigation to Library should identify the relevant song rather than opening an unrelated default list.
 
+The duplicate-group workflow itself remains contextual to Health in the target model until the Library interaction is defined well enough for multi-song work.
+
 ---
 
-## 6. Navigation by Screen
+## 7. Navigation by Screen
 
 ### Library
 
@@ -253,11 +286,11 @@ About does not change application state.
 
 ---
 
-## 7. Review and Duplicates Transition
+## 8. Review and Duplicates Transition
 
 ### Current state
 
-The application may expose:
+The application currently exposes these sections in the Desktop navigation:
 
 ```text
 Library
@@ -269,6 +302,8 @@ Organize
 Settings
 About
 ```
+
+This is documented as the **current state**, not the target.
 
 ### Target state
 
@@ -285,11 +320,11 @@ About
 
 Review and Duplicates remain available through contextual workflows.
 
-This transition must preserve all current capabilities. Removing a sidebar destination must not remove the underlying review or duplicate functionality.
+This transition must preserve all current capabilities. Removing a sidebar destination must not remove the underlying review or duplicate functionality. The source audit identifies this as the principal unresolved navigation change. fileciteturn157file18
 
 ---
 
-## 8. Back Navigation
+## 9. Back Navigation
 
 Back navigation should return to the previous user context whenever possible.
 
@@ -321,7 +356,7 @@ Back must not silently reset filters, selection, or the user's current workflow 
 
 ---
 
-## 9. Selection and Filtering
+## 10. Selection and Filtering
 
 Selection and filtering are different concepts.
 
@@ -342,9 +377,11 @@ Examples:
 - Health → many affected songs → Library: filter to affected songs.
 - Quick Fix → after Apply: keep the song selected and refresh its data.
 
+The distinction is a design rule even where the corresponding state is not yet implemented.
+
 ---
 
-## 10. State Preservation
+## 11. State Preservation
 
 Navigation should preserve relevant transient state when returning to a screen.
 
@@ -361,7 +398,7 @@ State should not be preserved when doing so would expose stale data after a dest
 
 ---
 
-## 11. No Dead-End Navigation
+## 12. No Dead-End Navigation
 
 A contextual action should always make clear what happened and where the user can continue.
 
@@ -389,9 +426,11 @@ should become:
 Statistics → Artist → Library filtered to that artist
 ```
 
+These are target interaction rules, not claims that every path is already implemented.
+
 ---
 
-## 12. Navigation Rules for New Features
+## 13. Navigation Rules for New Features
 
 Before adding a new sidebar item, answer:
 
@@ -407,7 +446,7 @@ A new primary destination requires an explicit design decision and documentation
 
 ---
 
-## 13. Navigation and Core Responsibilities
+## 14. Navigation and Core Responsibilities
 
 Navigation must call existing capabilities rather than duplicate them.
 
@@ -432,7 +471,7 @@ The navigation layer coordinates user context. It does not reimplement Core busi
 
 ---
 
-## 14. Accessibility
+## 15. Accessibility
 
 - All primary destinations must be keyboard reachable.
 - Current location must be visibly indicated and exposed to assistive technologies.
@@ -443,7 +482,7 @@ The navigation layer coordinates user context. It does not reimplement Core busi
 
 ---
 
-## 15. Visual Direction
+## 16. Visual Direction
 
 Primary navigation should remain visually quiet and easy to scan.
 
@@ -464,7 +503,7 @@ What can I do here?
 
 ---
 
-## 16. Decision Rules
+## 17. Decision Rules
 
 - Primary navigation represents stable user goals.
 - Contextual workflows represent actions derived from those goals.
