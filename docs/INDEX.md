@@ -1,8 +1,8 @@
 # Melody Sync Documentation
 
-Documentation is organized by responsibility: project overview, architecture, design, planning, development standards, and history.
+Documentation is organized by responsibility: project overview, architecture, design, planning, development standards, integrations, and history.
 
-The [`README.md`](../README.md) is the public entry point. This index is the entry point for the detailed project documentation.
+The [`README.md`](../README.md) is the public entry point. This index is the entry point for detailed project documentation.
 
 ---
 
@@ -24,24 +24,28 @@ Architecture documents describe how the application is structured and why import
 
 | Document | Purpose |
 |---|---|
-| [ADR-0001](architecture/ADR/ADR-0001.md) | Project Vision |
-| [ADR-0002](architecture/ADR/ADR-0002.md) | Programming Language — Kotlin |
-| [ADR-0003](architecture/ADR/ADR-0003.md) | Desktop GUI — Compose Desktop |
-| [ADR-0004](architecture/ADR/ADR-0004.md) | Local Database — SQLite via Exposed |
-| [ADR-0005](architecture/ADR/ADR-0005.md) | Audio Metadata — JAudioTagger |
-| [ADR-0006](architecture/ADR/ADR-0006.md) | Documentation Structure |
-| [ADR-0007](architecture/ADR/ADR-0007.md) | CLI Framework — clikt |
-| [ADR-0008](architecture/ADR/ADR-0008.md) | Build System — Gradle Kotlin DSL |
-| [ADR-0009](architecture/ADR/ADR-0009.md) | Platform Layer — installation, shell and system |
+| [ADR-0001 — Project Vision](architecture/ADR/ADR-0001-ProjectVision.md) | Project vision and scope |
+| [ADR-0002 — Kotlin](architecture/ADR/ADR-0002-Python.md) | Programming-language decision record |
+| [ADR-0003 — Compose Desktop](architecture/ADR/ADR-0003-PySide6.md) | Desktop UI decision record |
+| [ADR-0004 — SQLite](architecture/ADR/ADR-0004-SQLite.md) | Local database decision |
+| [ADR-0005 — Audio Metadata](architecture/ADR/ADR-0005-Mutagen.md) | Audio metadata decision |
+| [ADR-0006 — Documentation Structure](architecture/ADR/ADR-0006-DocumentationStructure.md) | Documentation architecture |
+| [ADR-0007 — clikt](architecture/ADR/ADR-0007-clikt.md) | CLI framework decision |
+| [ADR-0008 — Gradle Kotlin DSL](architecture/ADR/ADR-0008-GradleKotlinDSL.md) | Build-system decision |
+| [ADR-0009 — Platform Layer](architecture/ADR/ADR-0009-PlatformLayer.md) | Installation, shell and system boundary |
+
+> ADR titles are preserved from the repository. Some historical filenames retain names from earlier project stages.
 
 ### General Architecture
 
-| Document | Purpose |
-|---|---|
-| [Music Library Domain](architecture/music-library-domain.md) | Domain model and library concepts |
-| [Multiplatform Portability Guide](architecture/MultiplatformPortabilityGuide.md) | Future portability considerations |
-| [Security & Resilience Guide](architecture/SecurityAndResilienceGuide.md) | Defensive coding, data integrity and resilience |
-| [Architecture Reviews](architecture/reviews/) | Architectural reviews and evaluations |
+| Document | Purpose | Status |
+|---|---|---|
+| [Core Services](architecture/core-services.md) | Current Core capability map and responsibility boundaries | Draft |
+| [Music Library Domain](architecture/music-library-domain.md) | Domain model and library concepts | Active |
+| [Multiplatform Portability Guide](architecture/MultiplatformPortabilityGuide.md) | Future portability considerations | Reference |
+| [Security & Resilience Guide](architecture/SecurityAndResilienceGuide.md) | Defensive coding, data integrity and resilience | Active |
+| [Architecture Reviews](architecture/reviews/) | Architectural reviews and evaluations | Active |
+| Provider Architecture | Boundary for optional external providers | To be documented |
 
 ---
 
@@ -53,20 +57,52 @@ Design documentation defines how the application should look, behave and guide t
 
 | Document | Purpose | Status |
 |---|---|---|
-| [Application Design](design/app-design.md) | Application-wide navigation, hierarchy and interaction model | Defined |
+| [Application Design](design/app-design.md) | Application-wide navigation, hierarchy and interaction model | Target design |
 | [Design System](standards/DesignSystem.md) | Visual identity, colors, typography, shapes and reusable components | Implemented / evolving |
 | [Screen Specifications](design/screens/) | One document per application screen | Active |
 
+### Navigation State
+
+The current implementation and approved target navigation are intentionally documented separately until the navigation consolidation is implemented.
+
+**Current implementation:**
+
+```text
+Library
+Statistics
+Health
+Review
+Duplicates
+Organize
+Settings
+About
+```
+
+**Target navigation:**
+
+```text
+Library
+Statistics
+Health
+Organize
+Settings
+About
+```
+
+Review is intended to become a contextual review workflow connected to Health/Library. Duplicates is intended to become a contextual workflow rather than a permanent primary destination.
+
 ### Screens
 
-| Screen | Purpose |
-|---|---|
-| [Library](design/screens/library.md) | Main workspace for browsing, inspecting and curating songs |
-| [Health](design/screens/health.md) | Identify library issues and guide the user to review them |
-| [Statistics](design/screens/statistics.md) | Explore library data and navigate to contextual views |
-| [Organize](design/screens/organize.md) | Plan and apply filesystem organization |
-| [Settings](design/screens/settings.md) | Application, installation and update configuration |
-| [About](design/screens/about.md) | Project and application information |
+| Screen | Purpose | Status |
+|---|---|---|
+| [Library](design/screens/library.md) | Main workspace for browsing, inspecting and curating songs | Implemented / refining |
+| [Health](design/screens/health.md) | Identify library issues and guide the user to review them | Implemented / refining |
+| [Statistics](design/screens/statistics.md) | Explore library data and navigate to contextual views | Implemented / refining |
+| [Organize](design/screens/organize.md) | Plan and apply filesystem organization | Implemented / refining |
+| [Settings](design/screens/settings.md) | Application, installation and update configuration | Implemented / refining |
+| [About](design/screens/about.md) | Project and application information | Implemented |
+| Review | Current review workspace; target is contextual Health/Library workflow | Implemented / navigation consolidation pending |
+| Duplicates | Current duplicate-management workspace; target is contextual workflow | Implemented / navigation consolidation pending |
 
 ### Design Research & Feature History
 
@@ -80,7 +116,7 @@ Design documentation defines how the application should look, behave and guide t
 
 ## Integrations
 
-External tools and services are documented separately from the Core. They support specific workflows and must not become implicit requirements of the application.
+External tools and services are documented separately from Core responsibilities. They support specific workflows and must not become implicit requirements of the application.
 
 | Integration | Purpose | Status |
 |---|---|---|
@@ -89,7 +125,7 @@ External tools and services are documented separately from the Core. They suppor
 | Syncthing | External file synchronization between devices | Workflow / external tool |
 | Playback | Lightweight local playback for inspection | Planned |
 
-Detailed integration documents will be added or expanded as each boundary is defined.
+Detailed integration documents will be added or expanded when each boundary is formally defined.
 
 ---
 
@@ -100,10 +136,10 @@ Planning documents describe work that is not yet fully implemented. A large feat
 | Document | Purpose | Status |
 |---|---|---|
 | [ROADMAP](ROADMAP.md) | Current project direction, priorities and deferred work | Active |
-| [Metadata Foundation](planning/metadata-foundation.md) | Reliable metadata read/write foundation and Quick Fix support | Planned |
-| [Metadata Formats](planning/metadata-formats.md) | Verified read/write capability matrix by format | Reference / Planning |
+| [Metadata Foundation](planning/metadata-foundation.md) | Metadata provider, diagnostics, typed write results, persistence discipline and fixtures | Implemented / refinement |
+| [Metadata Formats](planning/metadata-formats.md) | Verified read/write capability matrix by format | Reference |
 
-Planning documents should define purpose, scope, non-goals, dependencies and validation before implementation.
+Planning documents should define purpose, scope, non-goals, dependencies and validation before implementation. A planning document may remain in `planning/` after implementation when it records the design and validation history of a foundation.
 
 ---
 
@@ -133,7 +169,7 @@ History records what has already happened. Completed milestones should not remai
 
 ## Current Status
 
-The README is the source for the concise public project status. This section intentionally remains short so status does not become duplicated across documents.
+The README is the source for concise public project status. This section intentionally remains short so status does not become duplicated across documents.
 
 | Area | Status |
 |---|---|
@@ -145,7 +181,7 @@ The README is the source for the concise public project status. This section int
 | Quick Fix | Working |
 | Installation / Updates | Working |
 | UX consistency | Implemented; refinement ongoing |
-| Metadata foundation | Planned |
+| Metadata foundation | Implemented; reliability refinement ongoing |
 | Unattended source rebuild updates | Backlog |
 
 For the current version and test count, see the [README](../README.md) and [ROADMAP](ROADMAP.md).
@@ -162,6 +198,7 @@ docs/
 ├── architecture/
 │   ├── ADR/                    # Architecture Decision Records
 │   ├── reviews/                # Architecture reviews
+│   ├── core-services.md        # Current Core capability map
 │   ├── music-library-domain.md
 │   ├── MultiplatformPortabilityGuide.md
 │   └── SecurityAndResilienceGuide.md
@@ -170,7 +207,7 @@ docs/
 │   ├── app-design.md           # Application-wide UX and navigation
 │   └── screens/                # One document per screen
 │
-├── planning/                   # Detailed plans for future work
+├── planning/                   # Detailed plans and foundation records
 │
 ├── project/                    # History, notes and error records
 │
@@ -191,14 +228,15 @@ docs/
 - `INDEX.md` maps the documentation; it should not become a second roadmap.
 - Architecture documents explain structure and decisions.
 - Design documents define user behavior and interaction boundaries.
-- Planning documents describe future implementation work.
+- Planning documents describe future implementation work or preserve the implementation record of a foundation.
 - History records completed evolution and is not an active backlog.
 - External integrations are documented separately from Core responsibilities.
 - Significant features should define scope and non-goals before implementation.
-- Documentation should reflect the current state and should not silently describe planned behavior as implemented.
+- Documentation must distinguish **Current**, **Target**, and **Planned** states.
+- A target design must not be presented as the current implementation until the code has been changed and validated.
 
 ---
 
 **Last Updated**
 
-2026-08-09 — Reorganized the documentation index around project overview, architecture, design, integrations, planning, development standards and history. Reduced duplicated status information and established screen specifications as the design reference for application behavior.
+2026-08-09 — Reconciled navigation, metadata status, architecture references and current-vs-target documentation state against the current project source.
