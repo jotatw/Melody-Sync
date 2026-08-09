@@ -212,6 +212,8 @@ Cannot write tags: metadata could not be parsed.
 
 # Phase C — Doctor and Integration Testing
 
+> **Status: Implemented** (`doctor` Metadata section + headless `ApplyIntegrationTest`).
+
 ## Objective
 
 Expose metadata health in `melody-sync doctor` and make Apply integration-testable without depending on the production database singleton.

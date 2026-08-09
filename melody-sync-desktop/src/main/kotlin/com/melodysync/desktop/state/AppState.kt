@@ -113,10 +113,23 @@ class AppState(
     private val uiScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate),
     // Background scope for the file watcher loop (blocking WatchService).
     private val ioScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+    // Test seams: override the database/preferences location so the Apply
+    // flow can be exercised headlessly against a temp database (Phase C).
+    private val databaseFile: Path? = null,
+    private val prefsFile: Path? = null,
 ) {
 
     private var watcher: LibraryWatcher? = null
-    private val prefs = AppPreferences.load()
+    private val prefs = AppPreferences.load(prefsFile ?: AppPreferences.defaultFile())
+
+    private fun connectDatabase() {
+        val db = databaseFile
+        if (db != null) {
+            MusicDatabase.connectToFile(db)
+        } else {
+            MusicDatabase.connect()
+        }
+    }
 
     var directory by mutableStateOf(prefs.directory)
         private set
@@ -358,7 +371,7 @@ class AppState(
                 }
                 val updated = result.updated!!
                 withContext(Dispatchers.Default) {
-                    MusicDatabase.connect()
+                    connectDatabase()
                     MusicRepository.updateByPath(updated)
                 }
                 songs = songs.map { if (it.path == updated.path) updated else it }
@@ -440,7 +453,7 @@ class AppState(
             progressText = "Scanning..."
             try {
                 val result = withContext(Dispatchers.Default) {
-                    MusicDatabase.connect()
+                    connectDatabase()
                     LibrarySyncService.syncDirectory(dir)
                 }
                 lastResult = result
@@ -478,7 +491,7 @@ class AppState(
         uiScope.launch {
             try {
                 val found = withContext(Dispatchers.Default) {
-                    MusicDatabase.connect()
+                    connectDatabase()
                     MusicRepository.findAll().filter { it.path.startsWith(dir) }
                 }
                 if (found.isNotEmpty()) {
@@ -508,7 +521,7 @@ class AppState(
             healthStatus = HealthStatus.RUNNING
             try {
                 healthReport = withContext(Dispatchers.Default) {
-                    MusicDatabase.connect()
+                    connectDatabase()
                     LibraryHealthService.analyze(dir)
                 }
                 healthStatus = HealthStatus.DONE
@@ -529,7 +542,7 @@ class AppState(
             duplicatesStatus = DuplicatesStatus.RUNNING
             try {
                 val groups = withContext(Dispatchers.Default) {
-                    MusicDatabase.connect()
+                    connectDatabase()
                     val songs = MusicRepository.findAll().filter { it.path.startsWith(dir) }
                     DuplicateDetectionService.detectDuplicates(songs)
                 }
@@ -732,7 +745,7 @@ class AppState(
             organizeStatus = OrganizeStatus.RUNNING
             try {
                 val report = withContext(Dispatchers.Default) {
-                    MusicDatabase.connect()
+                    connectDatabase()
                     val songs = MusicRepository.findAll().filter { it.path.startsWith(dir) }
                     LibraryOrganizationService.planOrganization(songs, dir)
                 }
@@ -755,7 +768,7 @@ class AppState(
             visibleColumns = visibleColumns.joinToString(",") { it.name.lowercase() },
             groupByLetter = groupByLetter,
             updateChannel = updateChannel.name.lowercase(),
-        ).save()
+        ).save(prefsFile ?: AppPreferences.defaultFile())
     }
 
     private fun resyncFromWatch() {
@@ -764,7 +777,7 @@ class AppState(
             try {
                 val dir = Path.of(directory.trim())
                 val result = withContext(Dispatchers.Default) {
-                    MusicDatabase.connect()
+                    connectDatabase()
                     LibrarySyncService.syncDirectory(dir)
                 }
                 lastResult = result

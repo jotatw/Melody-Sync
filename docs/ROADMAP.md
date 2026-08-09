@@ -34,7 +34,7 @@ Large features should have a dedicated document under `docs/planning/` before im
 | Item | Status |
 |------|--------|
 | Project version | **v0.13.0-dev** |
-| Automated tests | **233 passing** |
+| Automated tests | **247 passing** |
 | Core | Stable and actively used |
 | Desktop GUI | Functional and in UX refinement |
 | CLI | Functional |
@@ -54,7 +54,7 @@ The current priority is stabilization and consolidation rather than opening addi
 
 | Area | Priority | Status | Planning / Research |
 |------|----------|--------|---------------------|
-| Metadata & Quick Fix | High | 🚧 Foundation in progress (Step 0, A, B done — Phase C next) | [Metadata Foundation](planning/metadata-foundation.md) · [Quick-Fix HUD](research/quick-fix-hud.md) |
+| Metadata & Quick Fix | High | 🚧 Foundation in progress (Step 0, A, B, C done — Phase D next) | [Metadata Foundation](planning/metadata-foundation.md) · [Quick-Fix HUD](research/quick-fix-hud.md) |
 | Review / Analysis | Medium | ✅ Review implemented; Health actionable | [Application Design Research](research/app-design.md) |
 | Updates & Installation | Medium | 🚧 Automatic unattended update backlog; release installer and channels completed | [Update Channels](research/update-channels.md) |
 | Platform | Low | 🔒 Frozen | [ADR-0009](architecture/ADR/ADR-0009-PlatformLayer.md) |
@@ -79,7 +79,7 @@ Current implementation includes:
 - Review screen connected to the Health → song → fix flow.
 - Opus metadata read/write support.
 
-The foundation work is tracked in [metadata-foundation.md](planning/metadata-foundation.md).  **Step 0, Phase A (MetadataProvider) and Phase B (typed write errors) are done**: `melody-sync metadata --write-test <file>` reports format, provider, read/write capability and a typed `TagWriteError`; providers now return `WriteResult`. Next is Phase C (doctor metadata section + headless integration tests).
+The foundation work is tracked in [metadata-foundation.md](planning/metadata-foundation.md).  **Step 0, Phase A (MetadataProvider), Phase B (typed write errors) and Phase C (doctor metadata section + headless Apply integration test) are done**. Next is Phase D: one controlled database connection lifecycle and serialized writes.
 
 Primary open problem:
 

@@ -2,6 +2,7 @@ package com.melodysync.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.Context
+import com.melodysync.metadata.MetadataFormatRegistry
 import com.melodysync.platform.installation.InstallationPaths
 import com.melodysync.platform.installation.InstallationService
 import com.melodysync.platform.system.VersionInfo
@@ -37,11 +38,37 @@ class DoctorCommand : CliktCommand(
         issues += check("Latest release", detectLatestRelease())
 
         echo("")
+        echo("Metadata")
+        issues += checkCondition(
+            "Registry available",
+            MetadataFormatRegistry.providerFor("mp3") != null,
+        )
+        issues += checkCondition(
+            "JAudioTagger provider",
+            MetadataFormatRegistry.providerFor("mp3")?.id == "JAudioTagger",
+        )
+        issues += checkCondition(
+            "Opus provider",
+            MetadataFormatRegistry.providerFor("opus")?.id == "OpusProvider",
+        )
+        issues += checkCondition(
+            "Write capabilities",
+            listOf("mp3", "flac", "m4a", "wav", "ogg", "aac", "opus").all {
+                MetadataFormatRegistry.providerFor(it)?.supportsWrite == true
+            },
+        )
+
+        echo("")
         if (issues == 0) {
             echo("✓ Everything looks healthy.")
         } else {
             echo("✗ $issues issue(s) found.")
         }
+    }
+
+    private fun checkCondition(name: String, ok: Boolean): Int {
+        echo(if (ok) "  ✓ $name" else "  ✗ $name")
+        return if (ok) 0 else 1
     }
 
     private fun detectLatestRelease(): String =
