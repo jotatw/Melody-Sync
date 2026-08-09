@@ -38,7 +38,12 @@ fun TopBar(
                     contentDescription = if (state.sidebarExpanded) "Collapse sidebar" else "Expand sidebar",
                 )
             }
-            Text("Melody Sync", style = MaterialTheme.typography.titleLarge)
+            // Brand mark uses the editorial serif (DesignSystem §3).
+            Text(
+                "Melody Sync",
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
         }
 
         IconButton(onClick = onToggleTheme) {

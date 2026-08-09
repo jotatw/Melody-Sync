@@ -137,6 +137,8 @@ Library + Quick Fix refinement (Block 05): selected rows show a leading accent i
 
 Settings foundation (Block 06): theme state moved into AppState (mode: system/light/dark, immediate preview), and Settings gained an Appearance group with a theme selector (System/Light/Dark), aligning theme configuration with the Settings screen per the screen specification.
 
+Visual refinement (Block 07): the app brand mark in the top bar now uses the editorial serif (DesignSystem §3); section headers already use the serif hierarchy, status pills carry LED indicators, and technical data uses monospace. Deeper Studio Editorial layout work (statistics composition) remains ongoing refinement.
+
 ### Metadata Foundation
 
 The metadata foundation was completed through the documented Steps 0–E. The work established diagnostic tooling, metadata-provider abstractions and registry support, typed write errors, metadata checks in `doctor`, headless Apply integration coverage, serialized database access, and per-format fixtures with a capability matrix.
