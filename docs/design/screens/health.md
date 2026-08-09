@@ -1,16 +1,20 @@
-# Health
+# Health — Interaction Model
 
-> Interaction model for library diagnostics, issue review, and navigation to corrective actions.
+> Diagnostic hub for understanding what needs attention in the music library and routing the user to the correct action.
 
 ## Document Information
 
 | Item | Value |
 |---|---|
-| Category | Design / UX |
-| Audience | Developers |
-| Status | Defined |
+| Category | Design / Screen Specification |
+| Audience | Developers / UX |
+| Status | Defined / Target Navigation |
 | Project Version | v0.13.0-dev |
+| Primary navigation | Health |
+| Related screens | Library, Review, Duplicates, Quick Fix, Statistics |
 | Last Updated | 2026-08-09 |
+
+---
 
 ## 1. Purpose
 
@@ -20,11 +24,17 @@ It is a diagnostic and decision-support screen. It should help the user understa
 
 Health is not the place where individual metadata edits or file moves are performed.
 
+**Navigation target:** Review is intended to become a contextual workflow rather than a permanent primary destination. Duplicates may remain contextual to Health until Library supports an appropriate multi-song interaction.
+
+---
+
 ## 2. User Question
 
-> **"What needs attention in my library?"**
+> **What needs attention in my library?**
 
 The screen should answer this question without requiring the user to inspect the entire library manually.
+
+---
 
 ## 3. Responsibilities
 
@@ -51,6 +61,8 @@ Health must not:
 - require the user to understand internal scanner or database terminology;
 - become a permanent duplicate-management workspace when a dedicated duplicate workflow is not required.
 
+---
+
 ## 5. Entry Points
 
 Primary entry point:
@@ -64,6 +76,8 @@ Contextual entry points may include:
 - completion of a corrective action that requires re-evaluation.
 
 Health should remain a top-level destination even when there are no issues, because a healthy library is itself a meaningful state.
+
+---
 
 ## 6. Primary Actions
 
@@ -113,6 +127,8 @@ When the implementation exposes an explicit health analysis action, it should co
 
 A refresh after a successful fix should update the health result rather than requiring the user to restart the application.
 
+---
+
 ## 7. Issue Categories
 
 The exact categories should follow the diagnostics already supported by the application. Current examples include:
@@ -126,6 +142,8 @@ The exact categories should follow the diagnostics already supported by the appl
 New categories should only be added when the underlying data and diagnostic behavior exist.
 
 Health must not invent a category merely because it would look useful in the interface.
+
+---
 
 ## 8. States
 
@@ -196,6 +214,8 @@ If analysis itself fails, distinguish an analysis failure from a library health 
 
 The UI should say that the health check could not be completed rather than reporting a low score.
 
+---
+
 ## 9. Review Workflow
 
 `Review` is a workflow, not a primary navigation destination.
@@ -228,6 +248,8 @@ For a single affected song, the song should be selected so that its contextual a
 
 For duplicate groups, Health retains the group-level review context until a dedicated multi-selection experience exists in Library.
 
+---
+
 ## 10. Contextual Interactions
 
 ### Health → Library
@@ -259,6 +281,8 @@ Health identifies the problem; the Library/Quick Fix context performs the user-c
 
 Health may link to Statistics only when aggregate context helps explain a result. This is secondary and should not distract from issue resolution.
 
+---
+
 ## 11. Navigation Rules
 
 - Entering Health from the sidebar starts at the current library-wide health state.
@@ -267,6 +291,8 @@ Health may link to Statistics only when aggregate context helps explain a result
 - Health should not force navigation to another screen when the library is healthy.
 - Duplicate review remains within Health unless a future dedicated workflow is explicitly introduced.
 - Back/navigation should not discard an in-progress analysis without communicating the state to the user.
+
+---
 
 ## 12. Data Interaction
 
@@ -284,6 +310,8 @@ Health may request a refresh/recalculation after a completed operation.
 
 Health must not directly own metadata-writing or file-moving logic.
 
+---
+
 ## 13. UX Rules
 
 - A score must always have an explanation.
@@ -296,6 +324,8 @@ Health must not directly own metadata-writing or file-moving logic.
 - Do not treat a failed health analysis as a health problem.
 - Do not make automatic corrections from the Health screen.
 
+---
+
 ## 14. Accessibility
 
 - Issue categories must not rely on color alone.
@@ -305,6 +335,8 @@ Health must not directly own metadata-writing or file-moving logic.
 - Loading and completion states must be announced through accessible text where supported.
 - The order of keyboard focus should follow the visual and decision order: summary → issues → actions.
 - Duplicate groups must expose the relationship between files textually, not only through spatial grouping.
+
+---
 
 ## 15. Visual Notes
 
@@ -334,6 +366,8 @@ Semantic colors should communicate state:
 - primary accent → actionable controls.
 
 The interface should favor clear dividers, strong typography, restrained cards, and meaningful whitespace over decorative instrumentation.
+
+---
 
 ## 16. Decision Rules
 
