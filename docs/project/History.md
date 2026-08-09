@@ -165,7 +165,7 @@ The current project state is focused on consolidation rather than broad feature 
 Current reported project status:
 
 - Version: **v0.13.0-dev**
-- Automated tests: **247 passing**
+- Automated tests: **250 passing**
 - Core: functional and stable enough for continued feature work
 - Desktop GUI: functional with UX refinement ongoing
 - CLI: functional
@@ -225,7 +225,7 @@ Metadata Foundation
 | Metric | Value |
 |--------|-------|
 | Project Version | v0.13.0-dev |
-| Automated Tests | 247 |
+| Automated Tests | 250 |
 | Architecture Decision Records | 9 |
 | Desktop Sections | Library, Statistics, Health, Review, Duplicates, Organize, Settings, About |
 | Release Installer | Completed |

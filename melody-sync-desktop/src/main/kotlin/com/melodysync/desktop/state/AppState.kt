@@ -3,7 +3,7 @@ package com.melodysync.desktop.state
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.melodysync.database.MusicDatabase
+import com.melodysync.database.DatabaseConnection
 import com.melodysync.database.MusicRepository
 import com.melodysync.model.DuplicateGroup
 import com.melodysync.model.HealthReport
@@ -125,9 +125,9 @@ class AppState(
     private fun connectDatabase() {
         val db = databaseFile
         if (db != null) {
-            MusicDatabase.connectToFile(db)
+            DatabaseConnection.connectToFile(db)
         } else {
-            MusicDatabase.connect()
+            DatabaseConnection.connect()
         }
     }
 

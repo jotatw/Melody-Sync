@@ -34,7 +34,7 @@ Large features should have a dedicated document under `docs/planning/` before im
 | Item | Status |
 |------|--------|
 | Project version | **v0.13.0-dev** |
-| Automated tests | **247 passing** |
+| Automated tests | **250 passing** |
 | Core | Stable and actively used |
 | Desktop GUI | Functional and in UX refinement |
 | CLI | Functional |
@@ -54,7 +54,7 @@ The current priority is stabilization and consolidation rather than opening addi
 
 | Area | Priority | Status | Planning / Research |
 |------|----------|--------|---------------------|
-| Metadata & Quick Fix | High | 🚧 Foundation in progress (Step 0, A, B, C done — Phase D next) | [Metadata Foundation](planning/metadata-foundation.md) · [Quick-Fix HUD](research/quick-fix-hud.md) |
+| Metadata & Quick Fix | High | 🚧 Foundation in progress (Steps 0-A-D done — Phase E next) | [Metadata Foundation](planning/metadata-foundation.md) · [Quick-Fix HUD](research/quick-fix-hud.md) |
 | Review / Analysis | Medium | ✅ Review implemented; Health actionable | [Application Design Research](research/app-design.md) |
 | Updates & Installation | Medium | 🚧 Automatic unattended update backlog; release installer and channels completed | [Update Channels](research/update-channels.md) |
 | Platform | Low | 🔒 Frozen | [ADR-0009](architecture/ADR/ADR-0009-PlatformLayer.md) |
@@ -79,7 +79,7 @@ Current implementation includes:
 - Review screen connected to the Health → song → fix flow.
 - Opus metadata read/write support.
 
-The foundation work is tracked in [metadata-foundation.md](planning/metadata-foundation.md).  **Step 0, Phase A (MetadataProvider), Phase B (typed write errors) and Phase C (doctor metadata section + headless Apply integration test) are done**. Next is Phase D: one controlled database connection lifecycle and serialized writes.
+The foundation work is tracked in [metadata-foundation.md](planning/metadata-foundation.md).  **Step 0 and Phases A-D are done**: providers, typed write errors, doctor metadata section, headless Apply integration test, and a single serialized DatabaseConnection. Next is Phase E: format fixtures and the MetadataFormats capability matrix.
 
 Primary open problem:
 

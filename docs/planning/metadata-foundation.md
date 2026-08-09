@@ -256,6 +256,8 @@ The integration test must verify both the filesystem result and the database res
 
 # Phase D — Database Connection Discipline
 
+> **Status: Implemented** (`DatabaseConnection`: idempotent single connection + serialized writes).
+
 ## Objective
 
 Remove ad-hoc database connections from the metadata Apply path and establish one controlled connection lifecycle.

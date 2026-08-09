@@ -13,7 +13,11 @@ import java.nio.file.Path
 
 object MusicRepository {
 
-    fun insert(song: Song): Long = transaction {
+    /** Serializes database writes through the single connection write lock. */
+    private fun <T> write(block: org.jetbrains.exposed.sql.Transaction.() -> T): T =
+        DatabaseConnection.withWriteLock { transaction { block() } }
+
+    fun insert(song: Song): Long = write {
         SongsTable.insert {
             it[path] = song.path.toString()
             it[size] = song.size
@@ -28,7 +32,7 @@ object MusicRepository {
         } get SongsTable.id
     }
 
-    fun insertAll(songs: List<Song>): List<Long> = transaction {
+    fun insertAll(songs: List<Song>): List<Long> = write {
         songs.map { song ->
             SongsTable.insert {
                 it[path] = song.path.toString()
@@ -50,7 +54,7 @@ object MusicRepository {
      * Existing paths are provided by the caller (read outside the transaction),
      * so metadata reading never blocks the database.
      */
-    fun upsertAll(songs: List<Song>, existingPaths: Set<Path>): Pair<Int, Int> = transaction {
+    fun upsertAll(songs: List<Song>, existingPaths: Set<Path>): Pair<Int, Int> = write {
         var added = 0
         var updated = 0
         songs.forEach { song ->
@@ -87,7 +91,7 @@ object MusicRepository {
     }
 
     /** Deletes the given paths in a single transaction. */
-    fun deleteAllByPath(paths: Set<Path>): Int = transaction {
+    fun deleteAllByPath(paths: Set<Path>): Int = write {
         paths.sumOf { path ->
             SongsTable.deleteWhere { SongsTable.path eq path.toString() }
         }
@@ -110,7 +114,7 @@ object MusicRepository {
             .any()
     }
 
-    fun updateByPath(song: Song): Int = transaction {
+    fun updateByPath(song: Song): Int = write {
         SongsTable.update({ SongsTable.path eq song.path.toString() }) {
             it[size] = song.size
             it[title] = song.title
@@ -124,11 +128,11 @@ object MusicRepository {
         }
     }
 
-    fun deleteByPath(path: Path): Int = transaction {
+    fun deleteByPath(path: Path): Int = write {
         SongsTable.deleteWhere { SongsTable.path eq path.toString() }
     }
 
-    fun deleteAll(): Int = transaction {
+    fun deleteAll(): Int = write {
         SongsTable.deleteAll()
     }
 

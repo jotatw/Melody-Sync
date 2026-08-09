@@ -40,6 +40,7 @@ Keep a searchable record of the problems we hit so the same class of error is no
 | E-12 | Build · RPM | RPM rejects `-` in the version | ✅ Fixed |
 | E-13 | Metadata · Apply | Apply failed on some original files | ✅ Fixed |
 | E-14 | Build · Version | Version defined in three places | ✅ Fixed |
+| E-15 | Database | Ad-hoc DB connects in seven places; no write serialization | ✅ Fixed |
 
 ## Fixed Errors
 
@@ -155,11 +156,18 @@ Keep a searchable record of the problems we hit so the same class of error is no
 - **Fix:** `melodySyncVersion` in `gradle.properties`, consumed by the build (package version), a generated runtime resource (`VersionInfo`) and `install.sh`.
 - **Verification:** `melody-sync version` and `doctor` report the same version.
 
+### E-15 — Ad-hoc database connections and unserialized writes
+
+- **Area:** Database
+- **Symptom:** `MusicDatabase.connect()` was called in seven places from background threads; concurrent tag application and watcher resyncs could interleave writes.
+- **Root cause:** No single connection lifecycle; every operation reconnected and replaced the default Exposed database; writes were not serialized.
+- **Fix:** Introduced `DatabaseConnection` — idempotent `connect` per URL (connect once, reuse; tests may switch files) and a `ReentrantLock` write lock. `MusicRepository` write methods serialize through it; `AppState` connects through the single entry point.
+- **Verification:** `DatabaseConnectionTest` (idempotency, file switching, lock) + full suite; `doctor` reports the connection discipline.
+
 ## Known Issues (unresolved)
 
 | ID | Area | Issue | Plan |
 |----|------|-------|------|
-| K-01 | Database | `MusicDatabase.connect()` is called ad-hoc in seven places from background threads; connection lifecycle and write serialization are implicit. | Metadata foundation Phase D (single `DatabaseConnection` + `Mutex`) |
 | K-02 | Metadata | Some M4A/MP4 files can still fail to write depending on the container layout (JAudioTagger limitation). | Phases A–B (done) expose typed capabilities and `WriteResult`; `metadata --write-test` reports the per-file truth — monitor for format-specific fixtures |
 
 ## Related Documents

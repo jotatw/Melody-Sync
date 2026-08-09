@@ -29,6 +29,9 @@ class DoctorCommand : CliktCommand(
         issues += check("Install directory", installDir.toString())
         issues += check("Version file", InstallationPaths.versionFile(installDir).toString())
         issues += check("Installation JSON", InstallationPaths.installationJson(installDir).toString())
+        issues += check("Database file", com.melodysync.database.DatabaseConnection.defaultDatabaseFile())
+        com.melodysync.database.DatabaseConnection.connect()
+        issues += check("Connection discipline", "single DatabaseConnection (writes serialized)")
 
         echo("")
         echo("Version")
