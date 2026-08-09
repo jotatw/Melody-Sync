@@ -45,7 +45,7 @@ fun OrganizeSection(state: AppState) {
             onClick = state::planOrganization,
             enabled = state.directory.isNotBlank() && state.organizeStatus != OrganizeStatus.RUNNING,
         ) {
-            Text(if (state.organizeStatus == OrganizeStatus.RUNNING) "Planning…" else "Plan Organization")
+            Text(if (state.organizeStatus == OrganizeStatus.RUNNING) "Analyzing…" else "Analyze Library")
         }
 
         when (state.organizeStatus) {
@@ -68,7 +68,15 @@ fun OrganizeSection(state: AppState) {
                     )
                 }
             }
-            OrganizeStatus.IDLE -> Unit
+            OrganizeStatus.IDLE -> {
+                Text(
+                    "Keep your music arranged according to your library rules. " +
+                        "Analysis creates a dry-run plan — nothing is moved until you apply it explicitly.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = Spacing.sm),
+                )
+            }
         }
     }
 }

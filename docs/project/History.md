@@ -139,6 +139,8 @@ Settings foundation (Block 06): theme state moved into AppState (mode: system/li
 
 Visual refinement (Block 07): the app brand mark in the top bar now uses the editorial serif (DesignSystem §3); section headers already use the serif hierarchy, status pills carry LED indicators, and technical data uses monospace. Deeper Studio Editorial layout work (statistics composition) remains ongoing refinement.
 
+Organize redesign (Block 08): the initial state now explains what Organize does and offers Analyze Library; the empty result remains an explicit "everything is organized" success state. The desktop stays report-first (apply via CLI), with truncated destinations and tooltips already in place.
+
 ### Metadata Foundation
 
 The metadata foundation was completed through the documented Steps 0–E. The work established diagnostic tooling, metadata-provider abstractions and registry support, typed write errors, metadata checks in `doctor`, headless Apply integration coverage, serialized database access, and per-format fixtures with a capability matrix.
