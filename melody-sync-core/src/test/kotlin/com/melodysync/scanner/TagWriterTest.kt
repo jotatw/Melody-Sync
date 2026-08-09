@@ -15,7 +15,7 @@ class TagWriterTest {
     lateinit var tmp: Path
 
     private fun copyFixture(name: String, targetName: String): Path {
-        val source = Path.of(javaClass.getResource("/fixtures/audio/$name")!!.toURI())
+        val source = Path.of(javaClass.getResource("/fixtures/audio/mp3/$name")!!.toURI())
         val target = tmp.resolve(targetName)
         Files.copy(source, target)
         return target

@@ -284,6 +284,8 @@ Writes should be serialized where necessary using a `Mutex` so concurrent tag ap
 
 # Phase E — Documentation and Fixtures
 
+> **Status: Implemented.** Real per-format fixtures generated with ffmpeg and the verified capability matrix documented in [metadata-formats.md](metadata-formats.md).
+
 ## Objective
 
 Document the metadata subsystem and make format behavior reproducible through fixtures.

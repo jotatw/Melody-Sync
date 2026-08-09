@@ -12,14 +12,14 @@ class ScannerTest {
     lateinit var tmpDir: Path
 
     private fun copyFixture(name: String, destName: String = name): Path {
-        val source = Path.of(javaClass.getResource("/fixtures/audio/$name")!!.toURI())
+        val source = Path.of(javaClass.getResource("/fixtures/audio/mp3/$name")!!.toURI())
         val dest = tmpDir.resolve(destName)
         Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING)
         return dest
     }
 
     private fun copyFixtureTo(name: String, dest: Path): Path {
-        val source = Path.of(javaClass.getResource("/fixtures/audio/$name")!!.toURI())
+        val source = Path.of(javaClass.getResource("/fixtures/audio/mp3/$name")!!.toURI())
         Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING)
         return dest
     }
@@ -59,7 +59,7 @@ class ScannerTest {
         copyFixture("with_tags.mp3")
         val result = scan(tmpDir)
         assertEquals(1, result.size)
-        assertEquals("qualque coisa", result[0].title)
+        assertEquals("Fixture Song", result[0].title)
     }
 
     @Test

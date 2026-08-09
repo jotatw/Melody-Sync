@@ -79,7 +79,7 @@ class QuickFixServiceTest {
     @Test
     fun `apply writes tags and returns the updated song`() {
         val path = tmp.resolve("song.mp3")
-        Files.copy(Path.of(javaClass.getResource("/fixtures/audio/no_tags.mp3")!!.toURI()), path)
+        Files.copy(Path.of(javaClass.getResource("/fixtures/audio/mp3/no_tags.mp3")!!.toURI()), path)
         val s = song(path, bitrate = null, duration = null)
 
         val result = QuickFixService.apply(s, TagSuggestion(title = "Title", artist = "Artist", album = "Album"))

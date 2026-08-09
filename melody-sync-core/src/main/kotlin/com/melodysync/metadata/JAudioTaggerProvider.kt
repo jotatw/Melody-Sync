@@ -17,7 +17,7 @@ import java.nio.file.NoSuchFileException
 object JAudioTaggerProvider : MetadataProvider {
 
     override val id = "JAudioTagger"
-    override val formats = setOf("mp3", "flac", "m4a", "wav", "ogg", "aac")
+    override val formats = setOf("mp3", "flac", "m4a", "wav", "ogg")
     override val supportsWrite = true
     override val supportedFields = listOf("title", "artist", "album")
 

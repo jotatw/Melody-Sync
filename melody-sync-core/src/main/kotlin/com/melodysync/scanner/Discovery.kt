@@ -6,7 +6,6 @@ import java.nio.file.NotDirectoryException
 import java.nio.file.Path
 
 val SUPPORTED_AUDIO_SUFFIXES: Set<String> = setOf(
-    ".aac",
     ".flac",
     ".m4a",
     ".mp3",

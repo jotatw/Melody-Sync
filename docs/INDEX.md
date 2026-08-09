@@ -45,6 +45,7 @@ Planning is the entry point for future implementation. Large features should rec
 |----------|---------|
 | [ROADMAP](ROADMAP.md) | Current project state, priorities and deferred work |
 | [Metadata Foundation](planning/metadata-foundation.md) | Foundation plan for reliable metadata read/write and Quick Fix |
+| [Metadata Formats](planning/metadata-formats.md) | Verified read/write capability matrix per format |
 
 ---
 
@@ -139,7 +140,8 @@ docs/
 │   └── reviews/                   # Architecture reviews
 │
 ├── planning/                      # Detailed plans for large features
-│   └── metadata-foundation.md
+│   ├── metadata-foundation.md
+│   └── metadata-formats.md
 │
 ├── project/                       # Project notes, history and error log
 │   ├── DocumentationNotes.md

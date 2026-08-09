@@ -10,7 +10,7 @@ import java.nio.file.Path
 
 class MetadataTest {
     private fun fixture(name: String): Path =
-        Path.of(javaClass.getResource("/fixtures/audio/$name")!!.toURI())
+        Path.of(javaClass.getResource("/fixtures/audio/mp3/$name")!!.toURI())
 
     @Test
     fun `uses filename when title is missing`() {
@@ -70,19 +70,19 @@ class MetadataTest {
     @Test
     fun `reads title from tagged file`() {
         val result = readMetadata(Song(path = fixture("with_tags.mp3"), size = 0L))
-        assertEquals("qualque coisa", result.title)
+        assertEquals("Fixture Song", result.title)
     }
 
     @Test
     fun `reads artist from tagged file`() {
         val result = readMetadata(Song(path = fixture("with_tags.mp3"), size = 0L))
-        assertEquals("alguem", result.artist)
+        assertEquals("Fixture Artist", result.artist)
     }
 
     @Test
     fun `reads album from tagged file`() {
         val result = readMetadata(Song(path = fixture("with_tags.mp3"), size = 0L))
-        assertEquals("teste", result.album)
+        assertEquals("Fixture Album", result.album)
     }
 
     @Test

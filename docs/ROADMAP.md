@@ -34,7 +34,7 @@ Large features should have a dedicated document under `docs/planning/` before im
 | Item | Status |
 |------|--------|
 | Project version | **v0.13.0-dev** |
-| Automated tests | **250 passing** |
+| Automated tests | **253 passing** |
 | Core | Stable and actively used |
 | Desktop GUI | Functional and in UX refinement |
 | CLI | Functional |
@@ -54,7 +54,7 @@ The current priority is stabilization and consolidation rather than opening addi
 
 | Area | Priority | Status | Planning / Research |
 |------|----------|--------|---------------------|
-| Metadata & Quick Fix | High | 🚧 Foundation in progress (Steps 0-A-D done — Phase E next) | [Metadata Foundation](planning/metadata-foundation.md) · [Quick-Fix HUD](research/quick-fix-hud.md) |
+| Metadata & Quick Fix | High | ✅ Foundation complete (Steps 0, A–E done) | [Metadata Foundation](planning/metadata-foundation.md) · [Formats](planning/metadata-formats.md) · [Quick-Fix HUD](research/quick-fix-hud.md) |
 | Review / Analysis | Medium | ✅ Review implemented; Health actionable | [Application Design Research](research/app-design.md) |
 | Updates & Installation | Medium | 🚧 Automatic unattended update backlog; release installer and channels completed | [Update Channels](research/update-channels.md) |
 | Platform | Low | 🔒 Frozen | [ADR-0009](architecture/ADR/ADR-0009-PlatformLayer.md) |
@@ -79,7 +79,7 @@ Current implementation includes:
 - Review screen connected to the Health → song → fix flow.
 - Opus metadata read/write support.
 
-The foundation work is tracked in [metadata-foundation.md](planning/metadata-foundation.md).  **Step 0 and Phases A-D are done**: providers, typed write errors, doctor metadata section, headless Apply integration test, and a single serialized DatabaseConnection. Next is Phase E: format fixtures and the MetadataFormats capability matrix.
+The foundation work is tracked in [metadata-foundation.md](planning/metadata-foundation.md) and is **complete (Steps 0, A–E)**: diagnostic CLI, MetadataProvider registry, typed write errors, doctor metadata section, headless Apply integration test, single serialized DatabaseConnection, and per-format fixtures with the verified capability matrix ([metadata-formats.md](planning/metadata-formats.md)).
 
 Primary open problem:
 
@@ -245,12 +245,14 @@ The following remain intentionally deferred:
 
 - [Documentation Index](INDEX.md)
 - [Metadata Foundation](planning/metadata-foundation.md)
+- [Metadata Formats](planning/metadata-formats.md)
 - [Quick-Fix HUD research](research/quick-fix-hud.md)
 - [Application Design Research](research/app-design.md)
 - [Update Channels research](research/update-channels.md)
 - [Development Methodology](standards/handbook/DevelopmentMethodology.md)
 - [ADR-0009 — Platform Layer](architecture/ADR/ADR-0009-PlatformLayer.md)
 - [History](project/History.md)
+- [Error Log](project/ErrorLog.md)
 
 ---
 

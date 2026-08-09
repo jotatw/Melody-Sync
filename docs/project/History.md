@@ -165,7 +165,7 @@ The current project state is focused on consolidation rather than broad feature 
 Current reported project status:
 
 - Version: **v0.13.0-dev**
-- Automated tests: **250 passing**
+- Automated tests: **253 passing**
 - Core: functional and stable enough for continued feature work
 - Desktop GUI: functional with UX refinement ongoing
 - CLI: functional
@@ -174,7 +174,7 @@ Current reported project status:
 - UX-2 Quick Fix: completed
 - Review screen: completed
 - Development methodology: accepted
-- Metadata foundation: in progress — Steps 0, A, B, C done
+- Metadata foundation: completed (Steps 0, A-E, per-format fixtures and capability matrix)
 - Unattended automatic updates: deferred
 
 ---
@@ -225,7 +225,7 @@ Metadata Foundation
 | Metric | Value |
 |--------|-------|
 | Project Version | v0.13.0-dev |
-| Automated Tests | 250 |
+| Automated Tests | 253 |
 | Architecture Decision Records | 9 |
 | Desktop Sections | Library, Statistics, Health, Review, Duplicates, Organize, Settings, About |
 | Release Installer | Completed |
@@ -255,7 +255,7 @@ Metadata Foundation
 | UX-2 Quick Fix | ✅ Completed |
 | Review screen | ✅ Completed |
 | Development methodology | ✅ Accepted |
-| Metadata foundation | 🚧 Planned |
+| Metadata foundation | ✅ Completed |
 | Unattended automatic updates | ⏳ Deferred |
 
 ---

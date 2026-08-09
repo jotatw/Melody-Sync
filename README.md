@@ -20,7 +20,7 @@ The project is also a way to practice software engineering: architecture before 
 | Language | **Kotlin** (JVM 21) |
 | Core (scan, metadata, statistics) | ✅ Completed |
 | CLI (`melody-sync scan` / `health` / `duplicates` / `organize` / `export` / `enrich` / `update` / `doctor`) | ✅ Working |
-| Automated tests | 🎉 **250 passing** |
+| Automated tests | 🎉 **253 passing** |
 | Database (SQLite) | ✅ Working |
 | GUI (Desktop) | ✅ Working (Compose, collapsible sidebar) |
 | Library health check | ✅ Working |
@@ -41,7 +41,7 @@ The project is also a way to practice software engineering: architecture before 
 
 ### Implemented
 
-- ✅ Audio file discovery (`.mp3`, `.flac`, `.m4a`, `.ogg`, `.opus`, `.wav`, `.aac`)
+- ✅ Audio file discovery (`.mp3`, `.flac`, `.m4a`, `.ogg`, `.opus`, `.wav`)
 - ✅ Metadata extraction (title, artist, album, duration, bitrate, sample rate, channels, codec) — including Opus via a built-in Ogg/OpusTags reader/writer
 - ✅ Library statistics (total songs, unique artists/albums, size, duration, formats, avg bitrate)
 - ✅ SQLite database — persistent metadata cache (`~/.config/melody-sync/library.db`)
@@ -68,7 +68,7 @@ The project is also a way to practice software engineering: architecture before 
 - ✅ GitHub Actions CI + automated release publishing
 - ✅ MIT license
 - ✅ System theme detection (KDE Plasma + GNOME)
-- ✅ 250 automated tests with real audio fixtures
+- ✅ 253 automated tests with real audio fixtures
 
 ### In Progress / Planned
 
@@ -142,7 +142,7 @@ Directory
 | CLI framework | **clikt** 5.1.0 |
 | GUI | **Compose Desktop** 1.11.1 |
 | Database | **SQLite** via **Exposed** 0.61.0 |
-| Testing | **JUnit 5** (250 tests, real audio fixtures) |
+| Testing | **JUnit 5** (253 tests, real audio fixtures) |
 
 ---
 
@@ -207,11 +207,11 @@ cd Melody-Sync
 
 ## Testing
 
-**250 tests, all passing:**
+**253 tests, all passing:**
 
 | Module | Tests | Area |
 |--------|-------|------|
-| `core` | 217 | Models, Discovery, Metadata, Opus, TagWriter, Scanner, Statistics, Database, Sync, Health, Duplicates, Watcher, Organization, Export, Enrichment, Quick Fix, Suggestion sources, Platform (installation/shell/system) |
+| `core` | 220 | Models, Discovery, Metadata, Opus, TagWriter, Scanner, Statistics, Database, Sync, Health, Duplicates, Watcher, Organization, Export, Enrichment, Quick Fix, Suggestion sources, Platform (installation/shell/system) |
 | `cli` | 17 | Version, Scan, Health, Duplicates, Organize, Export, Enrich, Update, Doctor, Metadata commands |
 | `desktop` | 16 | Theme, preferences, state |
 
@@ -219,7 +219,7 @@ cd Melody-Sync
 ./gradlew test
 ```
 
-Test fixtures include real audio files (`.mp3` with and without tags) plus generated Opus pages.
+Test fixtures include real audio files for every supported format (with and without tags).
 
 ---
 
@@ -343,11 +343,11 @@ Project documentation lives in the `docs/` directory. Key documents:
 
 ### Milestone 17 — Metadata Foundation 🚧
 - [x] `melody-sync metadata --write-test` diagnostic (Step 0)
-- [ ] Per-format `MetadataProvider` abstraction (Phase A)
-- [ ] Typed write errors (Phase B)
-- [ ] Doctor metadata section + integration tests (Phase C)
-- [ ] Database connection discipline (Phase D)
-- [ ] Format fixtures + capability matrix docs (Phase E)
+- [x] Per-format `MetadataProvider` abstraction (Phase A)
+- [x] Typed write errors (Phase B)
+- [x] Doctor metadata section + integration tests (Phase C)
+- [x] Database connection discipline (Phase D)
+- [x] Format fixtures + capability matrix docs (Phase E)
 
 See [docs/planning/metadata-foundation.md](docs/planning/metadata-foundation.md).
 

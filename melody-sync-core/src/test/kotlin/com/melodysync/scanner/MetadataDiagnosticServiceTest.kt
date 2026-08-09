@@ -16,7 +16,7 @@ class MetadataDiagnosticServiceTest {
     lateinit var tmp: Path
 
     private fun copyFixture(name: String, target: Path): Path {
-        val source = Path.of(javaClass.getResource("/fixtures/audio/$name")!!.toURI())
+        val source = Path.of(javaClass.getResource("/fixtures/audio/mp3/$name")!!.toURI())
         Files.copy(source, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING)
         return target
     }

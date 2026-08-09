@@ -57,7 +57,7 @@ class ScanCommandTest {
     lateinit var tmpDir: Path
 
     private fun createLibrary(): Path {
-        val source = Path.of(javaClass.getResource("/fixtures/audio/with_tags.mp3")!!.toURI())
+        val source = Path.of(javaClass.getResource("/fixtures/audio/mp3/with_tags.mp3")!!.toURI())
         Files.copy(source, tmpDir.resolve("Queen.mp3"))
         Files.copy(source, tmpDir.resolve("Bach.mp3"))
         return tmpDir
@@ -114,7 +114,7 @@ class HealthCommandTest {
 
     @Test
     fun `reports audio and non-audio files`() {
-        val source = Path.of(javaClass.getResource("/fixtures/audio/with_tags.mp3")!!.toURI())
+        val source = Path.of(javaClass.getResource("/fixtures/audio/mp3/with_tags.mp3")!!.toURI())
         Files.copy(source, tmpDir.resolve("song.mp3"))
         Files.writeString(tmpDir.resolve("cover.png"), "png")
         Files.writeString(tmpDir.resolve("sub.vtt"), "vtt")

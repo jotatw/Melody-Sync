@@ -19,7 +19,7 @@ class MetadataFormatRegistryTest {
     lateinit var tmp: Path
 
     private fun fixture(name: String, target: Path): Path {
-        val source = Path.of(javaClass.getResource("/fixtures/audio/$name")!!.toURI())
+        val source = Path.of(javaClass.getResource("/fixtures/audio/mp3/$name")!!.toURI())
         Files.copy(source, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING)
         return target
     }
@@ -37,7 +37,7 @@ class MetadataFormatRegistryTest {
     fun `read delegates to the matching provider`() {
         val mp3 = fixture("with_tags.mp3", tmp.resolve("a.mp3"))
         val readMp3 = MetadataFormatRegistry.read(Song(path = mp3, size = 0))
-        assertEquals("qualque coisa", readMp3.title)
+        assertEquals("Fixture Song", readMp3.title)
 
         val opus = tmp.resolve("b.opus")
         Files.write(opus, twoPageOpus("Song", "Artist", "Album"))

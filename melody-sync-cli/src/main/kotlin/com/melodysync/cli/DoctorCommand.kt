@@ -56,7 +56,7 @@ class DoctorCommand : CliktCommand(
         )
         issues += checkCondition(
             "Write capabilities",
-            listOf("mp3", "flac", "m4a", "wav", "ogg", "aac", "opus").all {
+            listOf("mp3", "flac", "m4a", "wav", "ogg", "opus").all {
                 MetadataFormatRegistry.providerFor(it)?.supportsWrite == true
             },
         )

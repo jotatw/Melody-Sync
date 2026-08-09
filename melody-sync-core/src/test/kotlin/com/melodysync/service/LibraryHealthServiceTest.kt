@@ -37,7 +37,7 @@ class LibraryHealthServiceTest {
     }
 
     private fun copyAudioFixture(name: String, destName: String = name): Path {
-        val source = Path.of(javaClass.getResource("/fixtures/audio/with_tags.mp3")!!.toURI())
+        val source = Path.of(javaClass.getResource("/fixtures/audio/mp3/with_tags.mp3")!!.toURI())
         val dest = tmpDir.resolve(destName)
         Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING)
         return dest

@@ -33,7 +33,7 @@ class LibrarySyncServiceTest {
     }
 
     private fun copyFixture(name: String): Path {
-        val source = Path.of(javaClass.getResource("/fixtures/audio/with_tags.mp3")!!.toURI())
+        val source = Path.of(javaClass.getResource("/fixtures/audio/mp3/with_tags.mp3")!!.toURI())
         val dest = tmpDir.resolve(name)
         Files.copy(source, dest, StandardCopyOption.REPLACE_EXISTING)
         return dest
@@ -90,7 +90,7 @@ class LibrarySyncServiceTest {
         val stored = MusicRepository.findAll()
         assertEquals(1, stored.size)
         assertEquals(copied, stored[0].path)
-        assertEquals("qualque coisa", stored[0].title)
+        assertEquals("Fixture Song", stored[0].title)
     }
 
     @Test

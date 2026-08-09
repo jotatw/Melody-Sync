@@ -41,6 +41,7 @@ Keep a searchable record of the problems we hit so the same class of error is no
 | E-13 | Metadata · Apply | Apply failed on some original files | ✅ Fixed |
 | E-14 | Build · Version | Version defined in three places | ✅ Fixed |
 | E-15 | Database | Ad-hoc DB connects in seven places; no write serialization | ✅ Fixed |
+| E-16 | Metadata · AAC | `.aac` had no JAudioTagger reader but was listed as supported | ✅ Fixed |
 
 ## Fixed Errors
 
@@ -169,6 +170,7 @@ Keep a searchable record of the problems we hit so the same class of error is no
 | ID | Area | Issue | Plan |
 |----|------|-------|------|
 | K-02 | Metadata | Some M4A/MP4 files can still fail to write depending on the container layout (JAudioTagger limitation). | Phases A–B (done) expose typed capabilities and `WriteResult`; `metadata --write-test` reports the per-file truth — monitor for format-specific fixtures |
+| K-03 | Metadata · WAV | JAudioTagger reads WAV LIST/INFO values with a trailing NUL byte (e.g. `Fixture Song\u0000`). | Documented in the format matrix; callers trim the NUL when displaying |
 
 ## Related Documents
 
