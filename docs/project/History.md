@@ -1,27 +1,29 @@
 # Melody Sync Project History
 
-> High-level historical record of the project's major milestones, architectural evolution and current state.
+> High-level historical record of the project's major milestones, architectural evolution, and documented state.
 
 ---
 
 ## Document Information
 
-| Item             | Value |
-|------------------|-------|
-| Document ID      | HISTORY-001 |
-| Category         | History |
-| Audience         | Everyone |
-| Status           | Active |
-| Project Version  | v0.13.0-dev |
+| Item | Value |
+|---|---|
+| Document ID | HISTORY-001 |
+| Category | History |
+| Audience | Everyone |
+| Status | Active |
+| Project Version | v0.13.0-dev |
 | Template Version | HistoryTemplate v1.0 |
-| Last Updated     | 2026-08-08 |
-| Maintainer       | Melody Sync Project |
+| Last Updated | 2026-08-09 |
+| Maintainer | Melody Sync Project |
 
 ---
 
 ## Purpose
 
-Record the evolution of Melody Sync at a milestone level without replacing sprint planning, implementation documentation or architecture decisions.
+Record the evolution of Melody Sync at a milestone level without replacing planning, implementation documentation, or architecture decisions.
+
+This document records what happened. Current and future work belongs in [`docs/ROADMAP.md`](../ROADMAP.md) and the relevant planning documents.
 
 ---
 
@@ -29,34 +31,34 @@ Record the evolution of Melody Sync at a milestone level without replacing sprin
 
 ### Project Foundation
 
-Melody Sync began as a personal music-library organization project. The early implementation established the core domain around scanning a local music directory, extracting metadata and presenting library information.
+Melody Sync began as a personal music-library organization project. The early implementation established the core domain around scanning a local music directory, extracting metadata, and presenting library information.
 
 The project later migrated from the Python prototype to Kotlin, establishing the current JVM architecture and removing the legacy implementation after the Kotlin version became sufficiently stable.
 
 ### Core Library and Scanner
 
-The core evolved into a reusable library scanner and model layer capable of discovering audio files, reading metadata and persisting the library in SQLite.
+The core evolved into a reusable library scanner and model layer capable of discovering audio files, reading metadata, and persisting library information in SQLite.
 
-The project adopted JAudioTagger for audio metadata, with defensive handling for missing and malformed metadata. This decision is recorded in ADR-0005.
+JAudioTagger was adopted for audio metadata, with defensive handling for missing and malformed metadata. This decision is recorded in ADR-0005.
 
 ### CLI
 
-The CLI grew around report-oriented operations:
+The CLI grew around report-oriented operations including:
 
-- scan;
-- health;
-- duplicates;
-- organize;
-- export;
-- enrich;
-- update;
-- doctor.
+- `scan`;
+- `health`;
+- `duplicates`;
+- `organize`;
+- `export`;
+- `enrich`;
+- `update`;
+- `doctor`.
 
-The design consistently favored explicit reports and validation before destructive actions.
+The project consistently favored explicit reports and validation before destructive actions.
 
 ### Library Health and Analysis
 
-Health analysis was introduced to report missing metadata, zero duration, orphaned entries and non-audio content without modifying files.
+Health analysis was introduced to report missing metadata, zero duration, orphaned entries, and non-audio content without modifying files.
 
 Duplicate detection followed with report-only grouping and recommendations.
 
@@ -68,30 +70,21 @@ A recursive filesystem watcher was added to keep the database synchronized with 
 
 ### Desktop GUI
 
-The Compose Desktop application introduced:
+The Compose Desktop application introduced the main application areas for Library, Statistics, Health, Review, Duplicates, Organize, Settings, and About.
 
-- Library;
-- Statistics;
-- Health;
-- Review;
-- Duplicates;
-- Organize;
-- Settings;
-- About.
-
-A collapsible sidebar and persistent preferences established the current navigation model.
+A collapsible sidebar and persistent preferences established the navigation model used during the subsequent UX refinement work.
 
 ### UX Foundation
 
-The desktop UI received a Hi-Fi Editorial design direction and then a consistency pass covering semantic colors, reusable status pills, statistics cards, empty states, sidebar tooltips, Settings grouping and Health review actions.
+The desktop UI received a Hi-Fi Editorial design direction followed by a consistency pass covering semantic colors, reusable status pills, statistics cards, empty states, sidebar tooltips, Settings grouping, and Health review actions.
 
-UX-1 was completed as a consistency/refinement milestone.
+UX-1 was completed as a consistency and refinement milestone.
 
 ### Installation and Platform Layer
 
-Installation evolved from the local source-based Fedora installer into a dedicated platform layer covering installation, shell execution and system integration.
+Installation evolved from the local source-based Fedora installer into a dedicated platform layer covering installation, shell execution, and system integration.
 
-ADR-0009 froze the platform boundary so that domain/core code remains independent of platform implementation details.
+ADR-0009 froze the platform boundary so that domain and Core code remain independent of platform implementation details.
 
 A single version source was introduced through `gradle.properties`, and installation metadata is recorded through `VERSION` and `INSTALLATION.json`.
 
@@ -106,9 +99,9 @@ The release installer was completed with:
 - desktop entry;
 - Stable / Beta / Nightly channel support.
 
-The CLI and GUI update flows can now choose between rebuilding from a source checkout and installing a published release.
+The CLI and GUI update flows can choose between rebuilding from a source checkout and installing a published release.
 
-Fully unattended automatic updating remains deferred.
+Automatic update-on-startup was subsequently implemented for release installations. Relaunch orchestration remained a separate deferred concern.
 
 ### Metadata Quick Fix
 
@@ -124,15 +117,21 @@ The Quick Fix foundation introduced:
 
 The desktop Quick Fix HUD was then integrated into Library as a split pane. Every edit remains explicit and user-validated.
 
-Opus metadata support was subsequently added because JAudioTagger does not provide the required Opus behavior.
+Opus metadata support was added because JAudioTagger did not provide the required Opus behavior.
 
-A lyrics source was added to the Quick Fix panel (view-only fetch via the Lyrics.ovh API), alongside the local and YouTube suggestion sources.
+A lyrics source was added to the Quick Fix panel as a view-only fetch through the Lyrics.ovh API, alongside local and YouTube suggestion sources.
 
-The Review screen was added after Health and Quick Fix, creating a direct Health → Review → Quick Fix flow for songs with issues. The Review screen computes per-song diagnostics, provides filters and opens the Quick Fix panel for the selected song.
+The Review screen was added after Health and Quick Fix, creating a direct Health → Review → Quick Fix flow for songs with issues. The Review screen computes per-song diagnostics, provides filters, and opens the Quick Fix panel for the selected song.
+
+### Metadata Foundation
+
+The metadata foundation was completed through the documented Steps 0–E. The work established diagnostic tooling, metadata-provider abstractions and registry support, typed write errors, metadata checks in `doctor`, headless Apply integration coverage, serialized database access, and per-format fixtures with a capability matrix.
+
+The foundation established the boundary for further metadata reliability work rather than declaring all format-specific write behavior universally solved.
 
 ### Documentation Consolidation
 
-The documentation was consolidated around a central roadmap, detailed metadata planning, project history and an official development methodology.
+The documentation was consolidated around a central roadmap, detailed planning documents, project history, and an official development methodology.
 
 The development methodology formalized the cycle:
 
@@ -158,26 +157,30 @@ Approval
 Maintenance
 ```
 
-The methodology is now an accepted handbook rather than a backlog item.
+The methodology became an accepted handbook document rather than a backlog item.
 
-### Current Milestone — v0.13.0-dev
+---
 
-The current project state is focused on consolidation rather than broad feature expansion.
+## Current Milestone — v0.13.0-dev
 
-Current reported project status:
+The current documented project state is a consolidation and stabilization phase following the implementation of the Core, desktop workflow, installation system, Quick Fix, Review, and documentation foundation.
+
+Recorded state:
 
 - Version: **v0.13.0-dev**
 - Automated tests: **257 passing**
-- Core: functional and stable enough for continued feature work
+- Core: functional and stable enough for continued development
 - Desktop GUI: functional with UX refinement ongoing
 - CLI: functional
 - Installation and release update flow: implemented
-- UX-1: completed
+- UX-1 Consistency: completed
 - UX-2 Quick Fix: completed
 - Review screen: completed
 - Development methodology: accepted
-- Metadata foundation: completed (Steps 0, A-E, per-format fixtures and capability matrix)
-- Auto-update on startup: completed; relaunch orchestration: deferred
+- Metadata foundation: completed
+- Auto-update on startup: completed; relaunch orchestration remains separate
+
+The detailed current planning state is maintained in [`docs/ROADMAP.md`](../ROADMAP.md), rather than in this history document.
 
 ---
 
@@ -214,32 +217,34 @@ UX Foundation
 Quick Fix + Review
        │
        ▼
-Documentation Consolidation
+Metadata Foundation
        │
        ▼
-Metadata Foundation
+Documentation Consolidation
 ```
 
 ---
 
-## Project Metrics
+## Historical Project Metrics
 
-| Metric | Value |
-|--------|-------|
+| Metric | Recorded Value |
+|---|---|
 | Project Version | v0.13.0-dev |
 | Automated Tests | 257 |
 | Architecture Decision Records | 9 |
-| Desktop Sections | Library, Statistics, Health, Review, Duplicates, Organize, Settings, About |
+| Desktop Areas | Library, Statistics, Health, Review, Duplicates, Organize, Settings, About |
 | Release Installer | Completed |
 | Update Channels | Stable / Beta / Nightly |
 | Platform Layer | Frozen |
+
+These values describe the documented state at the current milestone and may change as the project evolves.
 
 ---
 
 ## Major Milestones
 
-| Milestone | Status |
-|-----------|--------|
+| Milestone | Status at v0.13.0-dev |
+|---|---|
 | Kotlin migration | ✅ Completed |
 | Core scanner and model | ✅ Completed |
 | SQLite persistence | ✅ Completed |
@@ -262,23 +267,14 @@ Metadata Foundation
 
 ---
 
-## Current State
+## Document Boundaries
 
-Melody Sync has moved from a feature-building phase into a stabilization and foundation phase.
+This history intentionally does not contain an implementation backlog or detailed future plans.
 
-The most important open technical concern is metadata writing reliability across file formats. The current Quick Fix implementation already surfaces write errors, but the project needs an explicit metadata-provider and capability layer before expanding metadata editing further.
-
-The immediate planning reference is [Metadata Foundation](../planning/metadata-foundation.md).
-
----
-
-## Next Steps
-
-1. Stabilize metadata writing and diagnosis.
-2. Add verified format fixtures and capability tests.
-3. Keep the platform layer frozen.
-4. Continue UX refinement without opening another major UI architecture branch.
-5. Keep relaunch orchestration deferred; auto-update on startup is complete.
+- Current priorities and deferred work → [`docs/ROADMAP.md`](../ROADMAP.md)
+- Detailed feature plans → [`docs/planning/`](../planning/)
+- Architecture decisions → [`docs/architecture/ADR/`](../architecture/ADR/)
+- UX and screen behavior → [`docs/design/`](../design/)
 
 ---
 
@@ -298,9 +294,10 @@ The immediate planning reference is [Metadata Foundation](../planning/metadata-f
 ## Revision History
 
 | Version | Date | Description |
-|---------|------|-------------|
+|---|---|---|
 | 1.0 | 2026-08-08 | Initial historical record consolidated from project milestones |
 | 1.1 | 2026-08-08 | Recorded documentation consolidation and accepted development methodology |
+| 1.2 | 2026-08-09 | Separated historical record from current planning and removed future-work sections |
 
 ---
 
