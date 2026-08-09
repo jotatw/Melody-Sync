@@ -7,7 +7,7 @@
 | Item | Value |
 |---|---|
 | Category | Screen Specification |
-| Status | Implemented / navigation consolidation pending |
+| Status | Implemented / contextual via Health (removed from sidebar) |
 | Scope | Current duplicate workflow |
 | Related | Health, Library, Trash |
 
@@ -89,15 +89,11 @@ If a last-analysis timestamp is available, it may be shown as supporting informa
 
 ## Navigation Status
 
-The current implementation exposes Duplicates as a primary navigation destination.
+Duplicates is no longer a primary navigation destination. It is reached contextually through Health (Health → "Review duplicate groups"), preserving group inspection, explicit confirmation, trash/recovery behavior and progress feedback.
 
-The approved target navigation model proposes treating duplicate findings as part of the broader Health/review experience rather than requiring a permanent top-level destination.
+## Consolidation
 
-This document describes the **current implemented workflow**. It does not by itself authorize removing Duplicates from the sidebar.
-
-## Future Consolidation
-
-If Duplicates becomes contextual to Health, the migration must preserve:
+The migration to a contextual Health workflow preserves:
 
 - access to duplicate groups;
 - group-level inspection;

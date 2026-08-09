@@ -7,7 +7,7 @@
 | Item | Value |
 |---|---|
 | Category | Screen Specification |
-| Status | Implemented / navigation consolidation pending |
+| Status | Implemented / contextual via Health (removed from sidebar) |
 | Scope | Current Review workflow |
 | Related | Health, Library, Quick Fix |
 
@@ -70,9 +70,7 @@ The empty state should not create a new action if there is no useful action to p
 
 ## Navigation Status
 
-The current implementation exposes Review as a primary navigation destination.
-
-The approved target navigation model proposes moving this behavior into contextual workflows, primarily through Health and Library:
+Review is no longer a primary navigation destination. It is reached contextually through Health and Library:
 
 ```text
 Health
@@ -82,7 +80,7 @@ review issue
 Library / Quick Fix
 ```
 
-This document therefore describes the **current implemented behavior**. It does not authorize removal of the Review destination by itself.
+The review capability remains fully reachable through this contextual flow.
 
 ## Future Consolidation
 

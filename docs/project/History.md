@@ -127,6 +127,8 @@ YouTube suggestions now present candidate results with explicit selection: the u
 
 The Review screen was added after Health and Quick Fix, creating a direct Health → Review → Quick Fix flow for songs with issues. The Review screen computes per-song diagnostics, provides filters, and opens the Quick Fix panel for the selected song.
 
+Navigation consolidation (Block 01 + Block 02): contextual navigation now distinguishes filter vs. selection contexts (Health → Library; Statistics → Library; Library → Quick Fix), and the sidebar reached its target primary navigation — Review and Duplicates were removed as primary destinations and are reached contextually through Health (issue context and duplicate groups).
+
 ### Metadata Foundation
 
 The metadata foundation was completed through the documented Steps 0–E. The work established diagnostic tooling, metadata-provider abstractions and registry support, typed write errors, metadata checks in `doctor`, headless Apply integration coverage, serialized database access, and per-format fixtures with a capability matrix.

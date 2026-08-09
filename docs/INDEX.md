@@ -53,8 +53,8 @@ The [`README.md`](../README.md) is the public entry point. This index is the ent
 | [Library](design/screens/library.md) | Browse, inspect and curate songs | Implemented / refining |
 | [Health](design/screens/health.md) | Identify library issues and guide review | Implemented / refining |
 | [Statistics](design/screens/statistics.md) | Explore library data and navigate to contextual views | Implemented / refining |
-| [Review](design/screens/review.md) | Current issue-review workspace | Implemented / navigation consolidation pending |
-| [Duplicates](design/screens/duplicates.md) | Current duplicate-management workspace | Implemented / navigation consolidation pending |
+| [Review](design/screens/review.md) | Issue-review workflow, reached contextually through Health | Implemented / contextual via Health |
+| [Duplicates](design/screens/duplicates.md) | Duplicate-management workflow, reached contextually through Health | Implemented / contextual via Health |
 | [Organize](design/screens/organize.md) | Plan and apply filesystem organization | Implemented / refining |
 | [Settings](design/screens/settings.md) | Application, installation and update configuration | Implemented / refining |
 | [About](design/screens/about.md) | Project and application information | Implemented |
@@ -71,7 +71,7 @@ Settings
 About
 ```
 
-`Review` and `Duplicates` remain functional contexts while being removed from the permanent primary navigation only after their contextual flows are validated.
+`Review` and `Duplicates` are removed from the permanent primary navigation; they remain functional contexts reached through Health (Health → issue context → Library/Quick Fix; Health → duplicate groups).
 
 ### Design Research
 

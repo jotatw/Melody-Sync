@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.HealthStatus
+import com.melodysync.desktop.state.Section
 import com.melodysync.desktop.theme.HiFiDarkColors
 import com.melodysync.desktop.theme.HiFiLightColors
 import com.melodysync.desktop.theme.Spacing
@@ -53,6 +54,21 @@ fun HealthSection(state: AppState) {
             enabled = state.directory.isNotBlank() && state.healthStatus != HealthStatus.RUNNING,
         ) {
             Text(if (state.healthStatus == HealthStatus.RUNNING) "Checking…" else "Analyze Health")
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(top = Spacing.sm),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                "Duplicate groups are reviewed here as a Health concern.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f),
+            )
+            TextButton(onClick = { state.setSection(Section.DUPLICATES) }) {
+                Text("Review duplicate groups")
+            }
         }
 
         when (state.healthStatus) {
