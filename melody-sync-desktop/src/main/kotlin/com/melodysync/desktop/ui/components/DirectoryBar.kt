@@ -24,8 +24,8 @@ import androidx.compose.ui.Modifier
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.ScanStatus
 import com.melodysync.desktop.state.WatchStatus
-import com.melodysync.desktop.theme.Heights
 import com.melodysync.desktop.theme.Spacing
+import com.melodysync.desktop.theme.Strokes
 import javax.swing.JFileChooser
 
 /**
@@ -39,7 +39,7 @@ fun DirectoryBar(state: AppState) {
         color = MaterialTheme.colorScheme.surface,
         shape = MaterialTheme.shapes.small,
         border = BorderStroke(
-            1.dp,
+            Strokes.hairline,
             MaterialTheme.colorScheme.outline.copy(alpha = 0.7f),
         ),
         modifier = Modifier.fillMaxWidth(),
