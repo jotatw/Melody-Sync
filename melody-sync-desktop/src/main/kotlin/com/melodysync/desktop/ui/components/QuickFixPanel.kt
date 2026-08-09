@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -81,7 +82,23 @@ fun QuickFixPanel(state: AppState, song: Song) {
                 .verticalScroll(rememberScrollState())
                 .padding(Spacing.md),
         ) {
-            Text("Quick Fix", style = MaterialTheme.typography.titleMedium)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    "Quick Fix",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(1f),
+                )
+                IconButton(onClick = { state.selectSong(null) }) {
+                    Icon(
+                        Icons.Filled.Close,
+                        contentDescription = "Close Quick Fix",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
             Text(
                 song.filename,
                 style = TechnicalStyle,

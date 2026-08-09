@@ -24,6 +24,11 @@ fun main() = application {
     val prefs = remember { AppPreferences.load() }
 
     val windowState = rememberWindowState(
+        placement = if (prefs.windowMaximized) {
+            androidx.compose.ui.window.WindowPlacement.Maximized
+        } else {
+            androidx.compose.ui.window.WindowPlacement.Floating
+        },
         position = if (prefs.windowPositionX != null && prefs.windowPositionY != null) {
             WindowPosition.Absolute(prefs.windowPositionX!!.dp, prefs.windowPositionY!!.dp)
         } else {
@@ -42,7 +47,9 @@ fun main() = application {
     LaunchedEffect(Unit) { appState.autoUpdateIfEnabled() }
 
     fun savePrefs() {
-        val position = windowState.position as? WindowPosition.Absolute
+        val placement = windowState.placement
+        val floating = placement == androidx.compose.ui.window.WindowPlacement.Floating
+        val position = if (floating) windowState.position as? WindowPosition.Absolute else null
         AppPreferences(
             directory = appState.directory,
             theme = appState.themeMode,
@@ -54,10 +61,12 @@ fun main() = application {
             groupByLetter = appState.groupByLetter,
             updateChannel = appState.updateChannel.name.lowercase(),
             autoUpdate = appState.autoUpdate,
-            windowWidth = windowState.size.width.value.toDouble(),
-            windowHeight = windowState.size.height.value.toDouble(),
+            windowWidth = if (floating) windowState.size.width.value.toDouble() else null,
+            windowHeight = if (floating) windowState.size.height.value.toDouble() else null,
             windowPositionX = position?.x?.value?.toDouble(),
             windowPositionY = position?.y?.value?.toDouble(),
+            windowMaximized = placement == androidx.compose.ui.window.WindowPlacement.Maximized ||
+                placement == androidx.compose.ui.window.WindowPlacement.Fullscreen,
         ).save()
     }
 

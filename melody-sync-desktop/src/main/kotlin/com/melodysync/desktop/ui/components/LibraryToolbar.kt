@@ -2,6 +2,8 @@ package com.melodysync.desktop.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,12 +29,16 @@ import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.SongColumn
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LibraryToolbar(state: AppState) {
     Column(modifier = Modifier.fillMaxWidth().padding(top = 12.dp)) {
-        Row(
+        // FlowRow keeps the search/filter controls usable on narrow windows:
+        // fields wrap to the next line instead of overflowing.
+        FlowRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             OutlinedTextField(
                 value = state.query,

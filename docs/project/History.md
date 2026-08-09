@@ -141,6 +141,8 @@ Visual refinement (Block 07): the app brand mark in the top bar now uses the edi
 
 Organize redesign (Block 08): the initial state now explains what Organize does and offers Analyze Library; the empty result remains an explicit "everything is organized" success state. The desktop stays report-first (apply via CLI), with truncated destinations and tooltips already in place.
 
+Polish pass: window maximization is persisted and restored (size is only saved while the window is floating); the Library toolbar wraps with FlowRow so search/filter controls stay usable on narrow windows; the Quick Fix panel can be closed with an X button; a design review confirmed no emojis, no hardcoded versions and consistent serif/sans/mono typography.
+
 ### Metadata Foundation
 
 The metadata foundation was completed through the documented Steps 0–E. The work established diagnostic tooling, metadata-provider abstractions and registry support, typed write errors, metadata checks in `doctor`, headless Apply integration coverage, serialized database access, and per-format fixtures with a capability matrix.

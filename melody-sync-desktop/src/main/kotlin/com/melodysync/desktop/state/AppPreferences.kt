@@ -19,6 +19,7 @@ data class AppPreferences(
     val windowHeight: Double? = null,
     val windowPositionX: Double? = null,
     val windowPositionY: Double? = null,
+    val windowMaximized: Boolean = false,
 ) {
     fun save(file: Path = defaultFile()) {
         val props = Properties()
@@ -36,6 +37,7 @@ data class AppPreferences(
         windowHeight?.let { props.setProperty("windowHeight", it.toString()) }
         windowPositionX?.let { props.setProperty("windowPositionX", it.toString()) }
         windowPositionY?.let { props.setProperty("windowPositionY", it.toString()) }
+        props.setProperty("windowMaximized", windowMaximized.toString())
 
         Files.createDirectories(file.parent)
         Files.newOutputStream(file).use { props.store(it, "Melody Sync preferences") }
@@ -70,6 +72,7 @@ data class AppPreferences(
                     windowHeight = props.getProperty("windowHeight")?.toDoubleOrNull(),
                     windowPositionX = props.getProperty("windowPositionX")?.toDoubleOrNull(),
                     windowPositionY = props.getProperty("windowPositionY")?.toDoubleOrNull(),
+                    windowMaximized = props.getProperty("windowMaximized")?.toBoolean() ?: false,
                 )
             } catch (_: Exception) {
                 AppPreferences()
