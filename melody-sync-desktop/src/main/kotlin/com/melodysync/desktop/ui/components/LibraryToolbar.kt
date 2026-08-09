@@ -54,6 +54,13 @@ fun LibraryToolbar(state: AppState) {
                 onValueChange = state::updateArtistFilter,
                 label = { Text("Artist") },
                 singleLine = true,
+                trailingIcon = {
+                    if (state.artistFilter.isNotEmpty()) {
+                        IconButton(onClick = { state.updateArtistFilter("") }) {
+                            Icon(Icons.Filled.Clear, contentDescription = "Clear artist filter")
+                        }
+                    }
+                },
                 modifier = Modifier.weight(1f),
             )
             OutlinedTextField(
@@ -61,6 +68,13 @@ fun LibraryToolbar(state: AppState) {
                 onValueChange = state::updateAlbumFilter,
                 label = { Text("Album") },
                 singleLine = true,
+                trailingIcon = {
+                    if (state.albumFilter.isNotEmpty()) {
+                        IconButton(onClick = { state.updateAlbumFilter("") }) {
+                            Icon(Icons.Filled.Clear, contentDescription = "Clear album filter")
+                        }
+                    }
+                },
                 modifier = Modifier.weight(1f),
             )
             OutlinedTextField(
@@ -69,6 +83,13 @@ fun LibraryToolbar(state: AppState) {
                 label = { Text("Format") },
                 placeholder = { Text("mp3, flac…") },
                 singleLine = true,
+                trailingIcon = {
+                    if (state.formatFilter.isNotEmpty()) {
+                        IconButton(onClick = { state.updateFormatFilter("") }) {
+                            Icon(Icons.Filled.Clear, contentDescription = "Clear format filter")
+                        }
+                    }
+                },
                 modifier = Modifier.weight(1f),
             )
             ColumnMenu(state)

@@ -133,6 +133,8 @@ Health consolidation (Block 03): Health now shows a duplicate-groups summary car
 
 Statistics expansion (Block 04): album navigation to Library with a preserved album filter (alongside artist/format), a Library album filter field, and a proper no-data empty state with a Go to Library action.
 
+Library + Quick Fix refinement (Block 05): selected rows show a leading accent indicator in addition to color (accessibility), artist/album/format filters expose clear (X) buttons so a filtered collection is obviously clearable, and the empty state uses the documented copy. Quick Fix remains fully contextual and source-attributed.
+
 ### Metadata Foundation
 
 The metadata foundation was completed through the documented Steps 0–E. The work established diagnostic tooling, metadata-provider abstractions and registry support, typed write errors, metadata checks in `doctor`, headless Apply integration coverage, serialized database access, and per-format fixtures with a capability matrix.

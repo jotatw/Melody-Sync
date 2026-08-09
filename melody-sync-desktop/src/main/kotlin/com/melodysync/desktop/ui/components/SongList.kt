@@ -8,6 +8,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -57,8 +59,8 @@ fun SongList(state: AppState) {
     if (state.songs.isEmpty()) {
         EmptyState(
             icon = Icons.Filled.FolderOpen,
-            title = "No songs loaded",
-            message = "Choose a music directory above and press Scan to load your library.",
+            title = "No songs in this library",
+            message = "Choose a music directory or scan the selected directory.",
         )
         return
     }
@@ -296,6 +298,17 @@ private fun SongRow(
                 .padding(vertical = 6.dp, horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            // Selection is indicated beyond color alone (§14 accessibility).
+            if (selected) {
+                Box(
+                    Modifier
+                        .width(3.dp)
+                        .height(24.dp)
+                        .background(MaterialTheme.colorScheme.primary),
+                )
+            } else {
+                Spacer(Modifier.width(3.dp))
+            }
             if (SongColumn.TITLE in state.visibleColumns) {
                 Text(
                     song.title ?: song.filename,
