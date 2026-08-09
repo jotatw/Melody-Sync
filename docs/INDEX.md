@@ -28,7 +28,7 @@ Architecture documents describe how the application is structured and why import
 | [ADR-0002 — Kotlin](architecture/ADR/ADR-0002-Python.md) | Programming-language decision record |
 | [ADR-0003 — Compose Desktop](architecture/ADR/ADR-0003-PySide6.md) | Desktop UI decision record |
 | [ADR-0004 — SQLite](architecture/ADR/ADR-0004-SQLite.md) | Local database decision |
-| [ADR-0005 — Audio Metadata](architecture/ADR/ADR-0005-Mutagen.md) | Audio metadata decision |
+| [ADR-0005 — Audio Metadata](architecture/ADR/ADR-5-Mutagen.md) | Audio metadata decision |
 | [ADR-0006 — Documentation Structure](architecture/ADR/ADR-0006-DocumentationStructure.md) | Documentation architecture |
 | [ADR-0007 — clikt](architecture/ADR/ADR-0007-clikt.md) | CLI framework decision |
 | [ADR-0008 — Gradle Kotlin DSL](architecture/ADR/ADR-0008-GradleKotlinDSL.md) | Build-system decision |
@@ -121,12 +121,11 @@ External tools and services are documented separately from Core responsibilities
 
 | Integration | Purpose | Status |
 |---|---|---|
-| YouTube | Optional external source for song identification and metadata suggestions | Implemented |
-| Lyrics provider | Informational lyrics lookup; never automatically written to tags | Implemented |
+| [YouTube Identification](integrations/youtube-identification.md) | Lightweight song identification and discovery; not authoritative metadata | Defined / target boundary |
+| [Metadata Providers](integrations/metadata-providers.md) | Replaceable structured metadata suggestion boundary | Defined / target |
+| [Lyrics Policy](integrations/lyrics-policy.md) | Informational lyrics lookup; never automatically written to tags | Defined / current policy |
 | Syncthing | External file synchronization between devices | Workflow / external tool |
 | Playback | Lightweight local playback for inspection | Planned |
-
-Detailed integration documents will be added or expanded when each boundary is formally defined.
 
 ---
 
@@ -138,6 +137,7 @@ Planning documents describe work that is not yet fully implemented. A large feat
 |---|---|---|
 | [ROADMAP](ROADMAP.md) | Current project direction, priorities and deferred work | Active |
 | [Implementation Block 01 — Navigation Context](planning/implementation-block-01-navigation-context.md) | First bounded implementation block for contextual navigation and context preservation | Approved for implementation |
+| [Metadata Workflow](planning/metadata-workflow.md) | End-to-end identification, enrichment, review and explicit metadata application workflow | Defined / target workflow |
 | [Metadata Foundation](planning/metadata-foundation.md) | Metadata provider, diagnostics, typed write results, persistence discipline and fixtures | Implemented / refinement |
 | [Metadata Formats](planning/metadata-formats.md) | Verified read/write capability matrix by format | Reference |
 
@@ -184,6 +184,7 @@ The README is the source for concise public project status. This section intenti
 | Installation / Updates | Working |
 | UX consistency | Implemented; refinement ongoing |
 | Metadata foundation | Implemented; reliability refinement ongoing |
+| Metadata workflow | Defined; enrichment and provider selection remain future work |
 | Unattended source rebuild updates | Backlog |
 
 For the current version and test count, see the [README](../README.md) and [ROADMAP](ROADMAP.md).
@@ -210,7 +211,14 @@ docs/
 │   ├── navigation.md           # Navigation contract and context rules
 │   └── screens/                # One document per screen
 │
-├── planning/                   # Detailed plans and foundation records
+├── integrations/
+│   ├── metadata-providers.md   # Replaceable structured metadata boundary
+│   ├── youtube-identification.md # YouTube identification boundary
+│   └── lyrics-policy.md        # Informational lyrics policy
+│
+├── planning/
+│   ├── metadata-workflow.md    # End-to-end metadata workflow
+│   └── ...
 │
 ├── project/                    # History, notes and error records
 │
@@ -242,4 +250,4 @@ docs/
 
 **Last Updated**
 
-2026-08-09 — Added the navigation contract and current/target navigation distinction while preserving the existing screen specifications.
+2026-08-09 — Expanded metadata integration, identification, lyrics and end-to-end workflow documentation while preserving the current/target distinction.
