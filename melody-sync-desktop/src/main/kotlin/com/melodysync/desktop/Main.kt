@@ -4,10 +4,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -40,15 +37,6 @@ fun main() = application {
     )
 
     val appState = remember { AppState() }
-    var theme by remember {
-        mutableStateOf(
-            when (prefs.theme) {
-                "light" -> AppTheme.LIGHT
-                "dark" -> AppTheme.DARK
-                else -> AppTheme.detectSystemTheme()
-            },
-        )
-    }
 
     LaunchedEffect(Unit) { appState.loadLibraryFromDatabase() }
     LaunchedEffect(Unit) { appState.autoUpdateIfEnabled() }
@@ -57,7 +45,7 @@ fun main() = application {
         val position = windowState.position as? WindowPosition.Absolute
         AppPreferences(
             directory = appState.directory,
-            theme = theme.name.lowercase(),
+            theme = appState.themeMode,
             section = appState.currentSection.name.lowercase(),
             sortColumn = appState.sortColumn.name.lowercase(),
             sortAscending = appState.sortAscending,
@@ -81,6 +69,8 @@ fun main() = application {
         title = "Melody Sync",
         state = windowState,
     ) {
+        val theme: AppTheme = appState.theme
+
         MaterialTheme(
             colorScheme = theme.colorScheme,
             typography = HiFiTypography,
@@ -90,10 +80,7 @@ fun main() = application {
                 LibraryScreen(
                     state = appState,
                     theme = theme,
-                    onToggleTheme = {
-                        theme = if (theme == AppTheme.LIGHT) AppTheme.DARK else AppTheme.LIGHT
-                        savePrefs()
-                    },
+                    onToggleTheme = appState::toggleTheme,
                 )
             }
         }

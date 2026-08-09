@@ -17,6 +17,7 @@ import com.melodysync.platform.installation.InstallationInfo
 import com.melodysync.platform.installation.InstallationService
 import com.melodysync.platform.installation.InstallationValidator
 import com.melodysync.platform.system.VersionInfo
+import com.melodysync.desktop.theme.AppTheme
 import com.melodysync.scanner.calculateStatistics
 import com.melodysync.service.DuplicateDetectionService
 import com.melodysync.service.FixSuggestion
@@ -143,6 +144,16 @@ class AppState(
 
     var directory by mutableStateOf(prefs.directory)
         private set
+
+    var themeMode by mutableStateOf(prefs.theme)
+        private set
+
+    val theme: AppTheme
+        get() = when (themeMode) {
+            "light" -> AppTheme.LIGHT
+            "dark" -> AppTheme.DARK
+            else -> AppTheme.detectSystemTheme()
+        }
 
     var currentSection by mutableStateOf(sectionFromString(prefs.section))
         private set
@@ -319,6 +330,16 @@ class AppState(
 
     fun updateDirectory(value: String) {
         directory = value
+        savePrefs()
+    }
+
+    fun selectThemeMode(mode: String) {
+        themeMode = mode
+        savePrefs()
+    }
+
+    fun toggleTheme() {
+        themeMode = if (theme == AppTheme.LIGHT) "dark" else "light"
         savePrefs()
     }
 

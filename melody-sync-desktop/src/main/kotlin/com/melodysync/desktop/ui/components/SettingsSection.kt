@@ -43,13 +43,6 @@ fun SettingsSection(state: AppState) {
             note("Set the music directory in the Library view (the path field above the Scan button).")
             note("Your library loads automatically from the database on startup — no rescan needed.")
 
-            Text(
-                "Theme",
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.padding(top = Spacing.md),
-            )
-            note("Use the sun/moon icon in the top bar to switch between light and dark.")
-
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = Spacing.md),
                 verticalAlignment = Alignment.CenterVertically,
@@ -62,6 +55,23 @@ fun SettingsSection(state: AppState) {
                     checked = state.groupByLetter,
                     onCheckedChange = { state.toggleGroupByLetter() },
                 )
+            }
+        }
+
+        SettingsCard("Appearance") {
+            Text("Theme", style = MaterialTheme.typography.titleSmall)
+            note("Changes apply immediately. The sun/moon icon in the top bar toggles between light and dark.")
+            Row(
+                modifier = Modifier.padding(top = Spacing.sm),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+            ) {
+                listOf("system", "light", "dark").forEach { mode ->
+                    FilterChip(
+                        selected = state.themeMode == mode,
+                        onClick = { state.selectThemeMode(mode) },
+                        label = { Text(mode.replaceFirstChar { it.uppercase() }) },
+                    )
+                }
             }
         }
 
