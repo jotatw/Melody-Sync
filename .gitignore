@@ -19,6 +19,7 @@ build/
 *.class
 local.properties
 out/
+.kotlin/
 
 # OS
 .DS_Store
