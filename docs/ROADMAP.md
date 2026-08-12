@@ -14,7 +14,7 @@
 | Status | Active |
 | Project Version | v0.13.0-dev |
 | Template Version | BaseDocument v1.0 |
-| Last Updated | 2026-08-09 |
+| Last Updated | 2026-08-11 |
 | Maintainer | Melody Sync Project |
 
 ---
@@ -85,6 +85,7 @@ This is intended to prevent unnecessary functionality from being added before th
 
 | Area | Priority | Status | Related documents |
 |---|---:|---|---|
+| Repository audit 2026-08 | **High** | ✅ Complete (A → B → D → C) | [Audit 2026-08](project/audit-2026-08.md) |
 | Documentation consolidation | **High** | 🚧 Active | [Documentation Index](INDEX.md), [History](project/History.md) |
 | Screen behavior & navigation | **High** | 🚧 Active | [Design](design/), [Application Design Research](research/app-design.md) |
 | Metadata reliability | **High** | 🚧 Refinement | [Metadata Foundation](planning/metadata-foundation.md), [Metadata Formats](planning/metadata-formats.md) |
@@ -217,7 +218,7 @@ Current design work is focused on defining behavior and limits before further vi
 - Statistics presentation;
 - Health and Review relationship;
 - Organize presentation;
-- Settings grouping;
+- Settings grouping (data-driven section model implemented; ongoing refinement);
 - keyboard accessibility;
 - responsive behavior;
 - loading and feedback states;
@@ -374,6 +375,7 @@ This list is a scope boundary, not a rejection of future possibilities.
 
 - [Documentation Index](INDEX.md)
 - [Project History](project/History.md)
+- [Repository Audit 2026-08](project/audit-2026-08.md)
 - [Metadata Foundation](planning/metadata-foundation.md)
 - [Metadata Formats](planning/metadata-formats.md)
 - [Quick-Fix HUD](research/quick-fix-hud.md)

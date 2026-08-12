@@ -188,7 +188,7 @@ The current documented project state is a consolidation and stabilization phase 
 Recorded state:
 
 - Version: **v0.13.0-dev**
-- Automated tests: **257 passing**
+- Automated tests: **262 passing**
 - Core: functional and stable enough for continued development
 - Desktop GUI: functional with UX refinement ongoing
 - CLI: functional
@@ -199,6 +199,8 @@ Recorded state:
 - Development methodology: accepted
 - Metadata foundation: completed
 - Auto-update on startup: completed; relaunch orchestration remains separate
+- Settings menu: data-driven section model (dynamic sections)
+- Repository audit 2026-08: completed (security, structure, documentation consistency, code)
 
 The detailed current planning state is maintained in [`docs/ROADMAP.md`](../ROADMAP.md), rather than in this history document.
 
