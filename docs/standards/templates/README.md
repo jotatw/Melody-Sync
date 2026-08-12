@@ -52,12 +52,12 @@ Each document should have a single, well-defined purpose.
 
 | Template         | Category     | Purpose              |
 |------------------|--------------|----------------------|
-| BaseDocument     | Base         | Parent template      |
-| HandbookTemplate | Handbook     | Development guides   |
-| ADRTemplate      | Architecture | ADR documents        |
-| SprintTemplate   | Project      | Sprint documentation |
-| TestTemplate     | Testing      | Test documentation   |
-| HistoryTemplate  | History      | Project history      |
+| [BaseDocument](BaseDocument.md)     | Base         | Parent template      |
+| [HandbookTemplate](HandbookTemplate.md) | Handbook     | Development guides   |
+| [ADRTemplate](ADRTemplate.md)      | Architecture | ADR documents        |
+| [SprintTemplate](SprintTemplate.md)   | Project      | Sprint documentation |
+| [TestTemplate](TestTemplate.md)     | Testing      | Test documentation   |
+| [HistoryTemplate](HistoryTemplate.md)  | History      | Project history      |
 
 
 ---
@@ -214,8 +214,8 @@ Example:
 
 ## Related Documents
 
-- DocumentationStandard.md *(to be created)*
-- INDEX.md
+- [Documentation Standard](../handbook/DocumentationStandard.md)
+- [Documentation Index](../../INDEX.md)
 
 ---
 

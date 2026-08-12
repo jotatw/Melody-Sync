@@ -4,6 +4,9 @@
 
 > **Note:** The visual identity is now defined by `docs/standards/DesignSystem.md` (Hi-Fi Editorial). This document records the research that led to the current UX decisions.
 
+> **Note:** this is the research record. The formal, target interaction model
+> is defined in [Melody Sync App Design](../design/app-design.md).
+
 ---
 
 ## Document Information

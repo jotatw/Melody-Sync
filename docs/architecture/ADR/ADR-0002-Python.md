@@ -210,7 +210,7 @@ The migration will be **incremental**: the new Kotlin code will coexist with the
 ## Related Documents
 
 - `docs/INDEX.md`
-- `docs/standards/handbook/DevelopmentGuide.md`
+- `docs/standards/handbook/DevelopmentMethodology.md`
 
 ---
 

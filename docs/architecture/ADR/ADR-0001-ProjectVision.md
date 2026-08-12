@@ -219,8 +219,8 @@ The following are explicitly out of scope for the vision:
 
 ## References
 
-- `docs/architecture/reviews/ArchitectureReview.md`
-- `docs/journal/capitulos/ 01-a-primeira-fundacao.md`
+- [`docs/architecture/reviews/ArchitectureReview.md`](../reviews/ArchitectureReview.md)
+- `docs/project/History.md`
 - `README.md`
 - ADR-0002 — Programming Language (Kotlin)
 

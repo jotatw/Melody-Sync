@@ -178,11 +178,11 @@ migration is required. Open consistency work:
 
 ## Related Documents
 
-- [Documentation Index](../INDEX.md)
-- [Roadmap](../ROADMAP.md)
-- [Documentation Standard](../standards/handbook/DocumentationStandard.md)
-- [Project History](../project/History.md)
-- [Repository Audit 2026-08](../project/audit-2026-08.md)
+- [Documentation Index](../../INDEX.md)
+- [Roadmap](../../ROADMAP.md)
+- [Documentation Standard](../../standards/handbook/DocumentationStandard.md)
+- [Project History](../../project/History.md)
+- [Repository Audit 2026-08](../../project/audit-2026-08.md)
 
 ---
 

@@ -2,6 +2,10 @@
 
 > Global navigation model, screen responsibilities, and cross-screen interaction rules.
 
+> **Note:** this document defines the target interaction model. The research
+> behind these decisions is recorded in
+> [Application Design Research](../research/app-design.md).
+
 ## Document Information
 
 | Item | Value |

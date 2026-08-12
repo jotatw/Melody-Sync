@@ -40,7 +40,7 @@ The roadmap should therefore remain concise and should not become a second imple
 | Item | Status |
 |---|---|
 | Project version | **v0.13.0-dev** |
-| Automated tests | **257 passing** |
+| Automated tests | **262 passing** |
 | Core | Stable and actively used |
 | Desktop GUI | Functional and under UX refinement |
 | CLI | Functional |
@@ -92,7 +92,7 @@ This is intended to prevent unnecessary functionality from being added before th
 | Review / Health | Medium | ✅ Implemented; interaction refinement ongoing | [Application Design Research](research/app-design.md) |
 | UX / Design System | Medium | 🚧 Continuous refinement | [Design](design/) |
 | Updates & Installation | Medium | ✅ Implemented; relaunch deferred | [Update Channels](research/update-channels.md) |
-| Providers | Low | ✅ YouTube + Lyrics support exists; provider boundary being documented | [Providers](architecture/providers.md) |
+| Providers | Low | ✅ YouTube + Lyrics support exists; provider boundary being documented | [Providers](integrations/metadata-providers.md) |
 | Platform | Low | 🔒 Frozen | [ADR-0009](architecture/ADR/ADR-0009-PlatformLayer.md) |
 | Tests / CI | Medium | ✅ CI and release automation complete; targeted coverage ongoing | [Development Methodology](standards/handbook/DevelopmentMethodology.md) |
 
@@ -302,7 +302,7 @@ No new platform abstraction should be introduced unless a concrete requirement a
 
 **Priority: Medium — Ongoing**
 
-The project has CI and release automation in place and currently reports **257 passing automated tests**.
+The project has CI and release automation in place and currently reports **262 passing automated tests**.
 
 Ongoing validation should prioritize areas where behavior depends on real filesystem, database, metadata, or external-process behavior.
 

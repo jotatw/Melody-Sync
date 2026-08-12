@@ -34,6 +34,13 @@ The [`README.md`](../README.md) is the public entry point. This index is the ent
 | [Multiplatform Portability Guide](architecture/MultiplatformPortabilityGuide.md) | Future portability considerations | Reference |
 | [Security & Resilience Guide](architecture/SecurityAndResilienceGuide.md) | Defensive coding, data integrity and resilience | Active |
 
+### Architecture Reviews
+
+| Document | Purpose | Date |
+|---|---|---|
+| [Architecture Review](architecture/reviews/ArchitectureReview.md) | Consolidated architecture review | Reference |
+| [Navigation & Metadata Consistency Review](architecture/reviews/navigation-metadata-consistency-2026-08.md) | Cross-check of navigation and metadata consistency | 2026-08 |
+
 ---
 
 ## Design
@@ -50,6 +57,7 @@ The [`README.md`](../README.md) is the public entry point. This index is the ent
 
 | Screen | Purpose | Status |
 |---|---|---|
+| [Screen Documents Index](design/screens/README.md) | Overview of the screen interaction documents | Reference |
 | [Library](design/screens/library.md) | Browse, inspect and curate songs | Implemented / refining |
 | [Health](design/screens/health.md) | Identify library issues and guide review | Implemented / refining |
 | [Statistics](design/screens/statistics.md) | Explore library data and navigate to contextual views | Implemented / refining |
@@ -106,6 +114,7 @@ External services remain separate from Core responsibilities and support specifi
 | [Metadata Workflow](planning/metadata-workflow.md) | End-to-end identification, enrichment, review and explicit metadata application | Defined / target workflow |
 | [Metadata Foundation](planning/metadata-foundation.md) | Metadata providers, diagnostics, safe writes, persistence and fixtures | Implemented / refinement |
 | [Metadata Formats](planning/metadata-formats.md) | Verified read/write capability matrix | Reference |
+| [Metadata Identification & Enrichment](planning/metadata-identification-and-enrichment.md) | Identification and enrichment boundaries and flow | Reference |
 
 Planning documents define purpose, scope, non-goals, dependencies and validation before implementation. Foundation records may remain here after implementation.
 

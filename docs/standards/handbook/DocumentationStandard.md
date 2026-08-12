@@ -134,6 +134,12 @@ docs/
 └── assets/
 ```
 
+> **Note:** the diagram above is the conceptual category layout. The actual,
+> authoritative directory layout of this repository is defined by
+> [ADR-0006 — Documentation Structure](../../architecture/ADR/ADR-0006-DocumentationStructure.md)
+> (responsibility-based: `architecture/`, `design/`, `planning/`,
+> `integrations/`, `project/`, `research/`, `standards/`).
+
 ### Design Goals
 
 The documentation directory structure is designed to:
@@ -216,6 +222,8 @@ The following table presents the primary templates adopted by the project.
 | Sprint Planning                    | Documents sprint goals and planned work.                      |
 | Meeting Notes                      | Records meetings and important discussions.                   |
 | Release Notes                      | Summarizes changes introduced in each release.                |
+
+The concrete templates live in [`docs/standards/templates/`](../templates/README.md).
 
 ### Template Maintenance
 
