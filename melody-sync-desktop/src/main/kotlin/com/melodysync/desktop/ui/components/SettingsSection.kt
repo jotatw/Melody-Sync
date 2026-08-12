@@ -4,9 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -18,8 +16,13 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.UpdateStatus
@@ -28,9 +31,50 @@ import com.melodysync.platform.installation.InstallationChannel
 import com.melodysync.platform.installation.InstallationPaths
 import com.melodysync.platform.system.VersionInfo
 
+/**
+ * Data model for a dynamic settings section. Sections are rendered from a
+ * list, so adding or hiding a group is a data change, not a layout change.
+ */
+data class SettingsSectionModel(
+    val title: String,
+    val description: String? = null,
+    val isVisible: (AppState) -> Boolean = { true },
+    val content: @Composable ColumnScope.() -> Unit,
+)
+
 @Composable
 fun SettingsSection(state: AppState) {
     LaunchedEffect(Unit) { state.refreshInstallationInfo() }
+
+    val sections = remember(state) {
+        listOf(
+            SettingsSectionModel(
+                title = "Application",
+                description = "General application behavior",
+                content = { ApplicationSettingsContent(state) },
+            ),
+            SettingsSectionModel(
+                title = "Library",
+                description = "Music directory and load behavior",
+                content = { LibrarySettingsContent() },
+            ),
+            SettingsSectionModel(
+                title = "Appearance",
+                description = "Visual preferences — changes apply immediately",
+                content = { AppearanceSettingsContent(state) },
+            ),
+            SettingsSectionModel(
+                title = "Installation",
+                description = "Installation information",
+                content = { InstallationInformationSection(state) },
+            ),
+            SettingsSectionModel(
+                title = "Updates",
+                description = "Update channel and auto-update",
+                content = { UpdatesSection(state) },
+            ),
+        )
+    }
 
     Column(modifier = Modifier.fillMaxWidth().padding(top = Spacing.sm)) {
         SectionHeader(
@@ -38,75 +82,54 @@ fun SettingsSection(state: AppState) {
             subtitle = "Application preferences",
         )
 
-        SettingsCard("Application") {
-            Text("Music directory", style = MaterialTheme.typography.titleSmall)
-            note("Set the music directory in the Library view (the path field above the Scan button).")
-            note("Your library loads automatically from the database on startup — no rescan needed.")
-
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(top = Spacing.md),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("Group songs by first letter", style = MaterialTheme.typography.bodyMedium)
-                    note("Show a letter header above each alphabetical group in the library list.")
-                }
-                Switch(
-                    checked = state.groupByLetter,
-                    onCheckedChange = { state.toggleGroupByLetter() },
-                )
+        sections.filter { it.isVisible(state) }.forEach { section ->
+            SettingsCard(section.title, section.description) {
+                section.content(this)
             }
-        }
-
-        SettingsCard("Appearance") {
-            Text("Theme", style = MaterialTheme.typography.titleSmall)
-            note("Changes apply immediately. The sun/moon icon in the top bar toggles between light and dark.")
-            Row(
-                modifier = Modifier.padding(top = Spacing.sm),
-                horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
-            ) {
-                listOf("system", "light", "dark").forEach { mode ->
-                    FilterChip(
-                        selected = state.themeMode == mode,
-                        onClick = { state.selectThemeMode(mode) },
-                        label = { Text(mode.replaceFirstChar { it.uppercase() }) },
-                    )
-                }
-            }
-        }
-
-        SettingsCard("Installation") {
-            InstallationInformationSection(state)
-        }
-
-        SettingsCard("Updates") {
-            UpdatesSection(state)
         }
     }
 }
 
 @Composable
-private fun SettingsCard(
-    title: String,
-    content: @Composable ColumnScope.() -> Unit,
-) {
-    Card(modifier = Modifier.fillMaxWidth().padding(top = Spacing.md)) {
-        Column(modifier = Modifier.padding(Spacing.md).fillMaxWidth()) {
-            Text(title, style = MaterialTheme.typography.titleMedium)
-            Spacer(modifier = Modifier.height(Spacing.sm))
-            content()
+private fun ApplicationSettingsContent(state: AppState) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(top = Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text("Group songs by first letter", style = MaterialTheme.typography.bodyMedium)
+            note("Show a letter header above each alphabetical group in the library list.")
         }
+        Switch(
+            checked = state.groupByLetter,
+            onCheckedChange = { state.toggleGroupByLetter() },
+        )
     }
 }
 
 @Composable
-private fun note(text: String) {
-    Text(
-        text,
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = Spacing.xs),
-    )
+private fun LibrarySettingsContent() {
+    Text("Music directory", style = MaterialTheme.typography.titleSmall)
+    note("Set the music directory in the Library view (the path field above the Scan button).")
+    note("Your library loads automatically from the database on startup — no rescan needed.")
+}
+
+@Composable
+private fun AppearanceSettingsContent(state: AppState) {
+    Text("Theme", style = MaterialTheme.typography.titleSmall)
+    note("The sun/moon icon in the top bar toggles light and dark.")
+    Row(
+        modifier = Modifier.padding(top = Spacing.sm),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
+    ) {
+        listOf("system", "light", "dark").forEach { mode ->
+            FilterChip(
+                selected = state.themeMode == mode,
+                onClick = { state.selectThemeMode(mode) },
+                label = { Text(mode.replaceFirstChar { it.uppercase() }) },
+            )
+        }
+    }
 }
 
 @Composable
@@ -135,7 +158,7 @@ private fun InstallationInformationSection(state: AppState) {
 }
 
 @Composable
-private fun InfoRow(label: String, value: String, valueColor: androidx.compose.ui.graphics.Color? = null) {
+private fun InfoRow(label: String, value: String, valueColor: Color? = null) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.xs),
         verticalAlignment = Alignment.CenterVertically,
@@ -186,9 +209,7 @@ private fun UpdatesSection(state: AppState) {
                     selected = state.updateChannel == channel,
                     onClick = { state.selectUpdateChannel(channel) },
                     enabled = !channelLocked,
-                    label = {
-                        Text(channel.name.lowercase().replaceFirstChar { it.uppercase() })
-                    },
+                    label = { Text(channel.name.lowercase().replaceFirstChar { it.uppercase() }) },
                 )
             }
     }
@@ -199,12 +220,7 @@ private fun UpdatesSection(state: AppState) {
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text("Auto-update on startup", style = MaterialTheme.typography.bodyMedium)
-            Text(
-                "Check and install newer releases automatically (release installs only — not from a source checkout).",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = Spacing.xs),
-            )
+            note("Check and install newer releases automatically (release installs only).")
         }
         Switch(
             checked = state.autoUpdate,
@@ -214,10 +230,7 @@ private fun UpdatesSection(state: AppState) {
 
     when (state.updateStatus) {
         UpdateStatus.IDLE -> {
-            Button(
-                onClick = state::checkForUpdates,
-                modifier = Modifier.padding(top = Spacing.md),
-            ) {
+            Button(onClick = state::checkForUpdates, modifier = Modifier.padding(top = Spacing.md)) {
                 Text("Check for updates")
             }
         }
@@ -243,7 +256,6 @@ private fun UpdatesSection(state: AppState) {
         }
         UpdateStatus.DONE -> {
             val message = state.updateMessage.orEmpty()
-            val updateActionLabel = if (state.updateSourceBased) "Rebuild & Install" else "Download & Install"
             Text(
                 message,
                 style = MaterialTheme.typography.bodyMedium,
@@ -259,7 +271,7 @@ private fun UpdatesSection(state: AppState) {
                     onClick = { state.runUpdate(force = true) },
                     modifier = Modifier.padding(top = Spacing.sm),
                 ) {
-                    Text(updateActionLabel)
+                    Text(if (state.updateSourceBased) "Rebuild & Install" else "Download & Install")
                 }
             } else if (message.contains("Already up to date")) {
                 OutlinedButton(
@@ -287,4 +299,36 @@ private fun UpdatesSection(state: AppState) {
             }
         }
     }
+}
+
+@Composable
+private fun SettingsCard(
+    title: String,
+    description: String? = null,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Card(modifier = Modifier.fillMaxWidth().padding(top = Spacing.md)) {
+        Column(modifier = Modifier.padding(Spacing.md).fillMaxWidth()) {
+            Text(title, style = MaterialTheme.typography.titleMedium)
+            if (description != null) {
+                Text(
+                    description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = Spacing.xs),
+                )
+            }
+            content()
+        }
+    }
+}
+
+@Composable
+private fun note(text: String) {
+    Text(
+        text,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(top = Spacing.xs),
+    )
 }
