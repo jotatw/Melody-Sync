@@ -16,7 +16,6 @@ import com.melodysync.platform.installation.InstallationChannel
 import com.melodysync.platform.installation.InstallationInfo
 import com.melodysync.platform.installation.InstallationService
 import com.melodysync.platform.installation.InstallationValidator
-import com.melodysync.platform.system.VersionInfo
 import com.melodysync.desktop.theme.AppTheme
 import com.melodysync.scanner.calculateStatistics
 import com.melodysync.service.DuplicateDetectionService
@@ -27,7 +26,6 @@ import com.melodysync.service.LibrarySyncService
 import com.melodysync.service.LibraryWatcher
 import com.melodysync.service.LyricsService
 import com.melodysync.service.QuickFixService
-import com.melodysync.service.SyncResult
 import com.melodysync.service.TrashService
 import com.melodysync.service.YoutubeFixSource
 import kotlinx.coroutines.CoroutineScope
@@ -193,9 +191,6 @@ class AppState(
         private set
 
     var progressText by mutableStateOf("")
-        private set
-
-    var lastResult: SyncResult? by mutableStateOf(null)
         private set
 
     var errorMessage by mutableStateOf<String?>(null)
@@ -599,7 +594,6 @@ class AppState(
                     connectDatabase()
                     LibrarySyncService.syncDirectory(dir)
                 }
-                lastResult = result
                 val found = withContext(Dispatchers.Default) {
                     MusicRepository.findAll()
                 }
@@ -924,7 +918,6 @@ class AppState(
                     connectDatabase()
                     LibrarySyncService.syncDirectory(dir)
                 }
-                lastResult = result
                 val found = withContext(Dispatchers.Default) {
                     MusicRepository.findAll()
                 }
