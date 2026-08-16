@@ -22,7 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.melodysync.desktop.state.AppState
-import com.melodysync.desktop.state.ScanStatus
+import com.melodysync.desktop.state.TaskStatus
 import com.melodysync.desktop.state.WatchStatus
 import com.melodysync.desktop.theme.Spacing
 import com.melodysync.desktop.theme.Strokes
@@ -66,12 +66,12 @@ fun DirectoryBar(state: AppState) {
 
                 Button(
                     onClick = state::scan,
-                    enabled = state.directory.isNotBlank() && state.status != ScanStatus.SCANNING,
+                    enabled = state.directory.isNotBlank() && state.status != TaskStatus.RUNNING,
                     modifier = Modifier.padding(vertical = Spacing.xs),
                 ) {
                     Text(
                         when {
-                            state.status == ScanStatus.SCANNING -> "Scanning…"
+                            state.status == TaskStatus.RUNNING -> "Scanning…"
                             state.songs.isNotEmpty() -> "Rescan Library"
                             else -> "Scan Library"
                         },
@@ -82,8 +82,8 @@ fun DirectoryBar(state: AppState) {
             }
 
             when (state.status) {
-                ScanStatus.SCANNING -> StatusPill("SCANNING", PillTone.PRIMARY, Modifier.padding(top = Spacing.sm))
-                ScanStatus.DONE -> {
+                TaskStatus.RUNNING -> StatusPill("SCANNING", PillTone.PRIMARY, Modifier.padding(top = Spacing.sm))
+                TaskStatus.DONE -> {
                     if (state.progressText.isNotBlank()) {
                         StatusPill(
                             state.progressText,
@@ -92,12 +92,12 @@ fun DirectoryBar(state: AppState) {
                         )
                     }
                 }
-                ScanStatus.ERROR -> {
+                TaskStatus.ERROR -> {
                     state.errorMessage?.let {
                         StatusPill(it, PillTone.DANGER, Modifier.padding(top = Spacing.sm))
                     }
                 }
-                ScanStatus.IDLE -> Unit
+                TaskStatus.IDLE -> Unit
             }
 
             when (state.watchStatus) {

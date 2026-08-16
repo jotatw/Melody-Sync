@@ -27,7 +27,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
-import com.melodysync.desktop.state.HealthStatus
+import com.melodysync.desktop.state.TaskStatus
 import com.melodysync.desktop.state.Section
 import com.melodysync.desktop.theme.HiFiDarkColors
 import com.melodysync.desktop.theme.HiFiLightColors
@@ -51,22 +51,22 @@ fun HealthSection(state: AppState) {
         )
         Button(
             onClick = state::analyzeHealth,
-            enabled = state.directory.isNotBlank() && state.healthStatus != HealthStatus.RUNNING,
+            enabled = state.directory.isNotBlank() && state.healthStatus != TaskStatus.RUNNING,
         ) {
-            Text(if (state.healthStatus == HealthStatus.RUNNING) "Checking…" else "Analyze Health")
+            Text(if (state.healthStatus == TaskStatus.RUNNING) "Checking…" else "Analyze Health")
         }
 
         when (state.healthStatus) {
-            HealthStatus.RUNNING -> {
+            TaskStatus.RUNNING -> {
                 ProgressCard("Checking library health…")
             }
-            HealthStatus.DONE -> {
+            TaskStatus.DONE -> {
                 state.healthReport?.let { report ->
                     HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.lg))
                     HealthReportView(state, report)
                 }
             }
-            HealthStatus.ERROR -> {
+            TaskStatus.ERROR -> {
                 state.errorMessage?.let {
                     Text(
                         it,
@@ -76,7 +76,7 @@ fun HealthSection(state: AppState) {
                     )
                 }
             }
-            HealthStatus.IDLE -> Unit
+            TaskStatus.IDLE -> Unit
         }
 
         // Block 03 — duplicate findings are a Health concern. A summary card

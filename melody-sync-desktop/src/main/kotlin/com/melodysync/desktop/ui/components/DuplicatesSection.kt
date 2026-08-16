@@ -30,7 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
-import com.melodysync.desktop.state.DuplicatesStatus
+import com.melodysync.desktop.state.TaskStatus
 import com.melodysync.desktop.theme.Spacing
 import com.melodysync.desktop.theme.TechnicalStyle
 import com.melodysync.desktop.theme.TechnicalStyleSmall
@@ -46,16 +46,16 @@ fun DuplicatesSection(state: AppState) {
         )
         Button(
             onClick = state::detectDuplicates,
-            enabled = state.directory.isNotBlank() && state.duplicatesStatus != DuplicatesStatus.RUNNING,
+            enabled = state.directory.isNotBlank() && state.duplicatesStatus != TaskStatus.RUNNING,
         ) {
-            Text(if (state.duplicatesStatus == DuplicatesStatus.RUNNING) "Checking…" else "Detect Duplicates")
+            Text(if (state.duplicatesStatus == TaskStatus.RUNNING) "Checking…" else "Detect Duplicates")
         }
 
         when (state.duplicatesStatus) {
-            DuplicatesStatus.RUNNING -> {
+            TaskStatus.RUNNING -> {
                 ProgressCard("Checking for duplicates…")
             }
-            DuplicatesStatus.DONE -> {
+            TaskStatus.DONE -> {
                 HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.lg))
                 if (state.duplicateGroups.isEmpty()) {
                     EmptyState(
@@ -68,7 +68,7 @@ fun DuplicatesSection(state: AppState) {
                     DuplicatesView(state)
                 }
             }
-            DuplicatesStatus.ERROR -> {
+            TaskStatus.ERROR -> {
                 state.errorMessage?.let {
                     Text(
                         it,
@@ -78,7 +78,7 @@ fun DuplicatesSection(state: AppState) {
                     )
                 }
             }
-            DuplicatesStatus.IDLE -> Unit
+            TaskStatus.IDLE -> Unit
         }
     }
 }

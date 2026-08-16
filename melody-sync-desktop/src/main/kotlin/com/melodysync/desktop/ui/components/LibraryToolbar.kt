@@ -27,7 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
-import com.melodysync.desktop.state.SongColumn
+import com.melodysync.desktop.state.SongField
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -135,7 +135,7 @@ private fun ColumnMenu(state: AppState) {
             )
         }
         DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
-            SongColumn.entries.forEach { column ->
+            SongField.entries.forEach { column ->
                 DropdownMenuItem(
                     text = { Text(column.name.lowercase().replaceFirstChar { it.uppercase() }) },
                     onClick = {

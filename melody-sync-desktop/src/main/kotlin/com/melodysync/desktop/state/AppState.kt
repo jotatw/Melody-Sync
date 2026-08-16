@@ -46,7 +46,7 @@ enum class Section {
     ABOUT,
 }
 
-enum class SortColumn {
+enum class SongField {
     TITLE,
     ARTIST,
     ALBUM,
@@ -55,30 +55,7 @@ enum class SortColumn {
     BITRATE,
 }
 
-enum class SongColumn {
-    TITLE,
-    ARTIST,
-    ALBUM,
-    DURATION,
-    FORMAT,
-    BITRATE,
-}
-
-enum class ScanStatus {
-    IDLE,
-    SCANNING,
-    DONE,
-    ERROR,
-}
-
-enum class HealthStatus {
-    IDLE,
-    RUNNING,
-    DONE,
-    ERROR,
-}
-
-enum class DuplicatesStatus {
+enum class TaskStatus {
     IDLE,
     RUNNING,
     DONE,
@@ -88,13 +65,6 @@ enum class DuplicatesStatus {
 enum class WatchStatus {
     STOPPED,
     WATCHING,
-    ERROR,
-}
-
-enum class OrganizeStatus {
-    IDLE,
-    RUNNING,
-    DONE,
     ERROR,
 }
 
@@ -187,7 +157,7 @@ class AppState(
     var transientMessage by mutableStateOf<String?>(null)
         private set
 
-    var status by mutableStateOf(ScanStatus.IDLE)
+    var status by mutableStateOf(TaskStatus.IDLE)
         private set
 
     var progressText by mutableStateOf("")
@@ -211,13 +181,13 @@ class AppState(
     var selectedSongPath by mutableStateOf<String?>(null)
         private set
 
-    var healthStatus by mutableStateOf(HealthStatus.IDLE)
+    var healthStatus by mutableStateOf(TaskStatus.IDLE)
         private set
 
     var healthReport by mutableStateOf<HealthReport?>(null)
         private set
 
-    var duplicatesStatus by mutableStateOf(DuplicatesStatus.IDLE)
+    var duplicatesStatus by mutableStateOf(TaskStatus.IDLE)
         private set
 
     var duplicateGroups by mutableStateOf<List<DuplicateGroup>>(emptyList())
@@ -293,7 +263,7 @@ class AppState(
     var watchStatus by mutableStateOf(WatchStatus.STOPPED)
         private set
 
-    var organizeStatus by mutableStateOf(OrganizeStatus.IDLE)
+    var organizeStatus by mutableStateOf(TaskStatus.IDLE)
         private set
 
     var organizationReport by mutableStateOf<OrganizationReport?>(null)
@@ -505,7 +475,7 @@ class AppState(
         savePrefs()
     }
 
-    fun toggleSort(column: SortColumn) {
+    fun toggleSort(column: SongField) {
         if (sortColumn == column) {
             sortAscending = !sortAscending
         } else {
@@ -515,7 +485,7 @@ class AppState(
         savePrefs()
     }
 
-    fun toggleColumn(column: SongColumn) {
+    fun toggleColumn(column: SongField) {
         val updated = if (column in visibleColumns) {
             visibleColumns - column
         } else {
@@ -582,12 +552,12 @@ class AppState(
     }
 
     fun scan() {
-        if (status == ScanStatus.SCANNING) return
+        if (status == TaskStatus.RUNNING) return
         val dir = Path.of(directory.trim())
         errorMessage = null
 
         uiScope.launch {
-            status = ScanStatus.SCANNING
+            status = TaskStatus.RUNNING
             progressText = "Scanning..."
             try {
                 val result = withContext(Dispatchers.Default) {
@@ -602,14 +572,14 @@ class AppState(
                 analytics = computeAnalytics(found)
                 refreshReview()
                 progressText = "Library synchronized · ${found.size} songs analyzed"
-                status = ScanStatus.DONE
+                status = TaskStatus.DONE
                 if (result.added > 0 || result.updated > 0) {
                     showMessage("Scan done: +${result.added} added, ${result.updated} updated")
                 }
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Scan failed"
                 progressText = ""
-                status = ScanStatus.ERROR
+                status = TaskStatus.ERROR
             }
         }
     }
@@ -620,7 +590,7 @@ class AppState(
      * A manual "Rescan" re-syncs with the filesystem.
      */
     fun loadLibraryFromDatabase() {
-        if (status == ScanStatus.SCANNING) return
+        if (status == TaskStatus.RUNNING) return
         if (directory.isBlank()) return
         val dir = Path.of(directory.trim())
         errorMessage = null
@@ -637,46 +607,46 @@ class AppState(
                     analytics = computeAnalytics(found)
                     refreshReview()
                     progressText = "Loaded ${found.size} songs from database"
-                    status = ScanStatus.DONE
+                    status = TaskStatus.DONE
                 } else {
-                    status = ScanStatus.IDLE
+                    status = TaskStatus.IDLE
                     progressText = ""
                 }
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Failed to load library from database"
-                status = ScanStatus.IDLE
+                status = TaskStatus.IDLE
             }
         }
     }
 
     fun analyzeHealth() {
-        if (healthStatus == HealthStatus.RUNNING) return
+        if (healthStatus == TaskStatus.RUNNING) return
         val dir = Path.of(directory.trim())
         errorMessage = null
 
         uiScope.launch {
-            healthStatus = HealthStatus.RUNNING
+            healthStatus = TaskStatus.RUNNING
             try {
                 healthReport = withContext(Dispatchers.Default) {
                     connectDatabase()
                     LibraryHealthService.analyze(dir)
                 }
-                healthStatus = HealthStatus.DONE
+                healthStatus = TaskStatus.DONE
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Health check failed"
-                healthStatus = HealthStatus.ERROR
+                healthStatus = TaskStatus.ERROR
             }
         }
     }
 
     fun detectDuplicates() {
-        if (duplicatesStatus == DuplicatesStatus.RUNNING) return
+        if (duplicatesStatus == TaskStatus.RUNNING) return
         val dir = Path.of(directory.trim())
         errorMessage = null
         duplicateTrashSelection = emptySet()
 
         uiScope.launch {
-            duplicatesStatus = DuplicatesStatus.RUNNING
+            duplicatesStatus = TaskStatus.RUNNING
             try {
                 val groups = withContext(Dispatchers.Default) {
                     connectDatabase()
@@ -684,10 +654,10 @@ class AppState(
                     DuplicateDetectionService.detectDuplicates(songs)
                 }
                 duplicateGroups = groups
-                duplicatesStatus = DuplicatesStatus.DONE
+                duplicatesStatus = TaskStatus.DONE
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Duplicate detection failed"
-                duplicatesStatus = DuplicatesStatus.ERROR
+                duplicatesStatus = TaskStatus.ERROR
             }
         }
     }
@@ -874,12 +844,12 @@ class AppState(
     }
 
     fun planOrganization() {
-        if (organizeStatus == OrganizeStatus.RUNNING) return
+        if (organizeStatus == TaskStatus.RUNNING) return
         val dir = Path.of(directory.trim())
         errorMessage = null
 
         uiScope.launch {
-            organizeStatus = OrganizeStatus.RUNNING
+            organizeStatus = TaskStatus.RUNNING
             try {
                 val report = withContext(Dispatchers.Default) {
                     connectDatabase()
@@ -887,10 +857,10 @@ class AppState(
                     LibraryOrganizationService.planOrganization(songs, dir)
                 }
                 organizationReport = report
-                organizeStatus = OrganizeStatus.DONE
+                organizeStatus = TaskStatus.DONE
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Organization failed"
-                organizeStatus = OrganizeStatus.ERROR
+                organizeStatus = TaskStatus.ERROR
             }
         }
     }
@@ -932,14 +902,14 @@ class AppState(
         }
     }
 
-    private fun comparatorFor(column: SortColumn, ascending: Boolean): Comparator<Song> {
+    private fun comparatorFor(column: SongField, ascending: Boolean): Comparator<Song> {
         val base: Comparator<Song> = when (column) {
-            SortColumn.TITLE -> compareBy { it.title?.lowercase() ?: it.filename.lowercase() }
-            SortColumn.ARTIST -> compareBy { it.artist?.lowercase() ?: "" }
-            SortColumn.ALBUM -> compareBy { it.album?.lowercase() ?: "" }
-            SortColumn.DURATION -> compareBy { it.duration ?: 0.0 }
-            SortColumn.FORMAT -> compareBy { it.extension }
-            SortColumn.BITRATE -> compareBy { it.bitrate ?: 0 }
+            SongField.TITLE -> compareBy { it.title?.lowercase() ?: it.filename.lowercase() }
+            SongField.ARTIST -> compareBy { it.artist?.lowercase() ?: "" }
+            SongField.ALBUM -> compareBy { it.album?.lowercase() ?: "" }
+            SongField.DURATION -> compareBy { it.duration ?: 0.0 }
+            SongField.FORMAT -> compareBy { it.extension }
+            SongField.BITRATE -> compareBy { it.bitrate ?: 0 }
         }
         return if (ascending) base else base.reversed()
     }
@@ -948,13 +918,13 @@ class AppState(
         fun sectionFromString(value: String): Section =
             try { Section.valueOf(value.uppercase()) } catch (_: Exception) { Section.LIBRARY }
 
-        fun sortColumnFromString(value: String): SortColumn =
-            try { SortColumn.valueOf(value.uppercase()) } catch (_: Exception) { SortColumn.TITLE }
+        fun sortColumnFromString(value: String): SongField =
+            try { SongField.valueOf(value.uppercase()) } catch (_: Exception) { SongField.TITLE }
 
-        fun parseColumns(value: String): Set<SongColumn> {
-            if (value.isBlank()) return SongColumn.entries.toSet()
+        fun parseColumns(value: String): Set<SongField> {
+            if (value.isBlank()) return SongField.entries.toSet()
             return value.split(",").mapNotNull { raw ->
-                try { SongColumn.valueOf(raw.trim().uppercase()) } catch (_: Exception) { null }
+                try { SongField.valueOf(raw.trim().uppercase()) } catch (_: Exception) { null }
             }.toSet()
         }
 

@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
-import com.melodysync.desktop.state.OrganizeStatus
+import com.melodysync.desktop.state.TaskStatus
 import com.melodysync.desktop.theme.HiFiDarkColors
 import com.melodysync.desktop.theme.HiFiLightColors
 import com.melodysync.desktop.theme.Spacing
@@ -43,22 +43,22 @@ fun OrganizeSection(state: AppState) {
         )
         Button(
             onClick = state::planOrganization,
-            enabled = state.directory.isNotBlank() && state.organizeStatus != OrganizeStatus.RUNNING,
+            enabled = state.directory.isNotBlank() && state.organizeStatus != TaskStatus.RUNNING,
         ) {
-            Text(if (state.organizeStatus == OrganizeStatus.RUNNING) "Analyzing…" else "Analyze Library")
+            Text(if (state.organizeStatus == TaskStatus.RUNNING) "Analyzing…" else "Analyze Library")
         }
 
         when (state.organizeStatus) {
-            OrganizeStatus.RUNNING -> {
+            TaskStatus.RUNNING -> {
                 ProgressCard("Planning folder structure…")
             }
-            OrganizeStatus.DONE -> {
+            TaskStatus.DONE -> {
                 state.organizationReport?.let { report ->
                     HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.lg))
                     OrganizeReportView(report)
                 }
             }
-            OrganizeStatus.ERROR -> {
+            TaskStatus.ERROR -> {
                 state.errorMessage?.let {
                     Text(
                         it,
@@ -68,7 +68,7 @@ fun OrganizeSection(state: AppState) {
                     )
                 }
             }
-            OrganizeStatus.IDLE -> {
+            TaskStatus.IDLE -> {
                 Text(
                     "Keep your music arranged according to your library rules. " +
                         "Analysis creates a dry-run plan — nothing is moved until you apply it explicitly.",

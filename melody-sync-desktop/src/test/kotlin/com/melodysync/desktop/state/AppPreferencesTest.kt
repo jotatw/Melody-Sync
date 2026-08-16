@@ -59,17 +59,17 @@ class AppPreferencesTest {
         assertEquals(Section.HEALTH, AppState.sectionFromString("health"))
         assertEquals(Section.LIBRARY, AppState.sectionFromString("invalid"))
 
-        assertEquals(SortColumn.TITLE, AppState.sortColumnFromString("title"))
-        assertEquals(SortColumn.DURATION, AppState.sortColumnFromString("duration"))
-        assertEquals(SortColumn.BITRATE, AppState.sortColumnFromString("bitrate"))
-        assertEquals(SortColumn.TITLE, AppState.sortColumnFromString("bogus"))
+        assertEquals(SongField.TITLE, AppState.sortColumnFromString("title"))
+        assertEquals(SongField.DURATION, AppState.sortColumnFromString("duration"))
+        assertEquals(SongField.BITRATE, AppState.sortColumnFromString("bitrate"))
+        assertEquals(SongField.TITLE, AppState.sortColumnFromString("bogus"))
     }
 
     @Test
     fun `parse columns from preferences`() {
         val columns = AppState.parseColumns("title,artist,format,bitrate")
 
-        assertEquals(setOf(SongColumn.TITLE, SongColumn.ARTIST, SongColumn.FORMAT, SongColumn.BITRATE), columns)
+        assertEquals(setOf(SongField.TITLE, SongField.ARTIST, SongField.FORMAT, SongField.BITRATE), columns)
     }
 
     @Test
@@ -82,8 +82,8 @@ class AppPreferencesTest {
 
     @Test
     fun `parse columns handles invalid and blank`() {
-        assertEquals(setOf(SongColumn.TITLE), AppState.parseColumns("title,bogus"))
-        assertEquals(SongColumn.entries.toSet(), AppState.parseColumns(""))
+        assertEquals(setOf(SongField.TITLE), AppState.parseColumns("title,bogus"))
+        assertEquals(SongField.entries.toSet(), AppState.parseColumns(""))
     }
 
     @Test

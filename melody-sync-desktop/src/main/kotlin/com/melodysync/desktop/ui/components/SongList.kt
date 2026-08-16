@@ -43,8 +43,7 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
-import com.melodysync.desktop.state.SongColumn
-import com.melodysync.desktop.state.SortColumn
+import com.melodysync.desktop.state.SongField
 import com.melodysync.desktop.theme.Spacing
 import com.melodysync.model.Song
 import java.awt.Desktop
@@ -309,7 +308,7 @@ private fun SongRow(
             } else {
                 Spacer(Modifier.width(3.dp))
             }
-            if (SongColumn.TITLE in state.visibleColumns) {
+            if (SongField.TITLE in state.visibleColumns) {
                 Text(
                     song.title ?: song.filename,
                     style = MaterialTheme.typography.bodyLarge.copy(
@@ -319,7 +318,7 @@ private fun SongRow(
                     modifier = Modifier.weight(2f),
                 )
             }
-            if (SongColumn.ARTIST in state.visibleColumns) {
+            if (SongField.ARTIST in state.visibleColumns) {
                 Text(
                     song.artist ?: "Unknown artist",
                     style = MaterialTheme.typography.bodyMedium,
@@ -328,7 +327,7 @@ private fun SongRow(
                     modifier = Modifier.weight(1.5f),
                 )
             }
-            if (SongColumn.ALBUM in state.visibleColumns) {
+            if (SongField.ALBUM in state.visibleColumns) {
                 Text(
                     song.album ?: "Unknown album",
                     style = MaterialTheme.typography.bodyMedium,
@@ -337,14 +336,14 @@ private fun SongRow(
                     modifier = Modifier.weight(1.5f),
                 )
             }
-            if (SongColumn.DURATION in state.visibleColumns) {
+            if (SongField.DURATION in state.visibleColumns) {
                 Text(
                     "%.1f min".format(song.durationMinutes),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.width(80.dp),
                 )
             }
-            if (SongColumn.FORMAT in state.visibleColumns) {
+            if (SongField.FORMAT in state.visibleColumns) {
                 Text(
                     song.extension,
                     style = MaterialTheme.typography.bodyMedium,
@@ -352,7 +351,7 @@ private fun SongRow(
                     modifier = Modifier.width(64.dp),
                 )
             }
-            if (SongColumn.BITRATE in state.visibleColumns) {
+            if (SongField.BITRATE in state.visibleColumns) {
                 Text(
                     song.bitrate?.let { "${it / 1000} kbps" } ?: "—",
                     style = MaterialTheme.typography.bodySmall,
@@ -396,23 +395,23 @@ private fun SongListHeader(state: AppState) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        if (SongColumn.TITLE in state.visibleColumns) {
-            SortableHeader("Title", SortColumn.TITLE, Modifier.weight(2f), state)
+        if (SongField.TITLE in state.visibleColumns) {
+            SortableHeader("Title", SongField.TITLE, Modifier.weight(2f), state)
         }
-        if (SongColumn.ARTIST in state.visibleColumns) {
-            SortableHeader("Artist", SortColumn.ARTIST, Modifier.weight(1.5f), state)
+        if (SongField.ARTIST in state.visibleColumns) {
+            SortableHeader("Artist", SongField.ARTIST, Modifier.weight(1.5f), state)
         }
-        if (SongColumn.ALBUM in state.visibleColumns) {
-            SortableHeader("Album", SortColumn.ALBUM, Modifier.weight(1.5f), state)
+        if (SongField.ALBUM in state.visibleColumns) {
+            SortableHeader("Album", SongField.ALBUM, Modifier.weight(1.5f), state)
         }
-        if (SongColumn.DURATION in state.visibleColumns) {
-            SortableHeader("Duration", SortColumn.DURATION, Modifier.width(80.dp), state)
+        if (SongField.DURATION in state.visibleColumns) {
+            SortableHeader("Duration", SongField.DURATION, Modifier.width(80.dp), state)
         }
-        if (SongColumn.FORMAT in state.visibleColumns) {
-            SortableHeader("Format", SortColumn.FORMAT, Modifier.width(64.dp), state)
+        if (SongField.FORMAT in state.visibleColumns) {
+            SortableHeader("Format", SongField.FORMAT, Modifier.width(64.dp), state)
         }
-        if (SongColumn.BITRATE in state.visibleColumns) {
-            SortableHeader("Bitrate", SortColumn.BITRATE, Modifier.width(72.dp), state)
+        if (SongField.BITRATE in state.visibleColumns) {
+            SortableHeader("Bitrate", SongField.BITRATE, Modifier.width(72.dp), state)
         }
     }
 }
@@ -420,7 +419,7 @@ private fun SongListHeader(state: AppState) {
 @Composable
 private fun SortableHeader(
     label: String,
-    column: SortColumn,
+    column: SongField,
     modifier: Modifier,
     state: AppState,
 ) {
