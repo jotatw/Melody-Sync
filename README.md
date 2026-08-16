@@ -1,5 +1,11 @@
 # Melody Sync
 
+<p align="center">
+  <img alt="License" src="https://img.shields.io/github/license/jotatw/Melody-Sync">
+  <img alt="CI" src="https://img.shields.io/github/actions/workflow/status/jotatw/Melody-Sync/ci.yml?branch=main">
+  <img alt="Language" src="https://img.shields.io/github/languages/top/jotatw/Melody-Sync">
+</p>
+
 > A desktop tool for curating, analyzing, and organizing a local music library.
 
 Melody Sync is a personal, open-source project focused on making music-library maintenance a clear and controlled workflow. It is designed around local files, explicit user decisions, and incremental organization rather than automatic changes.
@@ -309,6 +315,7 @@ The `docs/` directory is the source of detailed project documentation.
 | [`docs/architecture/`](docs/architecture/) | Architecture and technical decisions |
 | [`docs/design/`](docs/design/) | UX, screens, navigation, and visual design |
 | [`docs/planning/`](docs/planning/) | Detailed plans for larger changes |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Contribution guidelines |
 
 Architecture Decision Records are maintained under `docs/architecture/ADR/`.
 
@@ -352,15 +359,13 @@ Significant features should have a defined purpose, scope, behavior, and non-goa
 
 ## Current Direction
 
-The current development focus is consolidation rather than adding unrelated features:
+The current focus is refinement and stabilization of the implemented workflow:
 
-1. organize the project documentation;
-2. define the behavior of each screen;
-3. establish clear design and interaction rules;
-4. document Core services and external providers;
-5. stabilize metadata handling;
-6. refine the Library-centered workflow;
-7. expand only when a concrete need justifies it.
+1. **Documentation consolidation** — ongoing hierarchy work across `docs/`;
+2. **Screen behavior & navigation** — finalized (all eight screens have interaction contracts); remaining work is interaction refinement;
+3. **Metadata reliability** — per-format write capability enforced; WAV writes are read-only until a reliable writer exists; value round-trip coverage for all writable formats;
+4. **UX refinement** — keyboard accessibility, loading/feedback states, responsive behavior, and large-library performance validation;
+5. **Updates & installation** — implemented; relaunch orchestration deferred.
 
 The detailed roadmap is maintained in [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
@@ -368,4 +373,4 @@ The detailed roadmap is maintained in [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 ## License
 
-Melody Sync is released under the MIT License.
+Melody Sync is released under the [MIT License](LICENSE).
