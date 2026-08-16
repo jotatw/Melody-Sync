@@ -188,7 +188,7 @@ The current documented project state is a consolidation and stabilization phase 
 Recorded state:
 
 - Version: **v0.13.0-dev**
-- Automated tests: **265 passing**
+- Automated tests: **266 passing**
 - Core: functional and stable enough for continued development
 - Desktop GUI: functional with UX refinement ongoing
 - CLI: functional

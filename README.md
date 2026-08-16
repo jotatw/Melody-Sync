@@ -24,7 +24,7 @@ The project currently focuses on desktop use. External services and synchronizat
 | CLI | Working |
 | Desktop GUI | Working |
 | Database | SQLite |
-| Automated tests | **265 passing** |
+| Automated tests | **266 passing** |
 | Metadata read/write | Working, including Opus |
 | Health analysis | Working |
 | Duplicate detection | Working |
@@ -291,7 +291,7 @@ Run all tests:
 
 ## Testing
 
-The project currently has **265 automated tests** covering the Core, CLI, and Desktop modules.
+The project currently has **266 automated tests** covering the Core, CLI, and Desktop modules.
 
 Run:
 
