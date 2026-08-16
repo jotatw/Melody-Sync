@@ -61,7 +61,7 @@ fun LibraryScreen(
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { innerPadding ->
-        Row(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+        Row(modifier = Modifier.fillMaxSize().padding(innerPadding).keyboardShortcuts(state)) {
             Sidebar(state)
 
             Column(

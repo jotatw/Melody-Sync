@@ -48,5 +48,25 @@ fun AboutSection() {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = Spacing.xs),
         )
+
+        Text(
+            "Keyboard shortcuts",
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.padding(top = Spacing.lg),
+        )
+
+        listOf(
+            "Ctrl+1…8" to "Switch section",
+            "Ctrl+B" to "Toggle sidebar",
+            "F5" to "Rescan the library",
+            "Esc" to "Close the Quick Fix panel",
+        ).forEach { (keys, action) ->
+            Text(
+                "$keys — $action",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = Spacing.xs),
+            )
+        }
     }
 }

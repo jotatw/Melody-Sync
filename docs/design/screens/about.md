@@ -141,6 +141,7 @@ About must not own or modify application configuration, library data, metadata, 
 - Do not turn About into a technical dashboard.
 - External links should be explicit and understandable.
 - Information that changes frequently belongs in the appropriate project documentation or update/history mechanism rather than being copied into About.
+- About lists the global keyboard shortcuts so the shortcut set is discoverable in-app.
 
 ## 14. Accessibility
 
