@@ -70,12 +70,7 @@ fun DuplicatesSection(state: AppState) {
             }
             TaskStatus.ERROR -> {
                 state.errorMessage?.let {
-                    Text(
-                        it,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(top = Spacing.sm),
-                    )
+                    StatusPill(it, PillTone.DANGER, Modifier.padding(top = Spacing.sm))
                 }
             }
             TaskStatus.IDLE -> Unit
