@@ -61,7 +61,7 @@ whether to apply a suggestion; fixes are not applied automatically.
 - `FixSuggestionSource` — abstraction for extensible suggestion providers.
 - `LocalFixSource` — local filename/path-based suggestions.
 - `YoutubeFixSource` — optional YouTube candidates.
-- `TagApplyResult` — surfaces tag-write failures to the UI.
+- `WriteResult` / `TagWriteError` — typed tag-write outcomes that surface failures to the UI.
 
 ### Desktop
 
@@ -80,19 +80,18 @@ whether to apply a suggestion; fixes are not applied automatically.
 
 ## Current Boundary
 
-The Quick-Fix interaction itself is implemented. The remaining work is the
-metadata foundation required to make tag writing explicit, predictable and
-robust across supported formats.
+The Quick-Fix interaction and its foundation are implemented, including:
 
-That work includes:
-
-- metadata capability discovery;
 - `MetadataProvider` abstraction and format registry;
-- typed tag-write errors;
+- typed tag-write errors (`WriteResult` / `TagWriteError`);
 - more robust Apply behavior;
 - injectable database state for headless integration tests;
 - serialized database access;
 - format-specific fixtures and capability coverage.
+
+Remaining work is the focused reliability refinement described in
+[`docs/planning/metadata-foundation.md`](../planning/metadata-foundation.md)
+(per-format write reliability, real-world edge cases, and error-message polish).
 
 The detailed implementation plan is maintained in
 [`docs/planning/metadata-foundation.md`](../planning/metadata-foundation.md).

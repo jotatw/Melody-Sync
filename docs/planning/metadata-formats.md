@@ -30,7 +30,7 @@ Document which formats Melody Sync can read and write, backed by fixtures and au
 | MP3 | ✓ | ✓ | ✓ | JAudioTagger | ID3 |
 | M4A | ✓ | ✓ | ✓ | JAudioTagger | MP4 atoms; per-file write can fail on unusual layouts |
 | FLAC | ✓ | ✓ | ✓ | JAudioTagger | Vorbis comments |
-| WAV | ✓ | ⚠ | ✓ | JAudioTagger | LIST/INFO values are read with a trailing NUL byte (quirk) |
+| WAV | ✓ | ✓ | ✓ | JAudioTagger | LIST/INFO tags are read clean (trailing NUL normalized) |
 | OGG | ✓ | ✓ | ✓ | JAudioTagger | Vorbis |
 | Opus | ✓ | ✓ | ✓ | OpusProvider | built-in Ogg/OpusTags reader/writer (JAudioTagger has no Opus) |
 | AAC | ✗ | ✗ | ✗ | — | JAudioTagger has no AAC reader; removed from supported formats |
@@ -62,7 +62,7 @@ Untagged fixtures must expose no title/artist/album (title falls back to the fil
 
 ## Known Limitations
 
-- **WAV**: JAudioTagger reads LIST/INFO values with a trailing NUL byte (e.g. `Fixture Song\u0000`). Values are otherwise correct; callers should trim the NUL when displaying.
+- **WAV**: JAudioTagger reads LIST/INFO values with a trailing NUL byte (e.g. `Fixture Song\u0000`). The read layer now normalizes it away, so all consumers get clean title/artist/album values.
 - **M4A**: some container layouts can fail to write even though the format is supported — `metadata --write-test` reports the per-file result.
 - **AAC**: no tag container is read by the current stack; `.aac` files are treated as non-audio.
 

@@ -12,7 +12,7 @@ import java.nio.file.NoSuchFileException
 
 /**
  * Metadata backend for formats handled by JAudioTagger
- * (mp3, flac, m4a, wav, ogg, aac).
+ * (mp3, flac, m4a, wav, ogg).
  */
 object JAudioTaggerProvider : MetadataProvider {
 
@@ -31,9 +31,9 @@ object JAudioTaggerProvider : MetadataProvider {
         val tag = audio.tag
         val header = audio.audioHeader
 
-        val title = tag?.getFirst(FieldKey.TITLE)?.ifBlank { song.filename } ?: song.filename
-        val artist = tag?.getFirst(FieldKey.ARTIST)?.ifBlank { null }
-        val album = tag?.getFirst(FieldKey.ALBUM)?.ifBlank { null }
+        val title = tag?.getFirst(FieldKey.TITLE)?.let(::normalizeTag)?.ifBlank { song.filename } ?: song.filename
+        val artist = tag?.getFirst(FieldKey.ARTIST)?.let(::normalizeTag)?.ifBlank { null }
+        val album = tag?.getFirst(FieldKey.ALBUM)?.let(::normalizeTag)?.ifBlank { null }
 
         return song.copy(
             title = title,
@@ -63,6 +63,8 @@ object JAudioTaggerProvider : MetadataProvider {
         } catch (e: Exception) {
             WriteResult(error = classify(song, e))
         }
+
+    private fun normalizeTag(value: String): String = value.trimEnd('\u0000').trim()
 
     private fun classify(song: Song, e: Exception): TagWriteError {
         val message = e.message ?: ""

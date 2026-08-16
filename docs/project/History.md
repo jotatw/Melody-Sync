@@ -201,6 +201,9 @@ Recorded state:
 - Auto-update on startup: completed; relaunch orchestration remains separate
 - Settings menu: data-driven section model (dynamic sections)
 - Repository audit 2026-08: completed (security, structure, documentation consistency, code)
+- Screen interaction contracts: finalized (all eight screens + directory README); navigation structure recorded in the design docs
+- Audit refactors C4–C6: applied (`SongField`/`TaskStatus` enums, `refreshDerivedState`/`loadSongsForDirectory` helpers, `UpdateState` extraction)
+- Metadata reliability: WAV trailing-NUL normalization applied in the read layer; docs reconciled with code
 
 The detailed current planning state is maintained in [`docs/ROADMAP.md`](../ROADMAP.md), rather than in this history document.
 

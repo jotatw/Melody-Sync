@@ -51,16 +51,12 @@ class FixtureCapabilityTest {
 
     @Test
     fun `tagged fixtures expose title artist and album`() {
-        listOf("mp3", "m4a", "flac", "ogg", "opus").forEach { format ->
+        listOf("mp3", "m4a", "flac", "wav", "ogg", "opus").forEach { format ->
             val song = readMetadata(Song(path = fixtures.resolve("$format/with_tags.$format"), size = 0))
             assertEquals("Fixture Song", song.title, "$format title")
             assertEquals("Fixture Artist", song.artist, "$format artist")
             assertEquals("Fixture Album", song.album, "$format album")
         }
-        // WAV: JAudioTagger reads LIST/INFO values with a trailing NUL byte
-        // (known quirk, see docs/planning/metadata-formats.md).
-        val wav = readMetadata(Song(path = fixtures.resolve("wav/with_tags.wav"), size = 0))
-        assertTrue(wav.title != null && wav.title!!.trimEnd('\u0000') == "Fixture Song", "wav title quirk")
     }
 
     @Test
