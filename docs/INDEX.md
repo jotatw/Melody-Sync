@@ -52,6 +52,7 @@ The [`README.md`](../README.md) is the public entry point. This index is the ent
 | [Application Design](design/app-design.md) | Application-wide UX and interaction model | Target design |
 | [Navigation](design/navigation.md) | Navigation contract, context preservation and screen transitions | Defined / target |
 | [Design System](standards/DesignSystem.md) | Visual identity and reusable components | Implemented / evolving |
+| [Branding Assets](assets/branding/BRANDING.md) | Logo direction and visual assets | Draft (MS monogram selected) |
 
 ### Screens
 
