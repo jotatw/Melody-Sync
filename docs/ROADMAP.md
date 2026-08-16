@@ -147,6 +147,14 @@ The initial screen model centers the application around Library, with Health/Rev
 
 The exact navigation structure should be finalized in the design documentation before further navigation changes are implemented.
 
+### Current state (2026-08-11)
+
+The navigation structure is now finalized in the design documentation:
+
+- `docs/design/app-design.md` defines the global model: six structural destinations (Library, Statistics, Health, Organize, Settings, About); `Review` and `Duplicates` are contextual workflows reached through Health and documented as their own screen contracts.
+- Every screen has an interaction contract in `docs/design/screens/` (`library`, `health`, `statistics`, `organize`, `settings`, `about`, `review`, `duplicates`, plus a directory `README.md`).
+- Remaining work under this area is interaction/visual refinement (keyboard accessibility, responsive behavior, loading states, large-library performance) — not navigation restructure.
+
 ---
 
 ## 3. Metadata & Quick Fix

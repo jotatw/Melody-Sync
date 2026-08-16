@@ -1,25 +1,44 @@
-# Review
+# Review — Interaction Model
 
-> Current screen contract for the Review workflow.
+> Contextual workflow for inspecting songs that need attention before they return to the normal library workflow. Reached through Health and Library; not a primary navigation destination.
 
 ## Document Information
 
 | Item | Value |
 |---|---|
-| Category | Screen Specification |
+| Category | Design / Screen Specification |
+| Audience | Developers / UX |
 | Status | Implemented / contextual via Health (removed from sidebar) |
-| Scope | Current Review workflow |
-| Related | Health, Library, Quick Fix |
+| Project Version | v0.13.0-dev |
+| Primary navigation | None — contextual (Health → Review) |
+| Related screens | Health, Library, Quick Fix |
+| Related documents | [app-design.md](../app-design.md), [quick-fix-hud.md](../../research/quick-fix-hud.md) |
 
 ---
 
-## Purpose
+## 1. Purpose
 
 Review is a focused workspace for inspecting songs that require attention before they return to the normal library workflow.
 
 The screen is not an independent source of truth. It consumes diagnostic/review information from the application state and routes corrective actions through existing Core capabilities.
 
-## Current Responsibilities
+---
+
+## 2. User Question
+
+> **Which songs need attention, and why?**
+
+The user should be able to answer:
+
+- Which songs have issues?
+- What kind of issue each song has?
+- Can I filter the review list?
+- Can I inspect a selected song?
+- Can I open the corrective workflow for it?
+
+---
+
+## 3. Responsibilities
 
 Review currently provides a focused workflow for:
 
@@ -31,7 +50,9 @@ Review currently provides a focused workflow for:
 - applying an explicit metadata fix through Quick Fix;
 - returning the updated song to the normal library state.
 
-## Does Not
+---
+
+## 4. Non-Responsibilities
 
 Review must not:
 
@@ -42,7 +63,48 @@ Review must not:
 - replace Library browsing;
 - directly implement YouTube or lyrics access.
 
-## User Flow
+---
+
+## 5. Entry Points
+
+- **Health → Review**: the primary entry, when the user acts on an issue category.
+- **Library contextual**: song-level actions may open Review for the selected context.
+
+Review must preserve the reason the user entered (issue filter or selected song). See `app-design.md` "Context Preservation".
+
+---
+
+## 6. Screen Structure
+
+What the user sees:
+
+- the review list (songs with issues across the whole library);
+- filter controls for issue categories;
+- per-song issue indicators;
+- a selected-song inspection area;
+- the Quick Fix context when a song is selected.
+
+---
+
+## 7. Primary Actions
+
+- filter the review list;
+- select a song;
+- inspect the selected song;
+- open Quick Fix for the selected song;
+- apply an explicit metadata fix.
+
+---
+
+## 8. States and Empty States
+
+Review items are derived in memory from the current library (no file IO). The screen reflects:
+
+- **Ready with items** — review list populated from `reviewItems`.
+- **Empty** — no songs require attention; communicate that there is nothing requiring attention rather than displaying an empty technical table. The empty state should not create a new action if there is no useful action to perform.
+- **Per-song Quick Fix states** — applying/loading feedback is owned by the Quick Fix context, not by Review itself.
+
+### User Flow
 
 ```text
 Review
@@ -62,15 +124,19 @@ Review
 
 The important boundary is that Review identifies the item that needs attention, while Quick Fix performs the assisted correction workflow.
 
-## Empty State
+---
 
-When there are no review items, the screen should communicate that there is nothing requiring attention rather than displaying an empty technical table.
+## 9. Contextual Interactions
 
-The empty state should not create a new action if there is no useful action to perform.
+- **Health → Review**: Health actions navigate to Review with the affected issue context.
+- **Review → Quick Fix**: Quick Fix is opened for the selected song; corrections apply explicitly.
+- **Refresh**: the review list refreshes after library changes and tag application.
 
-## Navigation Status
+---
 
-Review is no longer a primary navigation destination. It is reached contextually through Health and Library:
+## 10. Navigation Rules
+
+Review is not a primary navigation destination. It is reached contextually through Health and Library:
 
 ```text
 Health
@@ -82,18 +148,38 @@ Library / Quick Fix
 
 The review capability remains fully reachable through this contextual flow.
 
-## Future Consolidation
+---
 
-Before removing Review from the sidebar, verify that the following capabilities remain reachable:
+## 11. Data Interaction
 
-- identify why a song needs attention;
-- inspect the song;
-- open Quick Fix;
-- apply a correction explicitly;
-- return to the library context;
-- preserve filtering/selection state where useful.
+- **Consumes:** `reviewItems` (songs with issues across the library), produced by the application state from Core diagnostics. It is an in-memory derivation; it does not read directly from the database.
+- **Can change:** nothing by itself. Corrections flow exclusively through Quick Fix, which writes metadata back to files; the review state is refreshed afterwards.
 
-The migration should remove a navigation destination, not remove the underlying review capability.
+---
+
+## 12. UX Rules
+
+- Surface the reason a song needs attention before offering actions.
+- Preserve filter/selection state when crossing into Quick Fix and returning.
+- Do not duplicate Health's broader diagnostics; Review narrows to actionable items.
+
+---
+
+## 13. Accessibility Notes
+
+- Filters and the song list must be keyboard-navigable.
+- Issue indicators must not rely on color alone (semantic text/label required).
+- Quick Fix status changes should be announced, not only visually shown.
+
+---
+
+## 14. Decision Rules
+
+- A song opens Quick Fix only when a corrective action is available.
+- Review keeps items in sync with the library after any applicable state change.
+- Do not promote Review to a sidebar destination while its contextual flow remains simple enough for Health.
+
+---
 
 ## Related Documents
 
