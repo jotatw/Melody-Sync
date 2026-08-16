@@ -74,10 +74,10 @@ class AppPreferencesTest {
 
     @Test
     fun `update channel mapping`() {
-        assertEquals(InstallationChannel.STABLE, AppState.channelFromString("stable"))
-        assertEquals(InstallationChannel.BETA, AppState.channelFromString("beta"))
-        assertEquals(InstallationChannel.NIGHTLY, AppState.channelFromString("nightly"))
-        assertEquals(InstallationChannel.STABLE, AppState.channelFromString("bogus"))
+        assertEquals(InstallationChannel.STABLE, UpdateState.channelFromString("stable"))
+        assertEquals(InstallationChannel.BETA, UpdateState.channelFromString("beta"))
+        assertEquals(InstallationChannel.NIGHTLY, UpdateState.channelFromString("nightly"))
+        assertEquals(InstallationChannel.STABLE, UpdateState.channelFromString("bogus"))
     }
 
     @Test

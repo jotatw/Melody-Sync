@@ -44,7 +44,7 @@ data class SettingsSectionModel(
 
 @Composable
 fun SettingsSection(state: AppState) {
-    LaunchedEffect(Unit) { state.refreshInstallationInfo() }
+    LaunchedEffect(Unit) { state.updates.refreshInstallationInfo() }
 
     val sections = remember(state) {
         listOf(
@@ -134,15 +134,15 @@ private fun AppearanceSettingsContent(state: AppState) {
 
 @Composable
 private fun InstallationInformationSection(state: AppState) {
-    val info = state.installationInfo
+    val info = state.updates.installationInfo
     val statusLabel = when {
-        state.updateAvailable -> "Update available"
-        state.updateStatus == UpdateStatus.ERROR -> "Needs attention"
+        state.updates.updateAvailable -> "Update available"
+        state.updates.updateStatus == UpdateStatus.ERROR -> "Needs attention"
         else -> "Healthy"
     }
     val statusColor = when {
-        state.updateAvailable -> MaterialTheme.colorScheme.primary
-        state.updateStatus == UpdateStatus.ERROR -> MaterialTheme.colorScheme.error
+        state.updates.updateAvailable -> MaterialTheme.colorScheme.primary
+        state.updates.updateStatus == UpdateStatus.ERROR -> MaterialTheme.colorScheme.error
         else -> MaterialTheme.colorScheme.tertiary
     }
 
@@ -181,7 +181,7 @@ private fun InfoRow(label: String, value: String, valueColor: Color? = null) {
 @Composable
 private fun UpdatesSection(state: AppState) {
     Text(
-        if (state.updateSourceBased) {
+        if (state.updates.updateSourceBased) {
             "Rebuilds and reinstalls from the Melody Sync source checkout. Requires Java 21."
         } else {
             "Downloads the latest published Melody Sync release and installs it."
@@ -200,14 +200,14 @@ private fun UpdatesSection(state: AppState) {
         modifier = Modifier.padding(top = Spacing.sm),
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
-        val channelLocked = state.updateStatus == UpdateStatus.CHECKING ||
-            state.updateStatus == UpdateStatus.RUNNING
+        val channelLocked = state.updates.updateStatus == UpdateStatus.CHECKING ||
+            state.updates.updateStatus == UpdateStatus.RUNNING
         InstallationChannel.entries
             .filter { it != InstallationChannel.SOURCE }
             .forEach { channel ->
                 FilterChip(
-                    selected = state.updateChannel == channel,
-                    onClick = { state.selectUpdateChannel(channel) },
+                    selected = state.updates.updateChannel == channel,
+                    onClick = { state.updates.selectUpdateChannel(channel) },
                     enabled = !channelLocked,
                     label = { Text(channel.name.lowercase().replaceFirstChar { it.uppercase() }) },
                 )
@@ -223,14 +223,14 @@ private fun UpdatesSection(state: AppState) {
             note("Check and install newer releases automatically (release installs only).")
         }
         Switch(
-            checked = state.autoUpdate,
-            onCheckedChange = { state.setAutoUpdateEnabled(it) },
+            checked = state.updates.autoUpdate,
+            onCheckedChange = { state.updates.setAutoUpdateEnabled(it) },
         )
     }
 
-    when (state.updateStatus) {
+    when (state.updates.updateStatus) {
         UpdateStatus.IDLE -> {
-            Button(onClick = state::checkForUpdates, modifier = Modifier.padding(top = Spacing.md)) {
+            Button(onClick = state.updates::checkForUpdates, modifier = Modifier.padding(top = Spacing.md)) {
                 Text("Check for updates")
             }
         }
@@ -239,7 +239,7 @@ private fun UpdatesSection(state: AppState) {
                 Text("Checking…")
             }
             Text(
-                state.updatePhase,
+                state.updates.updatePhase,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = Spacing.sm),
@@ -248,42 +248,42 @@ private fun UpdatesSection(state: AppState) {
         UpdateStatus.RUNNING -> {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(top = Spacing.md))
             Text(
-                state.updatePhase,
+                state.updates.updatePhase,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(top = Spacing.sm),
             )
         }
         UpdateStatus.DONE -> {
-            val message = state.updateMessage.orEmpty()
+            val message = state.updates.updateMessage.orEmpty()
             Text(
                 message,
                 style = MaterialTheme.typography.bodyMedium,
                 color = when {
-                    state.updateAvailable -> MaterialTheme.colorScheme.primary
+                    state.updates.updateAvailable -> MaterialTheme.colorScheme.primary
                     message.contains("failed", ignoreCase = true) -> MaterialTheme.colorScheme.error
                     else -> MaterialTheme.colorScheme.onSurfaceVariant
                 },
                 modifier = Modifier.padding(top = Spacing.md),
             )
-            if (state.updateAvailable) {
+            if (state.updates.updateAvailable) {
                 Button(
-                    onClick = { state.runUpdate(force = true) },
+                    onClick = { state.updates.runUpdate(force = true) },
                     modifier = Modifier.padding(top = Spacing.sm),
                 ) {
-                    Text(if (state.updateSourceBased) "Rebuild & Install" else "Download & Install")
+                    Text(if (state.updates.updateSourceBased) "Rebuild & Install" else "Download & Install")
                 }
             } else if (message.contains("Already up to date")) {
                 OutlinedButton(
-                    onClick = { state.runUpdate(force = true) },
+                    onClick = { state.updates.runUpdate(force = true) },
                     modifier = Modifier.padding(top = Spacing.sm),
                 ) {
-                    Text(if (state.updateSourceBased) "Force Rebuild" else "Force Update")
+                    Text(if (state.updates.updateSourceBased) "Force Rebuild" else "Force Update")
                 }
             }
         }
         UpdateStatus.ERROR -> {
-            state.updateMessage?.let {
+            state.updates.updateMessage?.let {
                 Text(
                     it,
                     style = MaterialTheme.typography.bodyMedium,
@@ -292,7 +292,7 @@ private fun UpdatesSection(state: AppState) {
                 )
             }
             OutlinedButton(
-                onClick = state::checkForUpdates,
+                onClick = state.updates::checkForUpdates,
                 modifier = Modifier.padding(top = Spacing.sm),
             ) {
                 Text("Retry")

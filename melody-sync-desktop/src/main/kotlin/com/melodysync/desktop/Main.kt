@@ -44,7 +44,7 @@ fun main() = application {
     val appState = remember { AppState() }
 
     LaunchedEffect(Unit) { appState.loadLibraryFromDatabase() }
-    LaunchedEffect(Unit) { appState.autoUpdateIfEnabled() }
+    LaunchedEffect(Unit) { appState.updates.autoUpdateIfEnabled() }
 
     fun savePrefs() {
         val placement = windowState.placement
@@ -59,8 +59,8 @@ fun main() = application {
             sidebarExpanded = appState.sidebarExpanded,
             visibleColumns = appState.visibleColumns.joinToString(",") { it.name.lowercase() },
             groupByLetter = appState.groupByLetter,
-            updateChannel = appState.updateChannel.name.lowercase(),
-            autoUpdate = appState.autoUpdate,
+            updateChannel = appState.updates.updateChannel.name.lowercase(),
+            autoUpdate = appState.updates.autoUpdate,
             windowWidth = if (floating) windowState.size.width.value.toDouble() else null,
             windowHeight = if (floating) windowState.size.height.value.toDouble() else null,
             windowPositionX = position?.x?.value?.toDouble(),

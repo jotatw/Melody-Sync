@@ -12,10 +12,6 @@ import com.melodysync.model.OrganizationReport
 import com.melodysync.model.Song
 import com.melodysync.model.SongDiagnostics
 import com.melodysync.model.TagSuggestion
-import com.melodysync.platform.installation.InstallationChannel
-import com.melodysync.platform.installation.InstallationInfo
-import com.melodysync.platform.installation.InstallationService
-import com.melodysync.platform.installation.InstallationValidator
 import com.melodysync.desktop.theme.AppTheme
 import com.melodysync.scanner.calculateStatistics
 import com.melodysync.service.DuplicateDetectionService
@@ -68,14 +64,6 @@ enum class WatchStatus {
     ERROR,
 }
 
-enum class UpdateStatus {
-    IDLE,
-    CHECKING,
-    RUNNING,
-    DONE,
-    ERROR,
-}
-
 /**
  * Multi-song Health navigation context: Library shows only the affected songs.
  * A single affected song uses a selection context instead (see [AppState.reviewIssue]).
@@ -100,6 +88,14 @@ class AppState(
 
     private var watcher: LibraryWatcher? = null
     private val prefs = AppPreferences.load(prefsFile ?: AppPreferences.defaultFile())
+
+    val updates = UpdateState(
+        uiScope = uiScope,
+        onPrefsChanged = { savePrefs() },
+        onMessage = { showMessage(it) },
+        initialChannel = UpdateState.channelFromString(prefs.updateChannel),
+        initialAutoUpdate = prefs.autoUpdate,
+    )
 
     private fun connectDatabase() {
         val db = databaseFile
@@ -215,27 +211,6 @@ class AppState(
     var reviewItems by mutableStateOf<List<SongDiagnostics>>(emptyList())
         private set
 
-    var updateStatus by mutableStateOf(UpdateStatus.IDLE)
-        private set
-
-    var updatePhase by mutableStateOf("")
-        private set
-
-    var updateMessage by mutableStateOf<String?>(null)
-        private set
-
-    var updateAvailable by mutableStateOf(false)
-        private set
-
-    var updateSourceBased by mutableStateOf(false)
-        private set
-
-    var updateChannel by mutableStateOf(channelFromString(prefs.updateChannel))
-        private set
-
-    var autoUpdate by mutableStateOf(prefs.autoUpdate)
-        private set
-
     // Quick-Fix HUD (see docs/research/quick-fix-hud.md)
     // The key is read from YOUTUBE_API_KEY, falling back to
     // ~/.config/melody-sync/youtube-api-key (trimmed) so the installed
@@ -268,9 +243,6 @@ class AppState(
 
     val youtubeEnabled: Boolean
         get() = youtubeApiKey.isNotBlank()
-
-    var installationInfo by mutableStateOf<InstallationInfo?>(null)
-        private set
 
     var watchStatus by mutableStateOf(WatchStatus.STOPPED)
         private set
@@ -515,44 +487,6 @@ class AppState(
         savePrefs()
     }
 
-    fun selectUpdateChannel(channel: InstallationChannel) {
-        updateChannel = channel
-        savePrefs()
-    }
-
-    fun setAutoUpdateEnabled(enabled: Boolean) {
-        autoUpdate = enabled
-        savePrefs()
-    }
-
-    /**
-     * Unattended updates: called once at startup. When enabled and running a
-     * release install (not a source checkout), checks the selected channel and
-     * installs a newer release automatically. The new build takes effect on the
-     * next launch.
-     */
-    fun autoUpdateIfEnabled() {
-        if (!autoUpdate) return
-        if (updateStatus == UpdateStatus.RUNNING || updateStatus == UpdateStatus.CHECKING) return
-
-        val projectDir = Path.of(System.getProperty("user.dir") ?: ".")
-        if (InstallationValidator().isSourceCheckout(projectDir)) return
-
-        uiScope.launch {
-            val service = InstallationService()
-            try {
-                val check = withContext(Dispatchers.Default) {
-                    service.checkForReleaseUpdate(channel = updateChannel)
-                }
-                if (check.updateAvailable && check.availableVersion != null) {
-                    runUpdate(force = false)
-                }
-            } catch (_: Exception) {
-                // offline or transient failure: skip silently, manual update remains available
-            }
-        }
-    }
-
     fun showMessage(message: String) {
         transientMessage = message
     }
@@ -710,114 +644,6 @@ class AppState(
         }
     }
 
-    fun refreshInstallationInfo() {
-        uiScope.launch {
-            installationInfo = withContext(Dispatchers.Default) {
-                InstallationService().detectInstallation()
-            }
-        }
-    }
-
-    fun checkForUpdates() {
-        if (updateStatus == UpdateStatus.CHECKING || updateStatus == UpdateStatus.RUNNING) return
-        updateStatus = UpdateStatus.CHECKING
-        updatePhase = "Checking for updates…"
-        updateMessage = null
-
-        uiScope.launch {
-            val projectDir = Path.of(System.getProperty("user.dir") ?: ".")
-            val service = InstallationService()
-            val sourceCheckout = InstallationValidator().isSourceCheckout(projectDir)
-            try {
-                val result = withContext(Dispatchers.Default) {
-                    if (sourceCheckout) {
-                        service.checkForUpdate(projectDir)
-                    } else {
-                        service.checkForReleaseUpdate(channel = updateChannel)
-                    }
-                }
-                val info = withContext(Dispatchers.Default) {
-                    service.detectInstallation()
-                }
-                installationInfo = info
-                updateSourceBased = sourceCheckout
-                updateAvailable = result.updateAvailable
-                updateMessage = when {
-                    result.message != null -> result.message
-                    result.updateAvailable -> {
-                        val from = result.installedVersion?.let { "v$it" } ?: "nothing"
-                        "Update available: $from → v${result.availableVersion}"
-                    }
-                    else -> "Already up to date (v${result.availableVersion})"
-                }
-                updateStatus = UpdateStatus.DONE
-                updatePhase = "Done"
-            } catch (e: Exception) {
-                updateMessage = e.message ?: "Update check failed"
-                updateStatus = UpdateStatus.ERROR
-            }
-        }
-    }
-
-    fun runUpdate(force: Boolean = true) {
-        if (updateStatus == UpdateStatus.RUNNING) return
-        updateStatus = UpdateStatus.RUNNING
-        updatePhase = if (updateSourceBased) "Preparing build…" else "Preparing download…"
-        updateMessage = null
-
-        uiScope.launch {
-            val projectDir = Path.of(System.getProperty("user.dir") ?: ".")
-            val service = InstallationService()
-            try {
-                val result = withContext(Dispatchers.Default) {
-                    if (updateSourceBased) {
-                        service.update(
-                            projectDir = projectDir,
-                            build = "Desktop",
-                            force = force,
-                            onProgress = { line ->
-                                uiScope.launch { updatePhase = phaseFromLine(line) }
-                            },
-                        )
-                    } else {
-                        service.updateFromRelease(
-                            channel = updateChannel,
-                            build = "Desktop",
-                            force = force,
-                            onProgress = { line ->
-                                uiScope.launch { updatePhase = phaseFromLine(line) }
-                            },
-                        )
-                    }
-                }
-                installationInfo = service.detectInstallation()
-                updateMessage = result.message
-                updatePhase = if (result.installed) "Done" else "Failed"
-                updateStatus = if (result.installed || result.sourceBased) {
-                    UpdateStatus.DONE
-                } else {
-                    UpdateStatus.ERROR
-                }
-                if (result.installed) {
-                    showMessage(result.message)
-                }
-            } catch (e: Exception) {
-                updateMessage = e.message ?: "Update failed"
-                updatePhase = "Failed"
-                updateStatus = UpdateStatus.ERROR
-            }
-        }
-    }
-
-    private fun phaseFromLine(line: String): String = when {
-        line.contains("Downloading", ignoreCase = true) -> "Downloading…"
-        line.contains("Verifying", ignoreCase = true) -> "Verifying…"
-        line.contains("Building", ignoreCase = true) -> "Compiling…"
-        line.contains("Installing to", ignoreCase = true) -> "Installing…"
-        line.contains("Installed!", ignoreCase = true) -> "Verifying…"
-        else -> line.trim().ifBlank { "Working…" }
-    }
-
     fun startWatching() {
         if (watchStatus == WatchStatus.WATCHING) return
         if (directory.isBlank()) return
@@ -873,8 +699,8 @@ class AppState(
             sidebarExpanded = sidebarExpanded,
             visibleColumns = visibleColumns.joinToString(",") { it.name.lowercase() },
             groupByLetter = groupByLetter,
-            updateChannel = updateChannel.name.lowercase(),
-            autoUpdate = autoUpdate,
+            updateChannel = updates.updateChannel.name.lowercase(),
+            autoUpdate = updates.autoUpdate,
         ).save(prefsFile ?: AppPreferences.defaultFile())
     }
 
@@ -924,13 +750,6 @@ class AppState(
                 try { SongField.valueOf(raw.trim().uppercase()) } catch (_: Exception) { null }
             }.toSet()
         }
-
-        fun channelFromString(value: String): InstallationChannel =
-            try {
-                InstallationChannel.valueOf(value.trim().uppercase())
-            } catch (_: Exception) {
-                InstallationChannel.STABLE
-            }
     }
 }
 
