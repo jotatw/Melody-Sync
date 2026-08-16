@@ -37,7 +37,7 @@ Document which formats Melody Sync can read and write, backed by fixtures and au
 
 - **Read**: the file parses (provider can open it).
 - **Tag read**: title/artist/album are extracted correctly.
-- **Write**: a safe write test on a temporary copy passes for the fixtures.
+- **Write**: a safe write test on a temporary copy succeeds **and** round-trips the written values (a write that reports success without persisting tags counts as failed).
 - Individual files may still fail (e.g. an unusual M4A container); use `melody-sync metadata --write-test <file>` for the per-file truth.
 
 ## Fixtures

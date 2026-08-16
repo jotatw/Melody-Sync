@@ -85,15 +85,20 @@ object MetadataDiagnosticService {
         return try {
             val copy = tempDir.resolve(file.fileName.toString())
             Files.copy(file, copy, StandardCopyOption.REPLACE_EXISTING)
-            val result = TagWriter.writeTags(
-                Song(path = copy, size = Files.size(copy)),
-                TagSuggestion(title = "Write Test", artist = "Melody Sync"),
-            )
-            if (result.success) {
-                MetadataDiagnostic.WriteTestResult(passed = true)
-            } else {
-                MetadataDiagnostic.WriteTestResult(passed = false, reason = result.error?.userMessage)
+            val song = Song(path = copy, size = Files.size(copy))
+            val suggestion = TagSuggestion(title = "Write Test", artist = "Melody Sync")
+            val result = TagWriter.writeTags(song, suggestion)
+            if (!result.success) {
+                return MetadataDiagnostic.WriteTestResult(passed = false, reason = result.error?.userMessage)
             }
+            val reRead = readMetadata(song)
+            if (reRead.title != suggestion.title || reRead.artist != suggestion.artist) {
+                return MetadataDiagnostic.WriteTestResult(
+                    passed = false,
+                    reason = "tags did not persist after write (read back title=\"${reRead.title}\")",
+                )
+            }
+            MetadataDiagnostic.WriteTestResult(passed = true)
         } catch (e: Exception) {
             MetadataDiagnostic.WriteTestResult(passed = false, reason = e.message ?: e.javaClass.simpleName)
         } finally {

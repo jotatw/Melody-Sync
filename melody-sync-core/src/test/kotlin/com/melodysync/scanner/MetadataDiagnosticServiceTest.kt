@@ -88,6 +88,22 @@ class MetadataDiagnosticServiceTest {
         assertNull(diagnostic.writeTest)
     }
 
+    @Test
+    fun `wav is read-only and skips the write test`() {
+        val file = tmp.resolve("song.wav")
+        Files.copy(
+            Path.of(javaClass.getResource("/fixtures/audio/wav/with_tags.wav")!!.toURI()),
+            file,
+        )
+
+        val diagnostic = MetadataDiagnosticService.inspect(file, runWriteTest = true)
+
+        assertTrue(diagnostic.readSupported)
+        assertTrue(diagnostic.readOk)
+        assertFalse(diagnostic.writeSupported)
+        assertNull(diagnostic.writeTest)
+    }
+
     private fun twoPageOpus(): ByteArray {
         val headPacket = "OpusHead".toByteArray() + byteArrayOf(
             1, 2, 0, 0,
