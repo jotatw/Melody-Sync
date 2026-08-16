@@ -110,6 +110,18 @@ class AppState(
         }
     }
 
+    private fun refreshDerivedState() {
+        statistics = calculateStatistics(songs)
+        analytics = computeAnalytics(songs)
+        refreshReview()
+    }
+
+    private suspend fun loadSongsForDirectory(dir: Path): List<Song> =
+        withContext(Dispatchers.Default) {
+            connectDatabase()
+            MusicRepository.findAll().filter { it.path.startsWith(dir) }
+        }
+
     var directory by mutableStateOf(prefs.directory)
         private set
 
@@ -446,9 +458,7 @@ class AppState(
                     MusicRepository.updateByPath(updated)
                 }
                 songs = songs.map { if (it.path == updated.path) updated else it }
-                statistics = calculateStatistics(songs)
-                analytics = computeAnalytics(songs)
-                refreshReview()
+                refreshDerivedState()
                 showMessage("Tags updated · ${song.filename}")
             } catch (e: Exception) {
                 showMessage("Apply failed: ${e.message ?: e::class.simpleName}")
@@ -568,9 +578,7 @@ class AppState(
                     MusicRepository.findAll()
                 }
                 songs = found
-                statistics = calculateStatistics(found)
-                analytics = computeAnalytics(found)
-                refreshReview()
+                refreshDerivedState()
                 progressText = "Library synchronized · ${found.size} songs analyzed"
                 status = TaskStatus.DONE
                 if (result.added > 0 || result.updated > 0) {
@@ -597,15 +605,10 @@ class AppState(
 
         uiScope.launch {
             try {
-                val found = withContext(Dispatchers.Default) {
-                    connectDatabase()
-                    MusicRepository.findAll().filter { it.path.startsWith(dir) }
-                }
+                val found = loadSongsForDirectory(dir)
                 if (found.isNotEmpty()) {
                     songs = found
-                    statistics = calculateStatistics(found)
-                    analytics = computeAnalytics(found)
-                    refreshReview()
+                    refreshDerivedState()
                     progressText = "Loaded ${found.size} songs from database"
                     status = TaskStatus.DONE
                 } else {
@@ -648,9 +651,8 @@ class AppState(
         uiScope.launch {
             duplicatesStatus = TaskStatus.RUNNING
             try {
+                val songs = loadSongsForDirectory(dir)
                 val groups = withContext(Dispatchers.Default) {
-                    connectDatabase()
-                    val songs = MusicRepository.findAll().filter { it.path.startsWith(dir) }
                     DuplicateDetectionService.detectDuplicates(songs)
                 }
                 duplicateGroups = groups
@@ -697,9 +699,7 @@ class AppState(
                 } else {
                     songs = remainingSongs
                     duplicateGroups = newGroups
-                    statistics = calculateStatistics(remainingSongs)
-                    analytics = computeAnalytics(remainingSongs)
-                    refreshReview()
+                    refreshDerivedState()
                     showMessage("Moved ${moved.size} file(s) to trash")
                 }
             } catch (e: Exception) {
@@ -851,9 +851,8 @@ class AppState(
         uiScope.launch {
             organizeStatus = TaskStatus.RUNNING
             try {
+                val songs = loadSongsForDirectory(dir)
                 val report = withContext(Dispatchers.Default) {
-                    connectDatabase()
-                    val songs = MusicRepository.findAll().filter { it.path.startsWith(dir) }
                     LibraryOrganizationService.planOrganization(songs, dir)
                 }
                 organizationReport = report
@@ -892,9 +891,7 @@ class AppState(
                     MusicRepository.findAll()
                 }
                 songs = found
-                statistics = calculateStatistics(found)
-                analytics = computeAnalytics(found)
-                refreshReview()
+                refreshDerivedState()
                 progressText = "Auto-sync: +${result.added} added, ${result.updated} updated, ${result.removed} removed"
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Auto-sync failed"
