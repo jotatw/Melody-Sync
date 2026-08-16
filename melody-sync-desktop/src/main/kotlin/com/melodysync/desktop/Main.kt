@@ -6,6 +6,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -19,6 +20,7 @@ import com.melodysync.desktop.theme.AppTheme
 import com.melodysync.desktop.theme.HiFiShapes
 import com.melodysync.desktop.theme.HiFiTypography
 import com.melodysync.desktop.ui.LibraryScreen
+import com.melodysync.desktop.ui.loadAppIcon
 
 fun main() = application {
     val prefs = remember { AppPreferences.load() }
@@ -42,6 +44,8 @@ fun main() = application {
     )
 
     val appState = remember { AppState() }
+
+    val windowIcon = remember { BitmapPainter(loadAppIcon()) }
 
     LaunchedEffect(Unit) { appState.loadLibraryFromDatabase() }
     LaunchedEffect(Unit) { appState.updates.autoUpdateIfEnabled() }
@@ -77,6 +81,7 @@ fun main() = application {
         },
         title = "Melody Sync",
         state = windowState,
+        icon = windowIcon,
     ) {
         val theme: AppTheme = appState.theme
 

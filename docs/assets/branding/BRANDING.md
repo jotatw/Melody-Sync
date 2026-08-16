@@ -48,4 +48,4 @@ Rationale: it matches the editorial typography direction of the Hi-Fi Editorial 
 ## Open items
 
 - Final definitive logo research and decision.
-- Application icon integration (packaging / About screen) once the mark stabilizes.
+- Application icon integration: initial pass done (window icon, About screen, bundled `icon.png`/`icon.svg`); packaging/launcher already consume `resources/icon.png`. Revisit when the final mark is chosen.
