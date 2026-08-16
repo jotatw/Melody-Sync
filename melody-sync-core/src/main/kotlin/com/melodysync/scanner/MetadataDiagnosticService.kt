@@ -47,7 +47,7 @@ object MetadataDiagnosticService {
         val provider = MetadataFormatRegistry.providerFor(format)
 
         val read = if (provider != null) attemptRead(file, provider) else null
-        val writeSupported = provider?.supportsWrite ?: false
+        val writeSupported = provider?.supportsWrite(format) ?: false
         val writeTest = if (runWriteTest && writeSupported) runWriteTest(file) else null
 
         return MetadataDiagnostic(

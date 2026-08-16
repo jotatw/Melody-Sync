@@ -103,8 +103,9 @@ class MetadataFormatRegistryTest {
 
     @Test
     fun `providers describe formats and fields`() {
-        assertTrue(MetadataFormatRegistry.providerFor("mp3")!!.supportsWrite)
-        assertTrue(MetadataFormatRegistry.providerFor("opus")!!.supportsWrite)
+        assertTrue(MetadataFormatRegistry.providerFor("mp3")!!.supportsWrite("mp3"))
+        assertTrue(MetadataFormatRegistry.providerFor("opus")!!.supportsWrite("opus"))
+        assertFalse(MetadataFormatRegistry.providerFor("wav")!!.supportsWrite("wav"))
         assertEquals(listOf("title", "artist", "album"), MetadataFormatRegistry.providerFor("mp3")!!.supportedFields)
     }
 

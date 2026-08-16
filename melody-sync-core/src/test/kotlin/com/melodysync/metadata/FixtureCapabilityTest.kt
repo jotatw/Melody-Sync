@@ -23,7 +23,7 @@ class FixtureCapabilityTest {
         "mp3" to (true to true),
         "m4a" to (true to true),
         "flac" to (true to true),
-        "wav" to (true to true),
+        "wav" to (true to false),
         "ogg" to (true to true),
         "opus" to (true to true),
         // aac has no JAudioTagger reader: not supported for read or write.

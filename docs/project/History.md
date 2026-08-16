@@ -188,7 +188,7 @@ The current documented project state is a consolidation and stabilization phase 
 Recorded state:
 
 - Version: **v0.13.0-dev**
-- Automated tests: **262 passing**
+- Automated tests: **265 passing**
 - Core: functional and stable enough for continued development
 - Desktop GUI: functional with UX refinement ongoing
 - CLI: functional
@@ -203,7 +203,7 @@ Recorded state:
 - Repository audit 2026-08: completed (security, structure, documentation consistency, code)
 - Screen interaction contracts: finalized (all eight screens + directory README); navigation structure recorded in the design docs
 - Audit refactors C4–C6: applied (`SongField`/`TaskStatus` enums, `refreshDerivedState`/`loadSongsForDirectory` helpers, `UpdateState` extraction)
-- Metadata reliability: WAV trailing-NUL normalization applied in the read layer; docs reconciled with code
+- Metadata reliability: WAV trailing-NUL normalization in the read layer; WAV marked read-only after discovering JAudioTagger's WAV writer silently drops tags; per-format write capability (`supportsWrite(extension)`); value round-trip tests across all writable formats
 
 The detailed current planning state is maintained in [`docs/ROADMAP.md`](../ROADMAP.md), rather than in this history document.
 

@@ -13,7 +13,6 @@ object OpusProvider : MetadataProvider {
 
     override val id = "OpusProvider"
     override val formats = setOf("opus")
-    override val supportsWrite = true
     override val supportedFields = listOf("title", "artist", "album")
 
     override fun read(song: Song): Song {

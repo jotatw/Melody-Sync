@@ -18,8 +18,15 @@ object JAudioTaggerProvider : MetadataProvider {
 
     override val id = "JAudioTagger"
     override val formats = setOf("mp3", "flac", "m4a", "wav", "ogg")
-    override val supportsWrite = true
     override val supportedFields = listOf("title", "artist", "album")
+
+    // WAV is read-only: JAudioTagger's WAV writer drops the LIST/INFO chunk
+    // instead of writing tags, so a reportable success would silently destroy
+    // existing tags. Read capability remains available for WAV.
+    private val writableFormats: Set<String> = setOf("mp3", "flac", "m4a", "ogg")
+
+    override fun supportsWrite(extension: String): Boolean =
+        extension.lowercase() in writableFormats
 
     override fun read(song: Song): Song {
         val audio = try {

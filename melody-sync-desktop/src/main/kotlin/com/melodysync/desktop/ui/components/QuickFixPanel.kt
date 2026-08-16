@@ -62,7 +62,7 @@ fun QuickFixPanel(state: AppState, song: Song) {
     val diagnostics = remember(song) { QuickFixService.diagnose(song) }
     val localSuggestions = remember(song) { LocalFixSource.suggest(song) }
     val writeSupported = remember(song) {
-        MetadataFormatRegistry.providerFor(song.extension)?.supportsWrite ?: false
+        MetadataFormatRegistry.providerFor(song.extension)?.supportsWrite(song.extension) ?: false
     }
     var reviewing by remember { mutableStateOf<FixSuggestion?>(null) }
 

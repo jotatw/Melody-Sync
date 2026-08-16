@@ -13,8 +13,10 @@ import com.melodysync.model.TagSuggestion
 interface MetadataProvider {
     val id: String
     val formats: Set<String>
-    val supportsWrite: Boolean
     val supportedFields: List<String>
     fun read(song: Song): Song
     fun write(song: Song, suggestion: TagSuggestion): WriteResult
+
+    /** Whether [write] is supported for a specific extension within [formats]. */
+    fun supportsWrite(extension: String): Boolean = extension.lowercase() in formats
 }

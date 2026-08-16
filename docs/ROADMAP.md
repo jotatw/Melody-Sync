@@ -40,7 +40,7 @@ The roadmap should therefore remain concise and should not become a second imple
 | Item | Status |
 |---|---|
 | Project version | **v0.13.0-dev** |
-| Automated tests | **262 passing** |
+| Automated tests | **265 passing** |
 | Core | Stable and actively used |
 | Desktop GUI | Functional and under UX refinement |
 | CLI | Functional |
@@ -311,7 +311,7 @@ No new platform abstraction should be introduced unless a concrete requirement a
 
 **Priority: Medium — Ongoing**
 
-The project has CI and release automation in place and currently reports **262 passing automated tests**.
+The project has CI and release automation in place and currently reports **265 passing automated tests**.
 
 Ongoing validation should prioritize areas where behavior depends on real filesystem, database, metadata, or external-process behavior.
 

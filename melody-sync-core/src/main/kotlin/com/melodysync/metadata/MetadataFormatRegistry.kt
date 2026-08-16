@@ -25,7 +25,7 @@ object MetadataFormatRegistry {
     fun write(song: Song, suggestion: TagSuggestion): WriteResult {
         val provider = providerFor(song.extension)
             ?: return WriteResult(error = TagWriteError.Unsupported)
-        if (!provider.supportsWrite) {
+        if (!provider.supportsWrite(song.extension)) {
             return WriteResult(error = TagWriteError.Unsupported)
         }
         return provider.write(song, suggestion)
