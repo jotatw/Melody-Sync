@@ -148,7 +148,7 @@ The confirmation step is mandatory for filesystem removal/trash actions.
 ## 9. Contextual Interactions
 
 - **Health → Duplicates**: Health hosts the duplicate-groups summary card and opens the workflow contextually.
-- **After trash**: the library and duplicate analysis are refreshed; remaining groups are re-derived.
+- **After trash**: the library and duplicate analysis are refreshed; remaining groups are re-derived. The workflow displays a local success/error outcome with the number of groups remaining; this result must not depend solely on a transient notification.
 
 ---
 

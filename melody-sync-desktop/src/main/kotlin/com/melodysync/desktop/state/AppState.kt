@@ -207,6 +207,9 @@ class AppState(
     var duplicateTrashing by mutableStateOf(false)
         private set
 
+    var duplicateTrashMessage by mutableStateOf<String?>(null)
+        private set
+
     // Review screen: songs with issues across the whole library.
     var reviewItems by mutableStateOf<List<SongDiagnostics>>(emptyList())
         private set
@@ -497,6 +500,10 @@ class AppState(
 
     fun scan() {
         if (status == TaskStatus.RUNNING) return
+        if (directory.isBlank()) {
+            showMessage("Choose a music directory before scanning.")
+            return
+        }
         val dir = Path.of(directory.trim())
         errorMessage = null
 
@@ -608,7 +615,7 @@ class AppState(
 
     fun trashSelectedDuplicates() {
         if (duplicateTrashing || duplicateTrashSelection.isEmpty()) return
-        errorMessage = null
+        duplicateTrashMessage = null
 
         uiScope.launch {
             duplicateTrashing = true
@@ -629,15 +636,16 @@ class AppState(
                 }
                 duplicateTrashSelection = emptySet()
                 if (moved.isEmpty()) {
-                    errorMessage = "Could not move the selected files to trash."
+                    duplicateTrashMessage = "Could not move the selected files to trash."
                 } else {
                     songs = remainingSongs
                     duplicateGroups = newGroups
                     refreshDerivedState()
+                    duplicateTrashMessage = "Moved ${moved.size} file(s) to trash · ${newGroups.size} group(s) remain"
                     showMessage("Moved ${moved.size} file(s) to trash")
                 }
             } catch (e: Exception) {
-                errorMessage = e.message ?: "Failed to move files to trash"
+                duplicateTrashMessage = e.message ?: "Failed to move files to trash"
             } finally {
                 duplicateTrashing = false
             }

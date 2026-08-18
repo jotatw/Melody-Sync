@@ -85,6 +85,20 @@ To avoid the "generic CRUD" look, components should follow these guidelines:
 * **Toggle Buttons:** Instead of material switches, style toggle controls to look like physical, metallic slider switches.
 * **Active Statuses:** Use tiny colored "LED" indicators (glowing green/amber/red dots) next to labels (e.g., "File Watcher [🟢 Active]", "Library Status [🟠 Needs Sync]").
 
+### 4.3 Operational Flow Pattern
+
+Every operational screen should communicate one compact sequence:
+
+```text
+Primary verb-led action → visible running state → outcome → one named next action
+```
+
+- Use one primary action per screen state; supporting actions stay contextual.
+- `ProgressCard` communicates an in-progress operation; `StatusPill` communicates compact success, warning, or error outcomes; snackbars remain transient confirmation only.
+- A control that navigates elsewhere must name that destination (for example, "Open duplicate detection" rather than "Detect").
+- Data that opens a filtered view must show a directional cue (for example, "View →"); color alone cannot carry that behavior.
+- Keep outcomes scoped to their workflow. A file-trash result belongs in Duplicates, not in a global error region that can surface in another section.
+
 ---
 
 ## 5. Interaction Model: Assisted Curation

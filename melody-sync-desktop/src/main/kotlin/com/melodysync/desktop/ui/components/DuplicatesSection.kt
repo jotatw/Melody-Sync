@@ -134,6 +134,11 @@ private fun DuplicatesView(state: AppState) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(top = Spacing.sm))
         }
 
+        state.duplicateTrashMessage?.let { message ->
+            val tone = if (message.startsWith("Moved ")) PillTone.SUCCESS else PillTone.DANGER
+            StatusPill(message, tone, Modifier.padding(top = Spacing.sm))
+        }
+
         LazyColumn(modifier = Modifier.weight(1f).padding(top = Spacing.md)) {
             items(groups, key = { it.key }) { group ->
                 DuplicateGroupCard(group, state)

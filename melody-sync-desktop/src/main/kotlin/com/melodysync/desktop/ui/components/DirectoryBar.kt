@@ -81,8 +81,16 @@ fun DirectoryBar(state: AppState) {
                 WatchToggle(state)
             }
 
+            if (state.directory.isBlank() && state.status == TaskStatus.IDLE) {
+                StatusPill(
+                    "Choose a music directory to begin.",
+                    PillTone.INFO,
+                    Modifier.padding(top = Spacing.sm),
+                )
+            }
+
             when (state.status) {
-                TaskStatus.RUNNING -> StatusPill("SCANNING", PillTone.PRIMARY, Modifier.padding(top = Spacing.sm))
+                TaskStatus.RUNNING -> StatusPill("SCANNING · reading files and tags", PillTone.PRIMARY, Modifier.padding(top = Spacing.sm))
                 TaskStatus.DONE -> {
                     if (state.progressText.isNotBlank()) {
                         StatusPill(

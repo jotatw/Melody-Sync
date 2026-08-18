@@ -138,7 +138,7 @@ A horizontal bar chart is preferred for comparison because artist names remain r
 
 The visualization should communicate that it is a **top-N** view rather than the complete artist list.
 
-Selecting an artist can become a contextual navigation action to Library.
+Selecting an artist can become a contextual navigation action to Library. The interactive row must expose that destination with a directional cue (for example, `View →`), rather than relying on chart color or click discovery.
 
 ### Top Albums
 
@@ -146,7 +146,7 @@ Albums can be ranked by song count from the current song data.
 
 A proportional bar/list treatment is appropriate when it communicates ranking without consuming the entire screen.
 
-Selecting an album can become a contextual navigation action to Library.
+Selecting an album can become a contextual navigation action to Library. The interactive row must expose that destination with a directional cue (for example, `View →`).
 
 ### Timeline
 

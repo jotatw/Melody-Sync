@@ -108,7 +108,7 @@ private fun DuplicateGroupsCard(state: AppState) {
                 modifier = Modifier.weight(1f),
             )
             TextButton(onClick = { state.setSection(Section.DUPLICATES) }) {
-                Text(if (count > 0) "Review groups" else "Detect")
+                Text(if (count > 0) "Review groups" else "Open duplicate detection")
             }
         }
     }

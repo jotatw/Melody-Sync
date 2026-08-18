@@ -50,7 +50,7 @@ fun StatisticsSection(state: AppState) {
             message = "Scan a music directory to build your library.",
             action = {
                 Button(onClick = { state.setSection(Section.LIBRARY) }) {
-                    Text("Go to Library")
+                    Text("Go to Library to Scan")
                 }
             },
         )
@@ -168,7 +168,7 @@ private fun FormatDonut(
                 ) {
                     Text(".${item.name}", style = MaterialTheme.typography.bodySmall)
                     Text(
-                        "${item.count} · ${"%.0f".format(pct)}%",
+                        "${item.count} · ${"%.0f".format(pct)}%  View →",
                         style = TechnicalStyleSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -231,7 +231,7 @@ private fun TopListCard(
                         )
                     }
                     Text(
-                        item.count.toString(),
+                        "${item.count}  View →",
                         style = TechnicalStyleSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
