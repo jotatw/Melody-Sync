@@ -30,6 +30,7 @@ The [`README.md`](../README.md) is the public entry point. This index is the ent
 | [ADR-0008 — Gradle Kotlin DSL](architecture/ADR/ADR-0008-GradleKotlinDSL.md) | Build-system decision | Reference |
 | [ADR-0009 — Platform Layer](architecture/ADR/ADR-0009-PlatformLayer.md) | Installation, shell and system boundary | Reference |
 | [Core Services](architecture/core-services.md) | Current Core capability map and responsibility boundaries | Draft |
+| [Technology & Modules](architecture/technology.md) | Technical stack, module map, validation status | Reference |
 | [Music Library Domain](architecture/music-library-domain.md) | Domain model and library concepts | Active |
 | [Multiplatform Portability Guide](architecture/MultiplatformPortabilityGuide.md) | Future portability considerations | Reference |
 | [Security & Resilience Guide](architecture/SecurityAndResilienceGuide.md) | Defensive coding, data integrity and resilience | Active |
