@@ -14,7 +14,7 @@
 | Status           | Active |
 | Project Version  | v0.13.0-dev |
 | Template Version | BaseDocument v1.0 |
-| Last Updated     | 2026-08-09 |
+| Last Updated     | 2026-08-19 |
 | Maintainer       | Melody Sync |
 
 ---
@@ -28,7 +28,7 @@ Document which formats Melody Sync can read and write, backed by fixtures and au
 | Format | Read | Tag read | Write | Provider | Notes |
 |--------|------|----------|-------|----------|-------|
 | MP3 | ✓ | ✓ | ✓ | JAudioTagger | ID3 |
-| M4A | ✓ | ✓ | ✓ | JAudioTagger | MP4 atoms; per-file write can fail on unusual layouts |
+| M4A | ✓ | ✓ | ⚠️ | JAudioTagger | MP4 atoms; per-file write can fail on unusual layouts; write-test verifies value persistence |
 | FLAC | ✓ | ✓ | ✓ | JAudioTagger | Vorbis comments |
 | WAV | ✓ | ✓ | ✗ | JAudioTagger | read-only: JAudioTagger's WAV writer silently drops LIST/INFO tags |
 | OGG | ✓ | ✓ | ✓ | JAudioTagger | Vorbis |
@@ -63,7 +63,8 @@ Untagged fixtures must expose no title/artist/album (title falls back to the fil
 ## Known Limitations
 
 - **WAV**: read-only. JAudioTagger's WAV writer removes the LIST/INFO chunk and writes nothing back, reporting success — silent tag loss. Writes are refused (`TagWriteError.Unsupported`); reads work and trailing NUL values are normalized by the read layer. Write support should only be re-enabled behind a writer that genuinely persists LIST/INFO tags.
-- **M4A**: some container layouts can fail to write even though the format is supported — `metadata --write-test` reports the per-file result.
+- **M4A**: some container layouts can fail to write even though the format is supported — `metadata --write-test` reports the per-file result. Write-test now verifies value persistence (not just exceptions).
+- **Write-test verification**: write-test now verifies value persistence (write → re-read → values match) rather than just checking for exceptions. Silent drops (like WAV) are caught.
 - **AAC**: no tag container is read by the current stack; `.aac` files are treated as non-audio.
 
 ## Related Documents

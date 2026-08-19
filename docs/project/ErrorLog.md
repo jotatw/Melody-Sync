@@ -13,7 +13,7 @@
 | Audience         | Developers |
 | Status           | Active |
 | Project Version  | v0.13.0-dev |
-| Last Updated     | 2026-08-08 |
+| Last Updated     | 2026-08-19 |
 | Maintainer       | Melody Sync |
 
 ---
@@ -171,6 +171,9 @@ Keep a searchable record of the problems we hit so the same class of error is no
 |----|------|-------|------|
 | K-02 | Metadata | Some M4A/MP4 files can still fail to write depending on the container layout (JAudioTagger limitation). | Phases A–B (done) expose typed capabilities and `WriteResult`; `metadata --write-test` reports the per-file truth — monitor for format-specific fixtures |
 | K-03 | Metadata · WAV | JAudioTagger reads WAV LIST/INFO values with a trailing NUL byte (e.g. `Fixture Song\u0000`). | Documented in the format matrix; callers trim the NUL when displaying |
+| K-04 | Metadata · Write verification | Write path reports success on re-read without verifying the written values actually persisted. The WAV silent-drop bug (K-03) was only caught because round-trip tests explicitly check values. Other providers may silently drop tags. | Add post-write verification hook in `TagWriter` that re-reads and compares written values; convert silent drops to typed `WriteResult` errors. Register as M-01. |
+| K-05 | Metadata · M4A write failures | Some M4A/MP4 files fail to write depending on container layout (JAudioTagger limitation). The write-test does not distinguish "unsupported format" from "write failed silently". | Add M4A fixture to test suite; verify `metadata --write-test` exposes the failure. Tag as K-02 (already tracked) but add format-specific fixture. |
+| K-06 | Metadata · Write-test gap | Current write-test only re-reads to check for exceptions, not for value persistence. Silent drops (like WAV K-03) pass as "passed" because no exception is thrown. | Extend `MetadataDiagnosticService.inspect` write-test to compare written values against input; update `MetadataRoundTripTest` to cover all providers. Tag as M-02. |
 
 ## Related Documents
 

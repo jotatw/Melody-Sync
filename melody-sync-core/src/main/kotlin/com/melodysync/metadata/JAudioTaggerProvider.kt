@@ -65,8 +65,14 @@ object JAudioTaggerProvider : MetadataProvider {
 
             AudioFileIO.write(audio)
 
-            // Re-read so the returned Song reflects what is actually on disk.
-            WriteResult(updated = read(song))
+            // Re-read so the returned Song reflects what is actually on disk,
+            // then verify the written values actually persisted: some writers
+            // report a successful write while dropping the tags (see WAV K-03).
+            val updated = read(song)
+            writePersistError(suggestion, updated)?.let {
+                return WriteResult(error = TagWriteError.Parse("tags did not persist after write ($it)"))
+            }
+            WriteResult(updated = updated)
         } catch (e: Exception) {
             WriteResult(error = classify(song, e))
         }
@@ -104,4 +110,29 @@ object JAudioTaggerProvider : MetadataProvider {
         channelMap[normalized]?.let { return it }
         return normalized.toIntOrNull()
     }
+}
+
+/**
+ * Verifies that the values requested in [suggestion] are actually present on
+ * the re-read [updated] song. Returns the mismatched field name, or null when
+ * every requested field persisted. Used by all providers so a "silent drop"
+ * write (like WAV LIST/INFO) is reported as a typed failure instead of success.
+ */
+internal fun writePersistError(suggestion: TagSuggestion, updated: Song): String? {
+    if (suggestion.title != null &&
+        updated.title?.trim()?.equals(suggestion.title.trim(), ignoreCase = true) != true
+    ) {
+        return "title"
+    }
+    if (suggestion.artist != null &&
+        updated.artist?.trim()?.equals(suggestion.artist.trim(), ignoreCase = true) != true
+    ) {
+        return "artist"
+    }
+    if (suggestion.album != null &&
+        updated.album?.trim()?.equals(suggestion.album.trim(), ignoreCase = true) != true
+    ) {
+        return "album"
+    }
+    return null
 }
