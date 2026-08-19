@@ -14,7 +14,7 @@
 | Status           | Accepted               |
 | Project Version  | v0.13.0-dev            |
 | Template Version | 1.0                    |
-| Last Updated     | 2026-08-11             |
+| Last Updated     | 2026-08-19             |
 | Maintainer       | Melody Sync            |
 
 ---
@@ -137,6 +137,8 @@ Rules:
 
 ### Negative
 
+> The two items below were later resolved during the 2026-08 repository audit; see [Implementation Notes](#implementation-notes).
+
 - Two documents legitimately share the basename `app-design.md`
   (`design/app-design.md` = formal interaction model; `research/app-design.md`
   = research notes). The name is ambiguous to readers; the documents should
@@ -159,11 +161,15 @@ Rules:
 This record is a retroactive formalization: the file existed as an empty
 placeholder since the initial project structure, and the responsibility-based
 layout described here is the structure already in use. No structural
-migration is required. Open consistency work:
+migration is required.
 
-- Reconcile the Documentation Standard's directory example with this ADR
-  (tracked in the 2026-08 repository audit).
-- Resolve the `app-design.md` naming ambiguity (cross-references).
+Consistency work (resolved during the 2026-08 repository audit):
+
+- Documentation Standard's directory example: a note under its directory
+  diagram now declares this ADR's layout authoritative.
+- `app-design.md` naming ambiguity: `design/app-design.md` and
+  `research/app-design.md` now cross-reference each other and state their
+  distinct roles (formal model vs. research notes).
 
 ---
 

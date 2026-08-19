@@ -112,7 +112,7 @@ External services remain separate from Core responsibilities and support specifi
 | Document | Purpose | Status |
 |---|---|---|
 | [ROADMAP](ROADMAP.md) | Project direction and priorities | Active |
-| [Implementation Block 01 — Navigation Context](planning/implementation-block-01-navigation-context.md) | Bounded contextual-navigation implementation | Approved for implementation |
+| [Implementation Block 01 — Navigation Context](planning/implementation-block-01-navigation-context.md) | Bounded contextual-navigation implementation | Implemented / validation ongoing |
 | [Metadata Workflow](planning/metadata-workflow.md) | End-to-end identification, enrichment, review and explicit metadata application | Defined / target workflow |
 | [Metadata Foundation](planning/metadata-foundation.md) | Metadata providers, diagnostics, safe writes, persistence and fixtures | Implemented / refinement |
 | [Metadata Formats](planning/metadata-formats.md) | Verified read/write capability matrix | Reference |
@@ -174,4 +174,4 @@ Planning documents define purpose, scope, non-goals, dependencies and validation
 
 ---
 
-**Last Updated:** 2026-08-09
+**Last Updated:** 2026-08-19

@@ -7,11 +7,11 @@
 | Item | Value |
 |---|---|
 | Category | Planning / Implementation Block |
-| Status | Approved for implementation |
+| Status | Implemented / validation ongoing |
 | Project Version | v0.13.0-dev |
 | Scope | Desktop navigation context |
 | Related | `docs/design/navigation.md`, screen specifications |
-| Last Updated | 2026-08-09 |
+| Last Updated | 2026-08-19 |
 
 ---
 
