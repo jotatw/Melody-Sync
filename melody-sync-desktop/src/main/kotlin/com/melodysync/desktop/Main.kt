@@ -21,6 +21,7 @@ import com.melodysync.desktop.theme.HiFiShapes
 import com.melodysync.desktop.theme.HiFiTypography
 import com.melodysync.desktop.ui.LibraryScreen
 import com.melodysync.desktop.ui.loadAppIcon
+import com.melodysync.desktop.ui.window.ProvideWindowSizeClass
 
 fun main() = application {
     val prefs = remember { AppPreferences.load() }
@@ -83,19 +84,21 @@ fun main() = application {
         state = windowState,
         icon = windowIcon,
     ) {
-        val theme: AppTheme = appState.theme
+        ProvideWindowSizeClass {
+            val theme: AppTheme = appState.theme
 
-        MaterialTheme(
-            colorScheme = theme.colorScheme,
-            typography = HiFiTypography,
-            shapes = HiFiShapes.material,
-        ) {
-            Surface(modifier = Modifier.fillMaxSize()) {
-                LibraryScreen(
-                    state = appState,
-                    theme = theme,
-                    onToggleTheme = appState::toggleTheme,
-                )
+            MaterialTheme(
+                colorScheme = theme.colorScheme,
+                typography = HiFiTypography,
+                shapes = HiFiShapes.material,
+            ) {
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    LibraryScreen(
+                        state = appState,
+                        theme = theme,
+                        onToggleTheme = appState::toggleTheme,
+                    )
+                }
             }
         }
     }
