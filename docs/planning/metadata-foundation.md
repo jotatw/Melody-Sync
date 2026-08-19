@@ -51,6 +51,16 @@ Quick Fix and the metadata subsystem now provide:
 
 `TagWriter` routes supported formats through the metadata provider registry and re-reads the file after a successful write. The user must explicitly confirm Apply.
 
+### Read pipeline (verified boundary)
+
+`readMetadata()` is the single read entry point: it resolves the provider registry and returns the song unchanged on any read failure (scan resilience by design). Verified consumers (2026-08):
+
+- `Scanner.scan()` — the library scan read path;
+- `MetadataDiagnosticService` — the write-test re-read used to verify persistence;
+- tests (`FixtureCapabilityTest`, `MetadataRoundTripTest`, `MetadataTest`, `OpusMetadataTest`, `ApplyIntegrationTest`).
+
+There are no hidden read paths; the UI, CLI, and services route reads through this hub. Read failures are never classified (reads are best-effort); only writes carry typed `TagWriteError` outcomes.
+
 ---
 
 # Step 0 — Metadata Diagnostic

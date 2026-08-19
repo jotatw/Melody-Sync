@@ -159,6 +159,8 @@ Current filter dimensions include:
 - format;
 - search text.
 
+The toolbar keeps **search always visible**; the artist/album/format fields live behind a compact **Filters** disclosure to preserve a low-density default. Active filters surface as removable chips with a **Clear all** shortcut, and the disclosure shows the active-filter count. When a contextual issue/statistics navigation applies a filter, it renders inline and can be cleared without losing the library state.
+
 Additional filters may be introduced later, but each should have a clear user-facing purpose.
 
 ### Select Song

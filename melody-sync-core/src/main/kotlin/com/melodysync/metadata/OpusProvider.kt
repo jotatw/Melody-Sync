@@ -32,7 +32,7 @@ object OpusProvider : MetadataProvider {
         }
         val written = OpusMetadata.writeTags(song.path, suggestion)
         if (!written) {
-            return WriteResult(error = TagWriteError.Parse("unsupported Opus layout"))
+            return WriteResult(error = TagWriteError.Parse("unsupported Ogg/Opus layout (tags cannot be written to this file structure)"))
         }
         return WriteResult(updated = read(song))
     }
