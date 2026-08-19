@@ -27,3 +27,6 @@ Thumbs.db
 
 # Build outputs
 bin/
+
+# Graphify knowledge-graph output (generated)
+graphify-out/
