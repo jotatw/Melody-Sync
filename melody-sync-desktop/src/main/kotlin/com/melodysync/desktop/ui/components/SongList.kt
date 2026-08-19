@@ -83,7 +83,7 @@ fun SongList(state: AppState) {
 
     val grouped = state.groupByLetter
 
-    val rows: List<ListEntry> = remember(songs, grouped) {
+    val rows = remember(songs, grouped) {
         if (grouped) {
             buildList<ListEntry> {
                 songs.groupBy { it.title?.trim()?.firstOrNull()?.uppercaseChar() ?: '#' }

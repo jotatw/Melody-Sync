@@ -3,6 +3,7 @@ package com.melodysync.desktop.state
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.derivedStateOf
 import com.melodysync.database.DatabaseConnection
 import com.melodysync.database.MusicRepository
 import com.melodysync.model.DuplicateGroup
@@ -106,10 +107,16 @@ class AppState(
         }
     }
 
+    var statistics by mutableStateOf<LibraryStatistics?>(null)
+        private set
+
+    var analytics by mutableStateOf<AnalyticsData?>(null)
+        private set
+
     private fun refreshDerivedState() {
         statistics = calculateStatistics(songs)
         analytics = computeAnalytics(songs)
-        refreshReview()
+        // refreshReview is called separately where needed
     }
 
     private suspend fun loadSongsForDirectory(dir: Path): List<Song> =
@@ -175,12 +182,6 @@ class AppState(
         private set
 
     var songs by mutableStateOf<List<Song>>(emptyList())
-        private set
-
-    var statistics by mutableStateOf<LibraryStatistics?>(null)
-        private set
-
-    var analytics by mutableStateOf<AnalyticsData?>(null)
         private set
 
     var query by mutableStateOf("")
@@ -265,8 +266,15 @@ class AppState(
     var organizeMessage by mutableStateOf<String?>(null)
         private set
 
+    var filteredSongsCache: List<Song>? = null
+    private var filteredSongsCacheKey: String? = null
+
     val filteredSongs: List<Song>
         get() {
+            val key = "${songs.size}-${query}-${artistFilter}-${formatFilter}-${albumFilter}-${sortColumn}-${sortAscending}-${issueContext?.paths?.size}"
+            if (filteredSongsCache != null && filteredSongsCacheKey == key) {
+                return filteredSongsCache!!
+            }
             val q = query.trim().lowercase()
             val artist = artistFilter.trim().lowercase()
             val format = formatFilter.trim().lowercase()
@@ -286,7 +294,10 @@ class AppState(
                 matchesQuery && matchesArtist && matchesFormat && matchesAlbum && matchesIssue
             }
             val comparator = comparatorFor(sortColumn, sortAscending)
-            return filtered.sortedWith(comparator)
+            val result = filtered.sortedWith(comparator)
+            filteredSongsCache = result
+            filteredSongsCacheKey = key
+            return result
         }
 
     fun updateDirectory(value: String) {
@@ -306,21 +317,30 @@ class AppState(
 
     fun updateQuery(value: String) {
         query = value
+        filteredSongsCache = null
     }
 
     fun selectSong(path: String?) {
         selectedSongPath = path
     }
 
+    private var lastReviewSongCount = 0
+
     /**
      * Recomputes the per-song diagnosis for the whole library (pure in-memory
      * checks — no file IO). Powers the Review screen.
      */
-    fun refreshReview() {
+    fun refreshReview(force: Boolean = false) {
         if (songs.isEmpty()) {
             reviewItems = emptyList()
+            lastReviewSongCount = 0
             return
         }
+        // Skip if song count hasn't changed and we're not forcing
+        if (!force && songs.size == lastReviewSongCount) {
+            return
+        }
+        lastReviewSongCount = songs.size
         uiScope.launch {
             reviewItems = withContext(Dispatchers.Default) {
                 songs.map { QuickFixService.diagnose(it) }.filter { it.hasIssues }
@@ -442,7 +462,7 @@ class AppState(
                     MusicRepository.updateByPath(updated)
                 }
                 songs = songs.map { if (it.path == updated.path) updated else it }
-                refreshDerivedState()
+                refreshReview(force = true)
                 showMessage("Tags updated · ${song.filename}")
             } catch (e: Exception) {
                 showMessage("Apply failed: ${e.message ?: e::class.simpleName}")
@@ -454,14 +474,17 @@ class AppState(
 
     fun updateArtistFilter(value: String) {
         artistFilter = value
+        filteredSongsCache = null
     }
 
     fun updateFormatFilter(value: String) {
         formatFilter = value
+        filteredSongsCache = null
     }
 
     fun updateAlbumFilter(value: String) {
         albumFilter = value
+        filteredSongsCache = null
     }
 
     fun setSection(section: Section) {
@@ -476,6 +499,7 @@ class AppState(
             sortColumn = column
             sortAscending = true
         }
+        filteredSongsCache = null
         savePrefs()
     }
 
@@ -486,6 +510,7 @@ class AppState(
             visibleColumns + column
         }
         visibleColumns = updated
+        filteredSongsCache = null
         savePrefs()
     }
 
@@ -528,7 +553,7 @@ class AppState(
                     MusicRepository.findAll()
                 }
                 songs = found
-                refreshDerivedState()
+                refreshReview(force = true)
                 progressText = "Library synchronized · ${found.size} songs analyzed"
                 status = TaskStatus.DONE
                 if (result.added > 0 || result.updated > 0) {
@@ -558,7 +583,7 @@ class AppState(
                 val found = loadSongsForDirectory(dir)
                 if (found.isNotEmpty()) {
                     songs = found
-                    refreshDerivedState()
+                    refreshReview(force = true)
                     progressText = "Loaded ${found.size} songs from database"
                     status = TaskStatus.DONE
                 } else {
@@ -649,7 +674,7 @@ class AppState(
                 } else {
                     songs = remainingSongs
                     duplicateGroups = newGroups
-                    refreshDerivedState()
+                    refreshReview(force = true)
                     duplicateTrashMessage = "Moved ${moved.size} file(s) to trash · ${newGroups.size} group(s) remain"
                     showMessage("Moved ${moved.size} file(s) to trash")
                 }
@@ -769,7 +794,7 @@ class AppState(
                     MusicRepository.findAll()
                 }
                 songs = found
-                refreshDerivedState()
+                refreshReview(force = true)
                 progressText = "Auto-sync: +${result.added} added, ${result.updated} updated, ${result.removed} removed"
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Auto-sync failed"
