@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,10 +17,15 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,7 +45,7 @@ fun OrganizeSection(state: AppState) {
     Column(modifier = Modifier.fillMaxSize().padding(top = Spacing.sm)) {
         SectionHeader(
             title = "Folder Organization",
-            subtitle = "Plan an Artist/Album folder structure. Dry-run only.",
+            subtitle = "Plan an Artist/Album folder structure; apply explicitly.",
         )
         Button(
             onClick = state::planOrganization,
@@ -55,7 +61,7 @@ fun OrganizeSection(state: AppState) {
             TaskStatus.DONE -> {
                 state.organizationReport?.let { report ->
                     HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.lg))
-                    OrganizeReportView(report)
+                    OrganizeReportView(state, report)
                 }
             }
             TaskStatus.ERROR -> {
@@ -76,10 +82,12 @@ fun OrganizeSection(state: AppState) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun OrganizeReportView(report: OrganizationReport) {
+private fun OrganizeReportView(state: AppState, report: OrganizationReport) {
     val success = if (isDark()) HiFiDarkColors.Success else HiFiLightColors.Success
     val moves = report.plannedMoves.filter { it.from != it.to }
+    var showConfirm by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         ResultCard(
@@ -102,44 +110,105 @@ private fun OrganizeReportView(report: OrganizationReport) {
             }
         }
 
+        when {
+            state.organizeApplying -> {
+                ProgressCard("Applying plan…")
+            }
+
+            state.organizeApplied -> {
+                state.organizeMessage?.let { message ->
+                    val tone = if (message.startsWith("Applied")) PillTone.SUCCESS else PillTone.DANGER
+                    StatusPill(message, tone, Modifier.padding(top = Spacing.sm))
+                }
+            }
+
+            report.toMove > 0 -> {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(top = Spacing.md),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+                ) {
+                    Text(
+                        "Review the plan below, then apply it.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Button(onClick = { showConfirm = true }) {
+                        Text("Apply Plan (${report.toMove})")
+                    }
+                }
+            }
+
+            else -> {
+                Text(
+                    "Everything is already organized.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = Spacing.md),
+                )
+            }
+        }
+
         Text(
-            "Planned moves — dry-run, nothing is moved",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(top = Spacing.lg),
+            "Dry-run first, explicit apply second: nothing moves until you confirm.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = Spacing.sm),
         )
 
-        if (moves.isEmpty()) {
-            Text(
-                "Everything is already organized.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = Spacing.md),
-            )
-        } else {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(top = Spacing.md),
-            ) {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    MoveHeaderRow()
-                    HorizontalDivider()
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(moves, key = { it.from.toString() }) { move ->
-                            MoveRow(move)
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = Spacing.md))
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(top = Spacing.md),
+        ) {
+            if (moves.isNotEmpty()) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                ) {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        MoveHeaderRow()
+                        HorizontalDivider()
+                        LazyColumn(modifier = Modifier.fillMaxSize()) {
+                            items(moves, key = { it.from.toString() }) { move ->
+                                MoveRow(move, applied = state.organizeApplied)
+                                HorizontalDivider(modifier = Modifier.padding(horizontal = Spacing.md))
+                            }
                         }
                     }
                 }
             }
         }
+    }
 
-        Text(
-            "Apply the plan with the CLI: melody-sync organize --apply",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = Spacing.sm),
+    if (showConfirm) {
+        AlertDialog(
+            onDismissRequest = { showConfirm = false },
+            title = { Text("Apply plan?") },
+            text = {
+                Text(
+                    "Move ${report.toMove} file(s) into the Artist/Album structure? " +
+                        "The library is re-scanned and synchronized afterwards.",
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showConfirm = false
+                        state.applyOrganization()
+                    },
+                ) {
+                    Text("Apply", color = MaterialTheme.colorScheme.primary)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showConfirm = false }) {
+                    Text("Cancel")
+                }
+            },
         )
     }
 }
@@ -179,7 +248,7 @@ private fun MoveHeaderRow() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MoveRow(move: PlannedMove) {
+private fun MoveRow(move: PlannedMove, applied: Boolean) {
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = Spacing.md, vertical = Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,
@@ -211,8 +280,8 @@ private fun MoveRow(move: PlannedMove) {
             modifier = Modifier.weight(1f),
         )
         StatusPill(
-            text = "MOVE",
-            tone = PillTone.PRIMARY,
+            text = if (applied) "DONE" else "MOVE",
+            tone = if (applied) PillTone.SUCCESS else PillTone.PRIMARY,
             modifier = Modifier.width(64.dp),
         )
     }

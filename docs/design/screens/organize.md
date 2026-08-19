@@ -145,6 +145,8 @@ During execution:
 
 The UI must not claim success before the operation actually completes.
 
+**Implementation status (2026-08):** the Apply flow is implemented in-app (not CLI-only). The desktop shows an explicit **Apply Plan** button with a confirmation dialog, progress while moving, a local success/error summary ("Moved N · Skipped N · Errors N"), and triggers a library rescan so Library reflects the new paths afterwards. The CLI `organize --apply` remains available for scripting.
+
 ## 10. Result States
 
 ### Initial

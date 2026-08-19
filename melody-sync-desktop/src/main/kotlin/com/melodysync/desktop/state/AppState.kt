@@ -256,6 +256,15 @@ class AppState(
     var organizationReport by mutableStateOf<OrganizationReport?>(null)
         private set
 
+    var organizeApplying by mutableStateOf(false)
+        private set
+
+    var organizeApplied by mutableStateOf(false)
+        private set
+
+    var organizeMessage by mutableStateOf<String?>(null)
+        private set
+
     val filteredSongs: List<Song>
         get() {
             val q = query.trim().lowercase()
@@ -681,6 +690,8 @@ class AppState(
         if (organizeStatus == TaskStatus.RUNNING) return
         val dir = Path.of(directory.trim())
         errorMessage = null
+        organizeApplied = false
+        organizeMessage = null
 
         uiScope.launch {
             organizeStatus = TaskStatus.RUNNING
@@ -694,6 +705,39 @@ class AppState(
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Organization failed"
                 organizeStatus = TaskStatus.ERROR
+            }
+        }
+    }
+
+    fun applyOrganization() {
+        if (organizeApplying || organizeStatus == TaskStatus.RUNNING) return
+        val report = organizationReport ?: return
+        if (report.toMove == 0) return
+        val dir = Path.of(directory.trim())
+        organizeMessage = null
+
+        uiScope.launch {
+            organizeApplying = true
+            try {
+                val songs = loadSongsForDirectory(dir)
+                val applied = withContext(Dispatchers.Default) {
+                    LibraryOrganizationService.reorganize(songs, dir)
+                }
+                organizationReport = applied
+                organizeApplied = true
+                organizeMessage = buildString {
+                    append("Applied: ${applied.moved} moved")
+                    if (applied.skipped > 0) append(" · ${applied.skipped} skipped")
+                    if (applied.errors.isNotEmpty()) append(" · ${applied.errors.size} error(s)")
+                }
+                if (applied.errors.isNotEmpty()) {
+                    errorMessage = applied.errors.first()
+                }
+                scan()
+            } catch (e: Exception) {
+                organizeMessage = "Apply failed: ${e.message ?: e::class.simpleName}"
+            } finally {
+                organizeApplying = false
             }
         }
     }
