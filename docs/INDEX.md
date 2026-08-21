@@ -111,14 +111,15 @@ External services remain separate from Core responsibilities and support specifi
 
 | Document | Purpose | Status |
 |---|---|---|
-| [ROADMAP](ROADMAP.md) | Project direction and priorities | Active |
+| [Product Roadmap](project/product-roadmap.md) | Complete objective map: consolidation, UX refinement, workflow refinement, maintenance, future expansion and deliberate non-goals | Active |
+| [ROADMAP](ROADMAP.md) | Current project direction, priorities and near-term implementation state | Active |
 | [Implementation Block 01 — Navigation Context](planning/implementation-block-01-navigation-context.md) | Bounded contextual-navigation implementation | Implemented / validation ongoing |
 | [Metadata Workflow](planning/metadata-workflow.md) | End-to-end identification, enrichment, review and explicit metadata application | Defined / target workflow |
 | [Metadata Foundation](planning/metadata-foundation.md) | Metadata providers, diagnostics, safe writes, persistence and fixtures | Implemented / refinement |
 | [Metadata Formats](planning/metadata-formats.md) | Verified read/write capability matrix | Reference |
 | [Metadata Identification & Enrichment](planning/metadata-identification-and-enrichment.md) | Identification and enrichment boundaries and flow | Reference |
 
-Planning documents define purpose, scope, non-goals, dependencies and validation before implementation. Foundation records may remain here after implementation.
+Planning documents define purpose, scope, non-goals, dependencies and validation before implementation. Foundation records may remain here after implementation. The Product Roadmap provides the broader objective map; `ROADMAP.md` tracks current priorities and near-term implementation state.
 
 ---
 
@@ -139,6 +140,7 @@ Planning documents define purpose, scope, non-goals, dependencies and validation
 | [History](project/History.md) | Milestones and architectural evolution |
 | [Error Log](project/ErrorLog.md) | Development bugs and resolutions |
 | [Documentation Notes](project/DocumentationNotes.md) | Documentation decisions and working notes |
+| [Repository Audit — 2026-08](project/audit-2026-08.md) | Historical audit of repository security, structure, documentation and code state | Completed snapshot |
 
 ---
 
@@ -174,4 +176,4 @@ Planning documents define purpose, scope, non-goals, dependencies and validation
 
 ---
 
-**Last Updated:** 2026-08-19
+**Last Updated:** 2026-08-21
