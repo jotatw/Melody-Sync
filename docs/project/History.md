@@ -211,6 +211,7 @@ Recorded state:
 - Product Hardening executed (2026-08): probes confirm safe, comprehensible failures (empty/nonexistent dirs, corrupt files, WAV refusal, orphaned entries, permission/typed errors); no critical findings — `planning/product-hardening-report.md`
 - Real-use pass started (2026-08): baseline of the real library captured (690 audio, 14 missing-artist YouTube MP3s, 1 zero-duration opus, Syncthing dirs handled); `planning/real-use-checklist.md` ready for the guided friction pass
 - Regression found during real use (Statistics empty): the performance pass had replaced derived-state refreshes with review-only refreshes, leaving statistics/analytics null. Fixed with `refreshAfterLibraryChange()` (statistics/analytics + review); regression test added
+- Dev workflow: `scripts/dev-watch.sh` added — auto-rebuild (and re-install) the app on source changes so the installed launcher is always current for testing
 
 **Metadata & reliability**
 

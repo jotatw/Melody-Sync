@@ -29,6 +29,8 @@ Requirements: **JDK 21+**.
 
 The suite includes real audio fixtures for metadata behavior and currently has **268 passing tests** (Core, CLI, Desktop).
 
+**Auto-rebuild while developing:** run `scripts/dev-watch.sh` to rebuild (and, by default, re-install via `scripts/install.sh`) automatically whenever sources change — so the installed `melody-sync` launcher is always the latest build. Use `--build` to only rebuild without installing, and `once` to build+install a single time.
+
 ## Rules enforced by the project
 
 - **Report first** — operations that change files or metadata present their result before applying changes whenever practical.
