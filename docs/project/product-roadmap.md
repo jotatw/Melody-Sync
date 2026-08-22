@@ -44,11 +44,29 @@ Expansion when justified
 
 ---
 
+## Cycle Status (2026-08)
+
+The **Consolidation & UX Refinement** cycle is complete. The following items from the NOW/NEXT sections are delivered and validated; this map keeps them as reference rather than removing the context behind each decision:
+
+- Metadata Read-Path Validation — complete
+- Large-Library Performance — implemented
+- Responsive Desktop Behavior — complete
+- Library Information Density — complete
+- Semantic Status Colors — complete
+- Health → Library → Quick Fix refinement — complete
+- Statistics workflow validation — complete
+- Organize workflow validation — complete
+- Keyboard and Accessibility review — complete
+
+The current stage is **Product Validation** (see `docs/planning/product-validation.md`), followed by Product Hardening, real use, and only then an expansion decision. The FUTURE sections below remain the reference for expansion candidates.
+
+---
+
 # NOW — Product Consolidation
 
 ## Metadata Read-Path Validation
 
-**Status:** In progress
+**Status:** Complete (2026-08)
 
 ### Goal
 
@@ -108,7 +126,7 @@ Do not introduce paging, complex caches, additional data layers, or concurrency 
 
 ## 1. Responsive Desktop Behavior
 
-**Priority:** Next implementation block after metadata read-path validation
+**Status:** Complete (2026-08) — `WindowSizeClass` compact/medium/expanded
 
 ### Goal
 
@@ -159,7 +177,7 @@ Reduced height
 
 ## 2. Library Information Density
 
-**Priority:** High
+**Status:** Complete (2026-08) — Filters disclosure, compact columns, result count
 
 ### Goal
 
@@ -193,7 +211,7 @@ Do not add columns or persistent indicators without a concrete decision-making b
 
 ## 3. Semantic Status Colors
 
-**Priority:** High after layout behavior is stable
+**Status:** Complete (2026-08) — `colorRoles()` + `ChartPalette` (DesignSystem §4.5)
 
 ### Goal
 
@@ -608,34 +626,38 @@ An item may return to consideration only when a concrete use case demonstrates t
 The intended order is:
 
 ```text
-NOW
+COMPLETED — Consolidation & UX Refinement (2026-08)
 
-1. Metadata read-path validation
-2. Validate current large-library behavior as needed
+1. Metadata read-path validation            ✓
+2. Large-library behavior                   ✓
+3. Responsive Desktop Behavior              ✓
+4. Library Information Density              ✓
+5. Semantic Status Colors                   ✓
+6. Health → Library → Quick Fix refinement  ✓
+7. Statistics workflow validation           ✓
+8. Organize workflow validation             ✓
+9. Keyboard and accessibility review        ✓
+
+NOW — Product Validation
+
+10. End-to-end workflow validation (see docs/planning/product-validation.md)
+11. Guided GUI validation
 
 NEXT
 
-3. Responsive Desktop Behavior
-4. Library Information Density
-5. Semantic Status Colors
+12. Product Hardening (safe failure behavior)
+13. Real use of the library; collect and classify friction
 
-THEN
+FUTURE (gated on real-use friction)
 
-6. Health → Library → Quick Fix refinement
-7. Statistics workflow validation
-8. Organize workflow validation
-9. Keyboard and accessibility review
-
-FUTURE
-
-10. Metadata Enrichment when justified by real use
-11. Additional metadata fields when needed
-12. Artwork when justified
-13. Lightweight playback if useful for review
-14. Additional providers when the enrichment architecture needs them
+14. Metadata Enrichment when justified by real use
+15. Additional metadata fields when needed
+16. Artwork when justified
+17. Lightweight playback if useful for review
+18. Additional providers when the enrichment architecture needs them
 ```
 
-This order is intentionally flexible inside each stage. A real reliability issue may always take priority over planned UX work.
+This order is intentionally flexible inside each stage. A real reliability issue may always take priority over planned UX work. Product Validation findings are registered and prioritized — only critical bugs, security/data problems, and regressions are fixed immediately; friction items feed the report and a later decision.
 
 ---
 

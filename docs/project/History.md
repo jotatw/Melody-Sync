@@ -206,6 +206,7 @@ Recorded state:
 - Screen interaction contracts: finalized (all eight screens + directory README); navigation structure recorded in the design docs
 - Audit refactors C4–C6: applied (`SongField`/`TaskStatus` enums, `refreshDerivedState`/`loadSongsForDirectory` helpers, `UpdateState` extraction)
 - Large-library performance: memoized filtering/statistics; lazy lists already in place (no paging needed)
+- Consolidation & UX Refinement cycle closed (2026-08): Product Roadmap and INDEX synchronized; next stage is Product Validation (`docs/planning/product-validation.md`, automated + guided GUI with prioritized findings)
 
 **Metadata & reliability**
 
