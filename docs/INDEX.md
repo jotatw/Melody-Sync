@@ -116,6 +116,8 @@ External services remain separate from Core responsibilities and support specifi
 | [Implementation Block 01 — Navigation Context](planning/implementation-block-01-navigation-context.md) | Bounded contextual-navigation implementation | Implemented / validation ongoing |
 | [Product Validation](planning/product-validation.md) | End-to-end workflow validation (automated + guided GUI) with prioritized findings | In execution |
 | [Product Validation Report](planning/product-validation-report.md) | Automated results and classified findings; GUI checklist | Findings registered |
+| [Product Hardening](planning/product-hardening.md) | Robustness review: fail comprehensibly and safely on error/edge cases | In progress |
+| [Product Hardening Report](planning/product-hardening-report.md) | Probe results — no critical findings | Probes complete |
 | [Metadata Workflow](planning/metadata-workflow.md) | End-to-end identification, enrichment, review and explicit metadata application | Defined / target workflow |
 | [Metadata Foundation](planning/metadata-foundation.md) | Metadata providers, diagnostics, safe writes, persistence and fixtures | Implemented / consolidated (read-path validated) |
 | [Metadata Formats](planning/metadata-formats.md) | Verified read/write capability matrix | Reference |
