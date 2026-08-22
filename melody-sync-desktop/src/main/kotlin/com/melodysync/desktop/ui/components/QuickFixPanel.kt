@@ -112,6 +112,14 @@ fun QuickFixPanel(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(top = Spacing.xs),
             )
+
+            state.quickFixError?.let { message ->
+                StatusPill(
+                    message,
+                    PillTone.DANGER,
+                    Modifier.padding(top = Spacing.sm),
+                )
+            }
             HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.md))
 
             DiagnosisSection(diagnostics)

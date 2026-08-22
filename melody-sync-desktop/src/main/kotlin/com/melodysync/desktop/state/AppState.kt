@@ -239,6 +239,9 @@ class AppState(
     var quickFixApplying by mutableStateOf(false)
         private set
 
+    var quickFixError by mutableStateOf<String?>(null)
+        private set
+
     var lyrics by mutableStateOf<String?>(null)
         private set
 
@@ -325,6 +328,7 @@ class AppState(
 
     fun selectSong(path: String?) {
         selectedSongPath = path
+        quickFixError = null
     }
 
     private var lastReviewSongCount = 0
@@ -461,12 +465,14 @@ class AppState(
     fun applyQuickFix(song: Song, suggestion: TagSuggestion) {
         if (quickFixApplying || !suggestion.hasChanges) return
         quickFixApplying = true
+        quickFixError = null
         uiScope.launch {
             try {
                 val result = withContext(Dispatchers.Default) {
                     QuickFixService.apply(song, suggestion)
                 }
                 if (!result.success) {
+                    quickFixError = result.error?.userMessage ?: "unknown error"
                     showMessage("Cannot write tags to ${song.filename}: ${result.error?.userMessage ?: "unknown error"}")
                     return@launch
                 }
@@ -479,6 +485,7 @@ class AppState(
                 refreshReview(force = true)
                 showMessage("Tags updated · ${song.filename}")
             } catch (e: Exception) {
+                quickFixError = e.message ?: e::class.simpleName
                 showMessage("Apply failed: ${e.message ?: e::class.simpleName}")
             } finally {
                 quickFixApplying = false
