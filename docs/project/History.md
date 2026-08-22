@@ -209,6 +209,7 @@ Recorded state:
 - Consolidation & UX Refinement cycle closed (2026-08): Product Roadmap and INDEX synchronized; next stage is Product Validation (`docs/planning/product-validation.md`, automated + guided GUI with prioritized findings)
 - Product Validation executed (2026-08): automated harness `scripts/validate-workflow.sh` (13/13 checks, GUI boot smoke OK); harness fixed to analyze health against the scanned database; findings registered in `planning/product-validation-report.md` (V1 corrected — untagged files are surfaced; V1b Health does not yet flag album-only gaps or filename-fallback titles)
 - Product Hardening executed (2026-08): probes confirm safe, comprehensible failures (empty/nonexistent dirs, corrupt files, WAV refusal, orphaned entries, permission/typed errors); no critical findings — `planning/product-hardening-report.md`
+- Real-use pass started (2026-08): baseline of the real library captured (690 audio, 14 missing-artist YouTube MP3s, 1 zero-duration opus, Syncthing dirs handled); `planning/real-use-checklist.md` ready for the guided friction pass
 
 **Metadata & reliability**
 
