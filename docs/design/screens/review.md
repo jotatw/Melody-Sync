@@ -100,7 +100,8 @@ What the user sees:
 
 Review items are derived in memory from the current library (no file IO). The screen reflects:
 
-- **Ready with items** — review list populated from `reviewItems`.
+- **Loading** — while the diagnosis pass runs (right after a scan/load), the screen shows a progress state rather than a premature "nothing to review".
+- **Ready with items** — review list populated from `reviewItems`. When items are present but no song is selected, the right panel shows a short guidance line ("Select a song to review a suggested fix.") instead of empty space.
 - **Empty** — no songs require attention; communicate that there is nothing requiring attention rather than displaying an empty technical table. The empty state should not create a new action if there is no useful action to perform.
 - **Per-song Quick Fix states** — applying/loading feedback is owned by the Quick Fix context, not by Review itself.
 

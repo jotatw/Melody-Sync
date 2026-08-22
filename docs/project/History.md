@@ -211,6 +211,7 @@ Recorded state:
 - Accessibility: data charts carry a text alternative (format distribution summary via semantics) so information is not color/visual-only
 - Library density: removed redundant "synchronized" line from the header (DirectoryBar already reports sync status); song list header shows a result count ("X of Y songs" when filtered) making the filtered state explicit
 - Statistics: drill-down validated — selecting an artist/album/format opens Library filtered by that single dimension (other filters/query/selection cleared); covered by tests
+- Review/Health → Quick Fix: Review now shows a loading state while diagnosing and a selection guidance hint when nothing is selected yet
 - Metadata reliability: read pipeline verified (single `readMetadata` hub) and Opus layout error message made actionable
 - GitHub presence: README focused on project identity; technical details moved to `docs/architecture/technology.md`; About description updated
 - Screen interaction contracts: finalized (all eight screens + directory README); navigation structure recorded in the design docs

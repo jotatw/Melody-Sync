@@ -4,9 +4,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -28,6 +30,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.theme.Spacing
+import com.melodysync.desktop.theme.colorRoles
 import com.melodysync.model.MissingField
 import com.melodysync.model.QualityFlag
 import com.melodysync.model.SongDiagnostics
@@ -91,16 +94,20 @@ fun ReviewSection(state: AppState) {
         HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.md))
 
         if (items.isEmpty()) {
-            EmptyState(
-                icon = Icons.Filled.CheckCircle,
-                title = "Nothing to review",
-                message = if (state.reviewItems.isEmpty()) {
-                    "Your library is in good shape."
-                } else {
-                    "No songs match this filter."
-                },
-                success = state.reviewItems.isEmpty(),
-            )
+            if (state.reviewLoading) {
+                ProgressCard("Scanning the library for issues…")
+            } else {
+                EmptyState(
+                    icon = Icons.Filled.CheckCircle,
+                    title = "Nothing to review",
+                    message = if (state.reviewItems.isEmpty()) {
+                        "Your library is in good shape."
+                    } else {
+                        "No songs match this filter."
+                    },
+                    success = state.reviewItems.isEmpty(),
+                )
+            }
             return@Column
         }
 
@@ -118,8 +125,33 @@ fun ReviewSection(state: AppState) {
             if (selectedSong != null) {
                 VerticalDivider()
                 QuickFixPanel(state, selectedSong)
+            } else {
+                VerticalDivider()
+                ReviewSelectionHint()
             }
         }
+    }
+}
+
+/**
+ * Guides a first-time user to select a song before the Quick-Fix panel opens.
+ * Kept minimal and non-interactive so it reads as space reserved for content.
+ */
+@Composable
+private fun ReviewSelectionHint() {
+    androidx.compose.foundation.layout.Box(
+        modifier = Modifier
+            .fillMaxHeight()
+            .width(320.dp)
+            .padding(Spacing.lg),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            "Select a song to review a suggested fix.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = colorRoles().muted,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+        )
     }
 }
 

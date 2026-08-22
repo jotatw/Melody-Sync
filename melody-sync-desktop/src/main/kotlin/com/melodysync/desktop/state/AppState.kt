@@ -215,6 +215,9 @@ class AppState(
     var reviewItems by mutableStateOf<List<SongDiagnostics>>(emptyList())
         private set
 
+    var reviewLoading by mutableStateOf(false)
+        private set
+
     // Quick-Fix HUD (see docs/research/quick-fix-hud.md)
     // The key is read from YOUTUBE_API_KEY, falling back to
     // ~/.config/melody-sync/youtube-api-key (trimmed) so the installed
@@ -333,6 +336,7 @@ class AppState(
     fun refreshReview(force: Boolean = false) {
         if (songs.isEmpty()) {
             reviewItems = emptyList()
+            reviewLoading = false
             lastReviewSongCount = 0
             return
         }
@@ -341,10 +345,12 @@ class AppState(
             return
         }
         lastReviewSongCount = songs.size
+        reviewLoading = true
         uiScope.launch {
             reviewItems = withContext(Dispatchers.Default) {
                 songs.map { QuickFixService.diagnose(it) }.filter { it.hasIssues }
             }
+            reviewLoading = false
         }
     }
 
