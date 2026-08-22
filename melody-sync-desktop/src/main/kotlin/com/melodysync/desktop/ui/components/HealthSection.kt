@@ -29,11 +29,10 @@ import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.TaskStatus
 import com.melodysync.desktop.state.Section
-import com.melodysync.desktop.theme.HiFiDarkColors
-import com.melodysync.desktop.ui.window.LocalWindowSizeClass
-import com.melodysync.desktop.theme.HiFiLightColors
 import com.melodysync.desktop.theme.Spacing
 import com.melodysync.desktop.theme.TechnicalStyleSmall
+import com.melodysync.desktop.theme.colorRoles
+import com.melodysync.desktop.ui.window.LocalWindowSizeClass
 import com.melodysync.model.HealthReport
 
 private data class IssueSection(
@@ -92,7 +91,7 @@ private fun DuplicateGroupsCard(state: AppState) {
         } else {
             "Duplicate groups"
         },
-        accent = if (count > 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+        accent = if (count > 0) colorRoles().danger else colorRoles().primaryAction,
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -122,11 +121,12 @@ private fun HealthReportView(state: AppState, report: HealthReport) {
         (100.0 * (1.0 - issues.toDouble() / report.audioFiles.coerceAtLeast(1)))
             .toInt()
             .coerceIn(0, 100)
-    val success = if (isDark()) HiFiDarkColors.Success else HiFiLightColors.Success
+    val roles = colorRoles()
+    val success = roles.success
     val scoreColor = when {
         score >= 90 -> success
-        score >= 60 -> MaterialTheme.colorScheme.secondary
-        else -> MaterialTheme.colorScheme.error
+        score >= 60 -> roles.warning
+        else -> roles.danger
     }
     val headline = if (issues == 0) {
         "Library healthy"
@@ -157,7 +157,7 @@ private fun HealthReportView(state: AppState, report: HealthReport) {
                                 "Issues",
                                 issues.toString(),
                                 modifier = Modifier.weight(1f),
-                                accent = if (issues > 0) MaterialTheme.colorScheme.error else success,
+                                accent = if (issues > 0) colorRoles().danger else success,
                             )
                             StatCard("Total files", report.totalFiles.toString(), modifier = Modifier.weight(1f))
                         }
@@ -183,7 +183,7 @@ private fun HealthReportView(state: AppState, report: HealthReport) {
                                 "Issues",
                                 issues.toString(),
                                 modifier = Modifier.weight(1f),
-                                accent = if (issues > 0) MaterialTheme.colorScheme.error else success,
+                                accent = if (issues > 0) colorRoles().danger else success,
                             )
                             StatCard("Total files", report.totalFiles.toString(), modifier = Modifier.weight(1f))
                         }
@@ -298,7 +298,7 @@ private fun IssueBreakdown(state: AppState, report: HealthReport, success: Color
                     Text(
                         "${section.title} (${section.total})",
                         style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.error,
+                        color = colorRoles().danger,
                         modifier = Modifier.weight(1f),
                     )
                     TextButton(onClick = { state.reviewIssue(section.paths, section.title) }) {
@@ -365,9 +365,4 @@ private fun Recommendations(report: HealthReport) {
     }
 }
 
-@Composable
-private fun isDark(): Boolean =
-    MaterialTheme.colorScheme.background.luminance() < 0.5f
 
-private fun Color.luminance(): Float =
-    (0.299f * red + 0.587f * green + 0.114f * blue)

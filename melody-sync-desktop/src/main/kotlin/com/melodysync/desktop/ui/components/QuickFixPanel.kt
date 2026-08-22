@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.theme.Spacing
+import com.melodysync.desktop.theme.colorRoles
 import com.melodysync.desktop.theme.TechnicalStyle
 import com.melodysync.desktop.theme.colorRoles
 import com.melodysync.metadata.MetadataFormatRegistry
@@ -118,7 +119,7 @@ fun QuickFixPanel(
                 Text(
                     "Tag writing is not supported for this format.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error,
+                    color = colorRoles().danger,
                     modifier = Modifier.padding(top = Spacing.sm),
                 )
             }
@@ -296,7 +297,7 @@ private fun YoutubeSuggestionsSection(state: AppState, song: Song, writeSupporte
                         .padding(top = Spacing.xs)
                         .background(
                             if (selected) {
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
+                                colorRoles().primaryAction.copy(alpha = 0.10f)
                             } else {
                                 MaterialTheme.colorScheme.surface
                             },

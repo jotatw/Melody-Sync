@@ -25,16 +25,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.RankedItem
 import com.melodysync.desktop.state.Section
-import com.melodysync.desktop.theme.HiFiDarkColors
-import com.melodysync.desktop.ui.window.LocalWindowSizeClass
-import com.melodysync.desktop.theme.HiFiLightColors
+import com.melodysync.desktop.theme.ChartPalette
 import com.melodysync.desktop.theme.Spacing
 import com.melodysync.desktop.theme.TechnicalStyleSmall
+import com.melodysync.desktop.theme.colorRoles
+import com.melodysync.desktop.ui.window.LocalWindowSizeClass
 import io.github.koalaplot.core.pie.DefaultSlice
 import io.github.koalaplot.core.pie.PieChart
 import io.github.koalaplot.core.util.ExperimentalKoalaPlotApi
@@ -155,14 +154,7 @@ private fun FormatDonut(
             }
 
             val total = formats.sumOf { it.count }.toFloat()
-            val palette = listOf(
-                Color(0xFFFF6B00),
-                Color(0xFFFFCC00),
-                Color(0xFF3DA5FF),
-                Color(0xFF4ADE80),
-                Color(0xFFC514D2),
-                Color(0xFFF87171),
-            )
+            val palette = ChartPalette.series
 
             Box(
                 modifier = Modifier
@@ -225,7 +217,7 @@ private fun TopListCard(
             }
 
             val max = items.maxOf { it.count }
-            val accent = if (isDark()) HiFiDarkColors.Primary else HiFiLightColors.Primary
+            val accent = colorRoles().primaryAction
 
             items.forEach { item ->
                 val clickModifier = if (onClick != null) {
@@ -271,9 +263,4 @@ private fun TopListCard(
     }
 }
 
-@Composable
-private fun isDark(): Boolean =
-    MaterialTheme.colorScheme.background.luminance() < 0.5f
 
-private fun Color.luminance(): Float =
-    (0.299f * red + 0.587f * green + 0.114f * blue)

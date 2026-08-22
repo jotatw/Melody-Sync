@@ -34,6 +34,7 @@ import com.melodysync.desktop.state.TaskStatus
 import com.melodysync.desktop.theme.Spacing
 import com.melodysync.desktop.theme.TechnicalStyle
 import com.melodysync.desktop.theme.TechnicalStyleSmall
+import com.melodysync.desktop.theme.colorRoles
 import com.melodysync.desktop.ui.window.LocalWindowSizeClass
 import com.melodysync.model.DuplicateGroup
 import com.melodysync.model.Song
@@ -93,7 +94,7 @@ private fun DuplicatesView(state: AppState) {
     Column(modifier = Modifier.fillMaxSize()) {
         ResultCard(
             headline = "${groups.size} duplicate group(s) · $extraFiles extra file(s)",
-            accent = MaterialTheme.colorScheme.error,
+            accent = colorRoles().danger,
         ) {
             val sizeClass = LocalWindowSizeClass.current
             if (sizeClass.isCompact) {
@@ -103,7 +104,7 @@ private fun DuplicatesView(state: AppState) {
                         "Extra files",
                         extraFiles.toString(),
                         modifier = Modifier.weight(1f),
-                        accent = MaterialTheme.colorScheme.error,
+                        accent = colorRoles().danger,
                     )
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md), modifier = Modifier.padding(top = Spacing.sm)) {
@@ -111,7 +112,7 @@ private fun DuplicatesView(state: AppState) {
                         "Recoverable",
                         formatSize(recoverable),
                         modifier = Modifier.weight(1f),
-                        accent = MaterialTheme.colorScheme.primary,
+                        accent = colorRoles().primaryAction,
                     )
                 }
             } else {
@@ -121,13 +122,13 @@ private fun DuplicatesView(state: AppState) {
                         "Extra files",
                         extraFiles.toString(),
                         modifier = Modifier.weight(1f),
-                        accent = MaterialTheme.colorScheme.error,
+                        accent = colorRoles().danger,
                     )
                     StatCard(
                         "Recoverable",
                         formatSize(recoverable),
                         modifier = Modifier.weight(1f),
-                        accent = MaterialTheme.colorScheme.primary,
+                        accent = colorRoles().primaryAction,
                     )
                 }
             }
@@ -185,7 +186,7 @@ private fun DuplicatesView(state: AppState) {
                         state.trashSelectedDuplicates()
                     },
                 ) {
-                    Text("Move to Trash", color = MaterialTheme.colorScheme.error)
+                    Text("Move to Trash", color = colorRoles().danger)
                 }
             },
             dismissButton = {
@@ -218,7 +219,7 @@ private fun DuplicateGroupCard(group: DuplicateGroup, state: AppState) {
                 Text(
                     "same title & artist",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.error,
+                    color = colorRoles().danger,
                 )
             }
             Text(
@@ -293,7 +294,7 @@ private fun CandidateRow(
         Text(
             song.extension,
             style = TechnicalStyleSmall,
-            color = MaterialTheme.colorScheme.primary,
+            color = colorRoles().primaryAction,
             modifier = Modifier.width(44.dp),
         )
         Text(

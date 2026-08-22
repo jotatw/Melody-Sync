@@ -32,12 +32,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.TaskStatus
-import com.melodysync.desktop.theme.HiFiDarkColors
-import com.melodysync.desktop.ui.window.LocalWindowSizeClass
-import com.melodysync.desktop.theme.HiFiLightColors
 import com.melodysync.desktop.theme.Spacing
 import com.melodysync.desktop.theme.TechnicalStyle
 import com.melodysync.desktop.theme.TechnicalStyleSmall
+import com.melodysync.desktop.theme.colorRoles
+import com.melodysync.desktop.ui.window.LocalWindowSizeClass
 import com.melodysync.model.OrganizationReport
 import com.melodysync.model.PlannedMove
 
@@ -86,14 +85,15 @@ fun OrganizeSection(state: AppState) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun OrganizeReportView(state: AppState, report: OrganizationReport) {
-    val success = if (isDark()) HiFiDarkColors.Success else HiFiLightColors.Success
+    val roles = colorRoles()
+    val success = roles.success
     val moves = report.plannedMoves.filter { it.from != it.to }
     var showConfirm by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         ResultCard(
             headline = "Plan: ${report.toMove} move(s) · ${report.alreadyOrganized} already organized",
-            accent = if (report.toMove > 0) MaterialTheme.colorScheme.primary else success,
+            accent = if (report.toMove > 0) colorRoles().primaryAction else success,
         ) {
             val sizeClass = LocalWindowSizeClass.current
             if (sizeClass.isCompact) {
@@ -102,7 +102,7 @@ private fun OrganizeReportView(state: AppState, report: OrganizationReport) {
                         "To move",
                         report.toMove.toString(),
                         modifier = Modifier.weight(1f),
-                        accent = if (report.toMove > 0) MaterialTheme.colorScheme.primary else success,
+                        accent = if (report.toMove > 0) colorRoles().primaryAction else success,
                     )
                     StatCard(
                         "Already organized",
@@ -119,7 +119,7 @@ private fun OrganizeReportView(state: AppState, report: OrganizationReport) {
                         "To move",
                         report.toMove.toString(),
                         modifier = Modifier.weight(1f),
-                        accent = if (report.toMove > 0) MaterialTheme.colorScheme.primary else success,
+                        accent = if (report.toMove > 0) colorRoles().primaryAction else success,
                     )
                     StatCard(
                         "Already organized",
@@ -222,7 +222,7 @@ private fun OrganizeReportView(state: AppState, report: OrganizationReport) {
                         state.applyOrganization()
                     },
                 ) {
-                    Text("Apply", color = MaterialTheme.colorScheme.primary)
+                    Text("Apply", color = colorRoles().primaryAction)
                 }
             },
             dismissButton = {
@@ -243,25 +243,25 @@ private fun MoveHeaderRow() {
         Text(
             "File",
             style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.primary,
+            color = colorRoles().primaryAction,
             modifier = Modifier.weight(1f),
         )
         Text(
             "Destination",
             style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.primary,
+            color = colorRoles().primaryAction,
             modifier = Modifier.weight(1.5f),
         )
         Text(
             "Reason",
             style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.primary,
+            color = colorRoles().primaryAction,
             modifier = Modifier.weight(1f),
         )
         Text(
             "Status",
             style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.primary,
+            color = colorRoles().primaryAction,
             modifier = Modifier.width(64.dp),
         )
     }
@@ -308,9 +308,4 @@ private fun MoveRow(move: PlannedMove, applied: Boolean) {
     }
 }
 
-@Composable
-private fun isDark(): Boolean =
-    MaterialTheme.colorScheme.background.luminance() < 0.5f
 
-private fun androidx.compose.ui.graphics.Color.luminance(): Float =
-    (0.299f * red + 0.587f * green + 0.114f * blue)

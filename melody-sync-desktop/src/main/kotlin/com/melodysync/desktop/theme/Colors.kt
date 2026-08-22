@@ -41,3 +41,20 @@ object HiFiLightColors {
     val Info = Color(0xFF2563EB)
     val Error = Color(0xFFB91C1C)
 }
+
+// ============================================================
+// Categorical chart palette — distinguishes categories (formats,
+// artists) in data visualizations. Independent of semantic status
+// roles; used only where color differentiates data groups.
+// ============================================================
+
+object ChartPalette {
+    val Amber = Color(0xFFFF6B00)
+    val Gold = Color(0xFFFFCC00)
+    val Azure = Color(0xFF3DA5FF)
+    val Emerald = Color(0xFF4ADE80)
+    val Magenta = Color(0xFFC514D2)
+    val Coral = Color(0xFFF87171)
+
+    val series: List<Color> = listOf(Amber, Gold, Azure, Emerald, Magenta, Coral)
+}

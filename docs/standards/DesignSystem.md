@@ -116,6 +116,25 @@ Rules:
 - Secondary information degrades before primary information (e.g. SongList hides Album/Format before Title/Artist).
 - Prefer a few explicit layout states over many ad-hoc size checks; concentrate adaptive logic rather than scattering width checks across the UI.
 
+### 4.5 Semantic Status Colors
+
+Colors communicate **meaning**, so components read semantic roles from `colorRoles()` (`primaryAction`, `success`, `warning`, `info`, `danger`, `surface`, `muted`) instead of reaching into raw palettes or `colorScheme` directly. Status components (`StatusPill`, section result accents, error text) must use these roles.
+
+| Role | Meaning | Real states mapped |
+|------|---------|--------------------|
+| `primaryAction` | Primary action / active accent | Scan/Analyze/Apply buttons, selected states, "update available", VU highlights |
+| `success` | Healthy / verified / completed | Health score ≥ 90, "No duplicates found", write verified, plan applied |
+| `warning` | Needs attention, not failing | Health score 60–89, "needs move", suggestion alerts |
+| `danger` | Failure / destructive | Health score < 60, missing metadata count, write failed, move to trash |
+| `info` | Informational state | Watch active, "choose a directory", installation healthy |
+| `neutral` (`muted`/`surface`) | Non-semantic chrome | Secondary text, inactive pills |
+
+Rules:
+
+- Never map a status to a raw color literal in a screen; use `colorRoles()`.
+- Categorical chart data (formats, artists) uses `ChartPalette` — a distinct palette for distinguishing groups, not for status.
+- Status must not rely on color alone; pair it with a label or icon (see `StatusPill` LED + text, and the accessibility baseline).
+
 ---
 
 ## 5. Interaction Model: Assisted Curation

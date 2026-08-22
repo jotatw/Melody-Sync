@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.UpdateStatus
 import com.melodysync.desktop.theme.Spacing
+import com.melodysync.desktop.theme.colorRoles
 import com.melodysync.platform.installation.InstallationChannel
 import com.melodysync.platform.installation.InstallationPaths
 import com.melodysync.platform.system.VersionInfo
@@ -140,10 +141,11 @@ private fun InstallationInformationSection(state: AppState) {
         state.updates.updateStatus == UpdateStatus.ERROR -> "Needs attention"
         else -> "Healthy"
     }
+    val roles = colorRoles()
     val statusColor = when {
-        state.updates.updateAvailable -> MaterialTheme.colorScheme.primary
-        state.updates.updateStatus == UpdateStatus.ERROR -> MaterialTheme.colorScheme.error
-        else -> MaterialTheme.colorScheme.tertiary
+        state.updates.updateAvailable -> roles.primaryAction
+        state.updates.updateStatus == UpdateStatus.ERROR -> roles.danger
+        else -> roles.info
     }
 
     Column(modifier = Modifier.padding(top = Spacing.xs)) {
@@ -250,7 +252,7 @@ private fun UpdatesSection(state: AppState) {
             Text(
                 state.updates.updatePhase,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary,
+                color = colorRoles().primaryAction,
                 modifier = Modifier.padding(top = Spacing.sm),
             )
         }
@@ -260,8 +262,8 @@ private fun UpdatesSection(state: AppState) {
                 message,
                 style = MaterialTheme.typography.bodyMedium,
                 color = when {
-                    state.updates.updateAvailable -> MaterialTheme.colorScheme.primary
-                    message.contains("failed", ignoreCase = true) -> MaterialTheme.colorScheme.error
+                    state.updates.updateAvailable -> colorRoles().primaryAction
+                    message.contains("failed", ignoreCase = true) -> colorRoles().danger
                     else -> MaterialTheme.colorScheme.onSurfaceVariant
                 },
                 modifier = Modifier.padding(top = Spacing.md),
@@ -287,7 +289,7 @@ private fun UpdatesSection(state: AppState) {
                 Text(
                     it,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.error,
+                    color = colorRoles().danger,
                     modifier = Modifier.padding(top = Spacing.md),
                 )
             }
