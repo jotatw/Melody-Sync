@@ -32,6 +32,28 @@ class SongMatcherRealNamesTest {
     }
 
     @Test
+    fun `strips source quality suffix but keeps title qualifiers`() {
+        // "(MP3_320K)" is a source/quality tag and must not pollute the title.
+        assertEquals(
+            "HUSHH - (Lyrics)",
+            suggest("Nightcore - HUSHH - (Lyrics)(MP3_320K).mp3").title,
+        )
+        assertEquals(
+            "don_t you want me ft. Such",
+            suggest("PSYQUI - don_t you want me ft. Such(MP3_320K).mp3").title,
+        )
+        // Title qualifiers stay: they are part of the title, not a source tag.
+        assertEquals(
+            "Sunset (Remix)",
+            suggest("Artist - Sunset (Remix).mp3").title,
+        )
+        assertEquals(
+            "Broken (ft. Ratfoot)",
+            suggest("Vosai - Broken (ft. Ratfoot).mp3").title,
+        )
+    }
+
+    @Test
     fun `recovers artist when the separator uses a unicode dash`() {
         assertEquals(
             "Hiroyuki Sawano",

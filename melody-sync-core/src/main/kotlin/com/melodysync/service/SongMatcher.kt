@@ -25,9 +25,16 @@ object SongMatcher {
     // separator heuristic match; title/artist values come out normalized too.
     private val unicodeDash = Regex("[–—－]")
 
+    // Trailing source/quality tag, e.g. "(MP3_320K)", "(FLAC_24)", "(1080p)".
+    // Deliberately conservative: only uppercase/digit token groups (no spaces,
+    // no lowercase words) so title qualifiers like "(Remix)" or "(feat. X)"
+    // are left intact.
+    private val sourceSuffix = Regex("""\s*\([A-Z0-9][A-Z0-9_.]*\)$""")
+
     fun suggest(song: Song): TagSuggestion {
         val filename = song.path.fileName.toString().substringBeforeLast('.').trim()
             .replace(unicodeDash, "-")
+            .replace(sourceSuffix, "")
         val dirPath = song.path.parent
         val dirName = dirPath?.fileName?.toString()
         val grandParent = dirPath?.parent?.fileName?.toString()

@@ -95,7 +95,7 @@ Notes:
 ### Apply now (simple, safe)
 
 1. **Unicode-dash normalization**: `–`, `—`, `－` → `-` before the `Artist - Title` split. *Done in `SongMatcher` (2026-08).*
-2. **Strip obvious source suffixes** before matching: trailing `(MP3_320K)` / `(FLAC…)` style tokens (safe to remove, they are never part of a title). *Candidate — small, additive.*
+2. **Strip obvious source suffixes** before matching: trailing `(MP3_320K)` / `(FLAC…)` style tokens (uppercase/digit token groups only, so `(Remix)` / `(feat. X)` stay). *Done in `SongMatcher` (2026-08).*
 3. **Whitespace/trim** around split parts (already done).
 
 ### Defer (complex — needs care)
