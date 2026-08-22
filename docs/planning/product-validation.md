@@ -108,7 +108,11 @@ Run the full suite before and after (`./gradlew test`) — no regressions. Optio
 
 ### 1.4 Deliverable
 
-A repeatable harness script (e.g. `scripts/validate-workflow.sh` or a small test task) that builds the library, runs the chain, and prints a pass/fail summary. This keeps Track 1 re-runnable and CI-able.
+A repeatable harness script that builds the library, runs the chain, and prints a pass/fail summary. This keeps Track 1 re-runnable and CI-able.
+
+**Implemented:** `scripts/validate-workflow.sh` — builds a realistic library (fixtures + duplicate pair + messy filename + non-audio file), runs scan → health → per-format write-test → duplicates → organize (dry-run) → doctor, and reports `[PASS]`/`[FAIL]` per step. Run with `--keep` to preserve the work dir for the guided GUI pass. Exit code 0 when all checks pass.
+
+**Baseline (2026-08-22):** 12 checks passing (scan discovers files; health analyzes; write-test persists for mp3/flac/m4a/ogg/opus; WAV write refused; duplicates run; organize plan produced; doctor healthy).
 
 ---
 
