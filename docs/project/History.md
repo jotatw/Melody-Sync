@@ -213,6 +213,7 @@ Recorded state:
 - Regression found during real use (Statistics empty): the performance pass had replaced derived-state refreshes with review-only refreshes, leaving statistics/analytics null. Fixed with `refreshAfterLibraryChange()` (statistics/analytics + review); regression test added
 - Dev workflow: `scripts/dev-watch.sh` added — auto-rebuild (and re-install) the app on source changes so the installed launcher is always current for testing
 - Real-use measurement (2026-08): local suggestion coverage on the 13 no-artist real MP3s is 9/13 (locked by `SongMatcherRealNamesTest`); Unicode-dash separators (`–`/`—`/`－`) are now normalized to the ASCII hyphen (simple matcher improvement); the remaining 4 systematic misses (underscores-as-spaces, bracket prefixes, "by X", no separator) are deferred as more complex — V5 in the validation report
+- Filename conventions documented (2026-08): `planning/metadata-filename-conventions.md` catalogues the real library's naming patterns (Japanese/`「」`/OP-ED, remix/feat., `[…]` tags, source suffixes, Unicode dashes) and separates simple normalization (apply now) from complex treatment (defer) to guide the matcher and future enrichment
 
 **Metadata & reliability**
 

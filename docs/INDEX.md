@@ -114,6 +114,7 @@ External services remain separate from Core responsibilities and support specifi
 | [Product Roadmap](project/product-roadmap.md) | Complete objective map: consolidation, UX refinement, workflow refinement, maintenance, future expansion and deliberate non-goals | Active — current stage: Product Validation |
 | [ROADMAP](ROADMAP.md) | Current project direction, priorities and near-term implementation state | Active |
 | [Implementation Block 01 — Navigation Context](planning/implementation-block-01-navigation-context.md) | Bounded contextual-navigation implementation | Implemented / validation ongoing |
+| [Filename Conventions](planning/metadata-filename-conventions.md) | How real music filenames are structured (Japanese, remix, symbols) and how to treat them | Reference (real-library grounded) |
 | [Product Validation](planning/product-validation.md) | End-to-end workflow validation (automated + guided GUI) with prioritized findings | In execution |
 | [Product Validation Report](planning/product-validation-report.md) | Automated results and classified findings; GUI checklist | Findings registered |
 | [Product Hardening](planning/product-hardening.md) | Robustness review: fail comprehensibly and safely on error/edge cases | In progress |
