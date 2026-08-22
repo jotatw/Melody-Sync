@@ -63,7 +63,7 @@ The Core contains the application capabilities. The CLI and Desktop application 
 
 ## Validation Status
 
-- Automated tests: **267 passing** (Core, CLI, Desktop)
+- Automated tests: **268 passing** (Core, CLI, Desktop)
 - CI and release automation in place
 - The suite includes real audio fixtures for metadata behavior; writes are verified by round-trip persistence (see [`docs/planning/metadata-formats.md`](../planning/metadata-formats.md))
 

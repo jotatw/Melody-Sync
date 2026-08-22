@@ -113,10 +113,19 @@ class AppState(
     var analytics by mutableStateOf<AnalyticsData?>(null)
         private set
 
-    private fun refreshDerivedState() {
+private fun refreshDerivedState() {
         statistics = calculateStatistics(songs)
         analytics = computeAnalytics(songs)
-        // refreshReview is called separately where needed
+    }
+
+    /**
+     * Recomputes derived data (statistics/analytics) and the review list after
+     * the library changed. [force] re-runs the (pure in-memory) diagnosis even
+     * when the song count is unchanged (e.g. after a tag apply).
+     */
+    private fun refreshAfterLibraryChange(force: Boolean = false) {
+        refreshDerivedState()
+        refreshReview(force)
     }
 
     private suspend fun loadSongsForDirectory(dir: Path): List<Song> =
@@ -482,7 +491,7 @@ class AppState(
                     MusicRepository.updateByPath(updated)
                 }
                 songs = songs.map { if (it.path == updated.path) updated else it }
-                refreshReview(force = true)
+                refreshAfterLibraryChange(force = true)
                 showMessage("Tags updated · ${song.filename}")
             } catch (e: Exception) {
                 quickFixError = e.message ?: e::class.simpleName
@@ -574,7 +583,7 @@ class AppState(
                     MusicRepository.findAll()
                 }
                 songs = found
-                refreshReview(force = true)
+                refreshAfterLibraryChange(force = true)
                 progressText = "Library synchronized · ${found.size} songs analyzed"
                 status = TaskStatus.DONE
                 if (result.added > 0 || result.updated > 0) {
@@ -604,7 +613,7 @@ class AppState(
                 val found = loadSongsForDirectory(dir)
                 if (found.isNotEmpty()) {
                     songs = found
-                    refreshReview(force = true)
+                    refreshAfterLibraryChange(force = true)
                     progressText = "Loaded ${found.size} songs from database"
                     status = TaskStatus.DONE
                 } else {
@@ -695,7 +704,7 @@ class AppState(
                 } else {
                     songs = remainingSongs
                     duplicateGroups = newGroups
-                    refreshReview(force = true)
+                    refreshAfterLibraryChange(force = true)
                     duplicateTrashMessage = "Moved ${moved.size} file(s) to trash · ${newGroups.size} group(s) remain"
                     showMessage("Moved ${moved.size} file(s) to trash")
                 }
@@ -815,7 +824,7 @@ class AppState(
                     MusicRepository.findAll()
                 }
                 songs = found
-                refreshReview(force = true)
+                refreshAfterLibraryChange(force = true)
                 progressText = "Auto-sync: +${result.added} added, ${result.updated} updated, ${result.removed} removed"
             } catch (e: Exception) {
                 errorMessage = e.message ?: "Auto-sync failed"

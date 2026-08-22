@@ -188,7 +188,7 @@ The current documented project state is a consolidation and stabilization phase 
 Recorded state:
 
 - Version: **v0.13.0-dev**
-- Automated tests: **267 passing**
+- Automated tests: **268 passing**
 - Core: functional and stable enough for continued development
 - Desktop GUI: functional with UX refinement ongoing
 - CLI: functional
@@ -210,6 +210,7 @@ Recorded state:
 - Product Validation executed (2026-08): automated harness `scripts/validate-workflow.sh` (13/13 checks, GUI boot smoke OK); harness fixed to analyze health against the scanned database; findings registered in `planning/product-validation-report.md` (V1 corrected — untagged files are surfaced; V1b Health does not yet flag album-only gaps or filename-fallback titles)
 - Product Hardening executed (2026-08): probes confirm safe, comprehensible failures (empty/nonexistent dirs, corrupt files, WAV refusal, orphaned entries, permission/typed errors); no critical findings — `planning/product-hardening-report.md`
 - Real-use pass started (2026-08): baseline of the real library captured (690 audio, 14 missing-artist YouTube MP3s, 1 zero-duration opus, Syncthing dirs handled); `planning/real-use-checklist.md` ready for the guided friction pass
+- Regression found during real use (Statistics empty): the performance pass had replaced derived-state refreshes with review-only refreshes, leaving statistics/analytics null. Fixed with `refreshAfterLibraryChange()` (statistics/analytics + review); regression test added
 
 **Metadata & reliability**
 

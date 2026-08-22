@@ -27,7 +27,7 @@ Requirements: **JDK 21+**.
 ./gradlew test         # run the test suite
 ```
 
-The suite includes real audio fixtures for metadata behavior and currently has **267 passing tests** (Core, CLI, Desktop).
+The suite includes real audio fixtures for metadata behavior and currently has **268 passing tests** (Core, CLI, Desktop).
 
 ## Rules enforced by the project
 

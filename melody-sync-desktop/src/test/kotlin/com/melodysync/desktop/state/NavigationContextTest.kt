@@ -46,6 +46,27 @@ class NavigationContextTest {
     }
 
     @Test
+    fun `loading the library populates statistics and analytics`() {
+        val dbFile = tmp.resolve("db.db")
+        val audioDir = Files.createDirectory(tmp.resolve("music"))
+        seed(dbFile, audioDir)
+
+        val appState = state(dbFile, tmp.resolve("prefs.properties"))
+        appState.updateDirectory(audioDir.toString())
+        appState.loadLibraryFromDatabase()
+        await { appState.songs.size == 3 }
+
+        // Derived state must be populated after a library load (regression:
+        // statistics/analytics were left null when the performance pass only
+        // refreshed Review).
+        assertTrue(appState.statistics != null, "statistics should be computed")
+        assertTrue(appState.analytics != null, "analytics should be computed")
+        assertEquals(3, appState.statistics?.totalSongs)
+        assertEquals(2, appState.statistics?.uniqueArtists)
+        assertTrue(appState.analytics!!.formats.isNotEmpty())
+    }
+
+    @Test
     fun `statistics exploreArtist opens Library filtered by artist`() {
         val dbFile = tmp.resolve("db.db")
         val audioDir = Files.createDirectory(tmp.resolve("music"))
