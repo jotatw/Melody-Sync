@@ -40,7 +40,7 @@ The roadmap should therefore remain concise and should not become a second imple
 | Item | Status |
 |---|---|
 | Project version | **v0.13.0-dev** |
-| Automated tests | **270 passing** |
+| Automated tests | **272 passing** |
 | Core | Stable and actively used |
 | Desktop GUI | Functional and under UX refinement |
 | CLI | Functional |
@@ -59,28 +59,28 @@ The roadmap should therefore remain concise and should not become a second imple
 
 ### Current Direction
 
-The immediate priority is **refinement of what exists**, not opening additional major feature areas.
+The base is consolidated and validated. The immediate priority is **real use and the expansion decision**, not opening feature areas speculatively.
 
 The active work is:
 
 ```text
-Metadata reliability
+Product Validation ✅
         │
         ▼
-UX density & performance
+Product Hardening ✅
         │
         ▼
-Documentation / history upkeep
+Real use (current) — collect friction
         │
         ▼
-Only then expand
+Expansion decision (gated on real friction)
 ```
 
-- **Metadata reliability** (High): make the write path dependable across real formats; only then consider enrichment or new fields.
-- **UX refinement** (Medium): Library density/info hierarchy, responsive behavior, and large-library performance validation.
-- **Documentation**: the knowledge graph (local `graphify-out/`) is kept current so planning decisions stay grounded in the real structure.
+- **Real use**: exercise the app on the real library and record friction (see `planning/real-use-checklist.md`); only critical/security/regression fixes are applied immediately.
+- **Metadata Enrichment** (most likely expansion): begin only when real use confirms manual identification is the main bottleneck. Local matcher coverage on the real library is measured (9/13; see `planning/metadata-filename-conventions.md` and the validation report V5).
+- **Maintenance**: keep documentation, tests, and the local knowledge graph current with what is delivered.
 
-This prevents unnecessary functionality from being added before the existing workflow and its limits are clearly defined.
+This prevents unnecessary functionality from being added before real usage demonstrates the need.
 
 ---
 
@@ -101,6 +101,11 @@ This prevents unnecessary functionality from being added before the existing wor
 | Tests / CI | Medium | ✅ CI and release automation complete; targeted coverage ongoing | [Development Methodology](standards/handbook/DevelopmentMethodology.md) |
 | Repository presence & branding | Medium | ✅ GitHub About/topics, badges, CONTRIBUTING, logo monogram | [Branding Assets](assets/branding/BRANDING.md) |
 | Knowledge graph | Medium | ✅ Built and updated incrementally (`graphify-out/`) | (local, unversioned) |
+| Product Validation | **High** | ✅ Executed (13/13 automated checks; real-library baseline; findings V1–V5) | [Validation](planning/product-validation.md), [Report](planning/product-validation-report.md) |
+| Product Hardening | Medium | ✅ Executed — safe, comprehensible failures; no critical findings | [Hardening](planning/product-hardening.md), [Report](planning/product-hardening-report.md) |
+| Real use | **High** | 🚧 In progress — friction collection | [Real-Use Checklist](planning/real-use-checklist.md) |
+| Filename conventions | Medium | ✅ Reference grounded on the real library | [Filename Conventions](planning/metadata-filename-conventions.md) |
+| Metadata Enrichment | Future | ⏳ Gated on real-use friction (V5: local matcher 9/13) | [Product Roadmap](project/product-roadmap.md) |
 
 ---
 
@@ -191,6 +196,7 @@ The remaining concern is **reliable application of metadata across real-world fo
 - The metadata write-test (`--write-test`) now **verifies persistence** (write → re-read → values match), and round-trip coverage exists for all writable formats.
 - The read pipeline hub (`readMetadata()`) is **validated**: single registry-backed entry point used by the scanner and write-test; read failures are best-effort by design (documented in `metadata-foundation.md`).
 - Provider error messages are polished (e.g. actionable Opus layout message). A formal review record lives in `planning/metadata-reliability-review.md`.
+- Local matcher improved with simple, safe normalization: Unicode dashes (`–`/`—`/`－`) as separators and source/quality suffixes (`(MP3_320K)`) stripped; coverage on the real no-artist MP3s is **9/13** (see `planning/metadata-filename-conventions.md`, validation report V5). The remaining gaps are deferred as complex (underscores, `[…]` tags, `[ORIGINAL]`, "by X", Japanese quoting).
 
 The goal is not to add more enrichment sources before the existing write path is dependable.
 
@@ -323,7 +329,7 @@ No new platform abstraction should be introduced unless a concrete requirement a
 
 **Priority: Medium — Ongoing**
 
-The project has CI and release automation in place and currently reports **270 passing automated tests**.
+The project has CI and release automation in place and currently reports **272 passing automated tests**.
 
 Ongoing validation should prioritize areas where behavior depends on real filesystem, database, metadata, or external-process behavior.
 
@@ -415,6 +421,7 @@ This list is a scope boundary, not a rejection of future possibilities.
 | 1.2 | 2026-08-09 | Reframed roadmap around documentation consolidation, screen behavior, existing capabilities, and explicit scope boundaries |
 | 1.3 | 2026-08-19 | Refreshed area statuses (screen contracts, metadata reliability, UX items); added repository presence, branding, and knowledge graph; updated current direction |
 | 1.4 | 2026-08-20 | Marked the current refinement cycle complete: metadata reliability, responsive desktop, semantic colors, library density, statistics drill-down, Review/Quick Fix refinement, large-library performance |
+| 1.5 | 2026-08-22 | Recorded Product Validation and Product Hardening as executed; added real-use and filename-conventions areas; Metadata Enrichment marked as gated on real-use friction; updated test counts (272) |
 
 ---
 

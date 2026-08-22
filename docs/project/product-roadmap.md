@@ -638,15 +638,15 @@ COMPLETED — Consolidation & UX Refinement (2026-08)
 8. Organize workflow validation             ✓
 9. Keyboard and accessibility review        ✓
 
-NOW — Product Validation
+COMPLETED — Product Validation & Hardening (2026-08)
 
-10. End-to-end workflow validation (see docs/planning/product-validation.md)
-11. Guided GUI validation
+10. End-to-end workflow validation            ✓ (13/13 checks, real-library baseline)
+11. Guided GUI validation                     ✓ (real use in progress)
+12. Product Hardening (safe failure behavior)  ✓ (no critical findings)
 
-NEXT
+NOW — Real Use
 
-12. Product Hardening (safe failure behavior)
-13. Real use of the library; collect and classify friction
+13. Use the real library; collect and classify friction (see planning/real-use-checklist.md)
 
 FUTURE (gated on real-use friction)
 
