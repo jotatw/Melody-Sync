@@ -256,6 +256,8 @@ These are contextual exploration actions, not required workflows.
 
 The important rule is that the dimension that caused the navigation is preserved.
 
+**Drill-down behavior (validated 2026-08):** activating an artist/album/format item opens Library filtered by that single dimension. Any other dimension filters, the search query, and the current song selection are cleared, so the returned view is predictable — one filter chip, no stale Quick Fix for a song that may not be in the result. The list header shows the result count ("X of Y songs").
+
 ---
 
 ## 10. Navigation Rules

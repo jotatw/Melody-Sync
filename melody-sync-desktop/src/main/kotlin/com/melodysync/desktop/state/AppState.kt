@@ -381,23 +381,31 @@ class AppState(
         issueContext = null
     }
 
-    /** Statistics → Library: open Library filtered by the selected artist. */
-    fun exploreArtist(artist: String) {
+    /**
+     * Statistics → Library drill-down. The selected dimension becomes the
+     * single visible filter: other dimension filters and the search query are
+     * cleared, and the song selection is dropped, so the return to Library is
+     * predictable (one filter chip, no stale Quick Fix for a hidden song).
+     */
+    private fun drillIntoLibrary(setFilter: (String) -> Unit, value: String) {
+        artistFilter = ""
+        albumFilter = ""
+        formatFilter = ""
+        query = ""
+        selectedSongPath = null
+        pendingScrollPath = null
+        setFilter(value)
         setSection(Section.LIBRARY)
-        artistFilter = artist
     }
+
+    /** Statistics → Library: open Library filtered by the selected artist. */
+    fun exploreArtist(artist: String) = drillIntoLibrary({ artistFilter = it }, artist)
 
     /** Statistics → Library: open Library filtered by the selected format. */
-    fun exploreFormat(format: String) {
-        setSection(Section.LIBRARY)
-        formatFilter = format
-    }
+    fun exploreFormat(format: String) = drillIntoLibrary({ formatFilter = it }, format)
 
     /** Statistics → Library: open Library filtered by the selected album. */
-    fun exploreAlbum(album: String) {
-        setSection(Section.LIBRARY)
-        albumFilter = album
-    }
+    fun exploreAlbum(album: String) = drillIntoLibrary({ albumFilter = it }, album)
 
     fun clearQuickFixYoutube() {
         quickFixYoutubeSuggestions = emptyList()

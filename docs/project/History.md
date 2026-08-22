@@ -188,7 +188,7 @@ The current documented project state is a consolidation and stabilization phase 
 Recorded state:
 
 - Version: **v0.13.0-dev**
-- Automated tests: **266 passing**
+- Automated tests: **267 passing**
 - Core: functional and stable enough for continued development
 - Desktop GUI: functional with UX refinement ongoing
 - CLI: functional
@@ -210,6 +210,7 @@ Recorded state:
 - Design: semantic status colors consolidated — screens read `colorRoles()` (success/warning/info/danger) and charts use `ChartPalette`; mapping documented in DesignSystem §4.5
 - Accessibility: data charts carry a text alternative (format distribution summary via semantics) so information is not color/visual-only
 - Library density: removed redundant "synchronized" line from the header (DirectoryBar already reports sync status); song list header shows a result count ("X of Y songs" when filtered) making the filtered state explicit
+- Statistics: drill-down validated — selecting an artist/album/format opens Library filtered by that single dimension (other filters/query/selection cleared); covered by tests
 - Metadata reliability: read pipeline verified (single `readMetadata` hub) and Opus layout error message made actionable
 - GitHub presence: README focused on project identity; technical details moved to `docs/architecture/technology.md`; About description updated
 - Screen interaction contracts: finalized (all eight screens + directory README); navigation structure recorded in the design docs

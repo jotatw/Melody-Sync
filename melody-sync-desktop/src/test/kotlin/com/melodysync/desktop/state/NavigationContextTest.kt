@@ -60,6 +60,10 @@ class NavigationContextTest {
 
         assertEquals(Section.LIBRARY, appState.currentSection)
         assertEquals("Alpha", appState.artistFilter)
+        assertTrue(appState.albumFilter.isEmpty())
+        assertTrue(appState.formatFilter.isEmpty())
+        assertTrue(appState.query.isEmpty())
+        assertNull(appState.selectedSongPath)
         assertEquals(setOf("a.mp3", "b.flac"), appState.filteredSongs.map { it.filename }.toSet())
     }
 
@@ -78,6 +82,8 @@ class NavigationContextTest {
 
         assertEquals(Section.LIBRARY, appState.currentSection)
         assertEquals("mp3", appState.formatFilter)
+        assertTrue(appState.artistFilter.isEmpty())
+        assertTrue(appState.albumFilter.isEmpty())
         assertEquals(setOf("a.mp3", "c.mp3"), appState.filteredSongs.map { it.filename }.toSet())
     }
 
@@ -96,7 +102,32 @@ class NavigationContextTest {
 
         assertEquals(Section.LIBRARY, appState.currentSection)
         assertEquals("One", appState.albumFilter)
+        assertTrue(appState.artistFilter.isEmpty())
+        assertTrue(appState.formatFilter.isEmpty())
         assertEquals(setOf("a.mp3", "c.mp3"), appState.filteredSongs.map { it.filename }.toSet())
+    }
+
+    @Test
+    fun `statistics drill-down replaces any existing filters`() {
+        val dbFile = tmp.resolve("db.db")
+        val audioDir = Files.createDirectory(tmp.resolve("music"))
+        seed(dbFile, audioDir)
+
+        val appState = state(dbFile, tmp.resolve("prefs.properties"))
+        appState.updateDirectory(audioDir.toString())
+        appState.loadLibraryFromDatabase()
+        await { appState.songs.size == 3 }
+
+        // A stale artist filter + selection must not survive the drill-down.
+        appState.selectSong(audioDir.resolve("a.mp3").toString())
+        appState.exploreAlbum("Two")
+
+        assertEquals(Section.LIBRARY, appState.currentSection)
+        assertEquals("Two", appState.albumFilter)
+        assertTrue(appState.artistFilter.isEmpty())
+        assertTrue(appState.formatFilter.isEmpty())
+        assertNull(appState.selectedSongPath)
+        assertEquals(setOf("b.flac"), appState.filteredSongs.map { it.filename }.toSet())
     }
 
     @Test
