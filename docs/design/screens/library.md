@@ -161,6 +161,8 @@ Current filter dimensions include:
 
 The toolbar keeps **search always visible**; the artist/album/format fields live behind a compact **Filters** disclosure to preserve a low-density default. Active filters surface as removable chips with a **Clear all** shortcut, and the disclosure shows the active-filter count. When a contextual issue/statistics navigation applies a filter, it renders inline and can be cleared without losing the library state.
 
+In **compact windows** (see DesignSystem §4.4) the song list hides secondary columns (Album, Format, Bitrate) so Title and Artist keep usable width; the user can still re-enable them via the columns menu. The Quick Fix panel narrows to keep the list usable.
+
 Additional filters may be introduced later, but each should have a clear user-facing purpose.
 
 ### Select Song

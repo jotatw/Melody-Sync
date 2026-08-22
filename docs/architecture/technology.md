@@ -51,6 +51,7 @@ The Core contains the application capabilities. The CLI and Desktop application 
 | Metadata | **JAudioTagger 2.2.7** + built-in Opus metadata support |
 | CLI | **clikt 5.1.0** |
 | Desktop UI | **Compose Desktop 1.11.1** |
+| Responsive layout | `WindowSizeClass` (compact/medium/expanded via `LocalWindowSizeClass`) |
 | Database | **SQLite / Exposed 0.61.0** |
 | Testing | **JUnit 5** |
 

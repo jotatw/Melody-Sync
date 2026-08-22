@@ -99,6 +99,23 @@ Primary verb-led action → visible running state → outcome → one named next
 - Data that opens a filtered view must show a directional cue (for example, "View →"); color alone cannot carry that behavior.
 - Keep outcomes scoped to their workflow. A file-trash result belongs in Duplicates, not in a global error region that can surface in another section.
 
+### 4.4 Responsive Desktop Behavior
+
+Melody Sync is desktop-first but the window can be resized. Layouts adapt to three **width classes**, decided by the available window width (not a physical resolution):
+
+| Class | Width | Behavior |
+|-------|-------|----------|
+| **Compact** | < 900dp | Sidebar collapses to icons; "Melody Sync" title hides; stat cards and side-by-side panels stack into rows/columns; Quick Fix panel narrows; SongList hides secondary columns (Album/Format/Bitrate) |
+| **Medium** | 900–1299dp | Sidebar expandable; standard toolbars; cards side-by-side |
+| **Expanded** | ≥ 1300dp | Sidebar expanded; generous margins; full column set |
+
+Rules:
+
+- Decisions come from the **available window width**, exposed through `LocalWindowSizeClass`, never from a fixed resolution or device assumption.
+- Keep the primary action of each screen reachable at every width (e.g. the Scan button stays visible in compact).
+- Secondary information degrades before primary information (e.g. SongList hides Album/Format before Title/Artist).
+- Prefer a few explicit layout states over many ad-hoc size checks; concentrate adaptive logic rather than scattering width checks across the UI.
+
 ---
 
 ## 5. Interaction Model: Assisted Curation

@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.theme.AppTheme
+import com.melodysync.desktop.ui.window.LocalWindowSizeClass
 
 @Composable
 fun TopBar(
@@ -39,11 +40,15 @@ fun TopBar(
                 )
             }
             // Brand mark uses the editorial serif (DesignSystem §3).
-            Text(
-                "Melody Sync",
-                style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
+            // Hidden in compact windows so the controls keep usable width.
+            val sizeClass = LocalWindowSizeClass.current
+            if (!sizeClass.isCompact) {
+                Text(
+                    "Melody Sync",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
         }
 
         IconButton(onClick = onToggleTheme) {

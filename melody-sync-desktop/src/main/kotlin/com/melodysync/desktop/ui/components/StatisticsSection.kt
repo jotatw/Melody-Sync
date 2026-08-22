@@ -31,6 +31,7 @@ import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.RankedItem
 import com.melodysync.desktop.state.Section
 import com.melodysync.desktop.theme.HiFiDarkColors
+import com.melodysync.desktop.ui.window.LocalWindowSizeClass
 import com.melodysync.desktop.theme.HiFiLightColors
 import com.melodysync.desktop.theme.Spacing
 import com.melodysync.desktop.theme.TechnicalStyleSmall
@@ -65,12 +66,28 @@ fun StatisticsSection(state: AppState) {
     ) {
         SectionHeader(title = "Library Statistics", subtitle = "Overview of your library")
 
-        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md), modifier = Modifier.padding(top = Spacing.md)) {
-            StatCard("Songs", stats.totalSongs.toString(), modifier = Modifier.weight(1f))
-            StatCard("Artists", stats.uniqueArtists.toString(), modifier = Modifier.weight(1f))
-            StatCard("Albums", stats.uniqueAlbums.toString(), modifier = Modifier.weight(1f))
-            StatCard("Hours", "%.1f".format(stats.totalDurationHours), modifier = Modifier.weight(1f))
-            StatCard("Size", "%.2f GB".format(stats.totalSizeGb), modifier = Modifier.weight(1f))
+        val sizeClass = LocalWindowSizeClass.current
+        val statRowSpacing = Spacing.md
+        if (sizeClass.isCompact) {
+            Row(horizontalArrangement = Arrangement.spacedBy(statRowSpacing), modifier = Modifier.padding(top = Spacing.md)) {
+                StatCard("Songs", stats.totalSongs.toString(), modifier = Modifier.weight(1f))
+                StatCard("Artists", stats.uniqueArtists.toString(), modifier = Modifier.weight(1f))
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(statRowSpacing), modifier = Modifier.padding(top = Spacing.md)) {
+                StatCard("Albums", stats.uniqueAlbums.toString(), modifier = Modifier.weight(1f))
+                StatCard("Hours", "%.1f".format(stats.totalDurationHours), modifier = Modifier.weight(1f))
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(statRowSpacing), modifier = Modifier.padding(top = Spacing.md)) {
+                StatCard("Size", "%.2f GB".format(stats.totalSizeGb), modifier = Modifier.weight(1f))
+            }
+        } else {
+            Row(horizontalArrangement = Arrangement.spacedBy(statRowSpacing), modifier = Modifier.padding(top = Spacing.md)) {
+                StatCard("Songs", stats.totalSongs.toString(), modifier = Modifier.weight(1f))
+                StatCard("Artists", stats.uniqueArtists.toString(), modifier = Modifier.weight(1f))
+                StatCard("Albums", stats.uniqueAlbums.toString(), modifier = Modifier.weight(1f))
+                StatCard("Hours", "%.1f".format(stats.totalDurationHours), modifier = Modifier.weight(1f))
+                StatCard("Size", "%.2f GB".format(stats.totalSizeGb), modifier = Modifier.weight(1f))
+            }
         }
 
         Text(
@@ -83,18 +100,31 @@ fun StatisticsSection(state: AppState) {
 
         HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.lg))
 
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Spacing.lg)) {
+        if (sizeClass.isCompact) {
             FormatDonut(
                 formats = analytics.formats,
                 onFormatClick = { state.exploreFormat(it) },
-                modifier = Modifier.weight(1f),
             )
             TopListCard(
                 title = "Top Artists",
                 items = analytics.topArtists,
                 onClick = { state.exploreArtist(it) },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.padding(top = Spacing.md),
             )
+        } else {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(Spacing.lg)) {
+                FormatDonut(
+                    formats = analytics.formats,
+                    onFormatClick = { state.exploreFormat(it) },
+                    modifier = Modifier.weight(1f),
+                )
+                TopListCard(
+                    title = "Top Artists",
+                    items = analytics.topArtists,
+                    onClick = { state.exploreArtist(it) },
+                    modifier = Modifier.weight(1f),
+                )
+            }
         }
 
         HorizontalDivider(modifier = Modifier.padding(vertical = Spacing.lg))

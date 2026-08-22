@@ -30,6 +30,7 @@ import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.TaskStatus
 import com.melodysync.desktop.state.Section
 import com.melodysync.desktop.theme.HiFiDarkColors
+import com.melodysync.desktop.ui.window.LocalWindowSizeClass
 import com.melodysync.desktop.theme.HiFiLightColors
 import com.melodysync.desktop.theme.Spacing
 import com.melodysync.desktop.theme.TechnicalStyleSmall
@@ -139,28 +140,53 @@ private fun HealthReportView(state: AppState, report: HealthReport) {
             accent = scoreColor,
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(Spacing.xl),
-            ) {
-                HealthScoreRing(score, scoreColor)
-                Column(modifier = Modifier.weight(1f)) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
-                        StatCard("Audio files", report.audioFiles.toString(), modifier = Modifier.weight(1f), accent = success)
-                        StatCard("Non-audio", report.totalNonAudio.toString(), modifier = Modifier.weight(1f))
+            val sizeClass = LocalWindowSizeClass.current
+            if (sizeClass.isCompact) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    HealthScoreRing(score, scoreColor)
+                    Column(modifier = Modifier.fillMaxWidth().padding(top = Spacing.md)) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
+                            StatCard("Audio files", report.audioFiles.toString(), modifier = Modifier.weight(1f), accent = success)
+                            StatCard("Non-audio", report.totalNonAudio.toString(), modifier = Modifier.weight(1f))
+                        }
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+                            modifier = Modifier.padding(top = Spacing.md),
+                        ) {
+                            StatCard(
+                                "Issues",
+                                issues.toString(),
+                                modifier = Modifier.weight(1f),
+                                accent = if (issues > 0) MaterialTheme.colorScheme.error else success,
+                            )
+                            StatCard("Total files", report.totalFiles.toString(), modifier = Modifier.weight(1f))
+                        }
                     }
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
-                        modifier = Modifier.padding(top = Spacing.md),
-                    ) {
-                        StatCard(
-                            "Issues",
-                            issues.toString(),
-                            modifier = Modifier.weight(1f),
-                            accent = if (issues > 0) MaterialTheme.colorScheme.error else success,
-                        )
-                        StatCard("Total files", report.totalFiles.toString(), modifier = Modifier.weight(1f))
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(Spacing.xl),
+                ) {
+                    HealthScoreRing(score, scoreColor)
+                    Column(modifier = Modifier.weight(1f)) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
+                            StatCard("Audio files", report.audioFiles.toString(), modifier = Modifier.weight(1f), accent = success)
+                            StatCard("Non-audio", report.totalNonAudio.toString(), modifier = Modifier.weight(1f))
+                        }
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+                            modifier = Modifier.padding(top = Spacing.md),
+                        ) {
+                            StatCard(
+                                "Issues",
+                                issues.toString(),
+                                modifier = Modifier.weight(1f),
+                                accent = if (issues > 0) MaterialTheme.colorScheme.error else success,
+                            )
+                            StatCard("Total files", report.totalFiles.toString(), modifier = Modifier.weight(1f))
+                        }
                     }
                 }
             }

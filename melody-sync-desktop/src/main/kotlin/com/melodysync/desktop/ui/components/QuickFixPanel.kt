@@ -58,7 +58,11 @@ import com.melodysync.service.QuickFixService
  * user validates every edit — nothing is applied automatically.
  */
 @Composable
-fun QuickFixPanel(state: AppState, song: Song) {
+fun QuickFixPanel(
+    state: AppState,
+    song: Song,
+    modifier: Modifier = Modifier,
+) {
     val diagnostics = remember(song) { QuickFixService.diagnose(song) }
     val localSuggestions = remember(song) { LocalFixSource.suggest(song) }
     val writeSupported = remember(song) {
@@ -73,7 +77,7 @@ fun QuickFixPanel(state: AppState, song: Song) {
     }
 
     Surface(
-        modifier = Modifier.fillMaxHeight().width(320.dp),
+        modifier = modifier.fillMaxHeight(),
         color = MaterialTheme.colorScheme.surface,
     ) {
         Column(

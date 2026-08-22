@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.Section
+import com.melodysync.desktop.ui.window.LocalWindowSizeClass
 
 private data class RailItem(
     val section: Section,
@@ -52,7 +53,10 @@ private val footerItems = listOf(
 
 @Composable
 fun Sidebar(state: AppState) {
-    val expanded = state.sidebarExpanded
+    val sizeClass = LocalWindowSizeClass.current
+    // In compact mode the sidebar stays collapsed to icons regardless of the
+    // user preference, so the content area keeps usable width.
+    val expanded = state.sidebarExpanded && !sizeClass.isCompact
     val railWidth = if (expanded) 200.dp else 80.dp
 
     NavigationRail(

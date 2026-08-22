@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.TaskStatus
 import com.melodysync.desktop.theme.HiFiDarkColors
+import com.melodysync.desktop.ui.window.LocalWindowSizeClass
 import com.melodysync.desktop.theme.HiFiLightColors
 import com.melodysync.desktop.theme.Spacing
 import com.melodysync.desktop.theme.TechnicalStyle
@@ -94,19 +95,39 @@ private fun OrganizeReportView(state: AppState, report: OrganizationReport) {
             headline = "Plan: ${report.toMove} move(s) · ${report.alreadyOrganized} already organized",
             accent = if (report.toMove > 0) MaterialTheme.colorScheme.primary else success,
         ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
-                StatCard(
-                    "To move",
-                    report.toMove.toString(),
-                    modifier = Modifier.weight(1f),
-                    accent = if (report.toMove > 0) MaterialTheme.colorScheme.primary else success,
-                )
-                StatCard(
-                    "Already organized",
-                    report.alreadyOrganized.toString(),
-                    modifier = Modifier.weight(1f),
-                )
-                StatCard("Skipped", report.skipped.toString(), modifier = Modifier.weight(1f))
+            val sizeClass = LocalWindowSizeClass.current
+            if (sizeClass.isCompact) {
+                Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
+                    StatCard(
+                        "To move",
+                        report.toMove.toString(),
+                        modifier = Modifier.weight(1f),
+                        accent = if (report.toMove > 0) MaterialTheme.colorScheme.primary else success,
+                    )
+                    StatCard(
+                        "Already organized",
+                        report.alreadyOrganized.toString(),
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md), modifier = Modifier.padding(top = Spacing.sm)) {
+                    StatCard("Skipped", report.skipped.toString(), modifier = Modifier.weight(1f))
+                }
+            } else {
+                Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
+                    StatCard(
+                        "To move",
+                        report.toMove.toString(),
+                        modifier = Modifier.weight(1f),
+                        accent = if (report.toMove > 0) MaterialTheme.colorScheme.primary else success,
+                    )
+                    StatCard(
+                        "Already organized",
+                        report.alreadyOrganized.toString(),
+                        modifier = Modifier.weight(1f),
+                    )
+                    StatCard("Skipped", report.skipped.toString(), modifier = Modifier.weight(1f))
+                }
             }
         }
 
