@@ -27,7 +27,7 @@ Requirements: **JDK 21+**.
 ./gradlew test         # run the test suite
 ```
 
-The suite includes real audio fixtures for metadata behavior and currently has **268 passing tests** (Core, CLI, Desktop).
+The suite includes real audio fixtures for metadata behavior and currently has **270 passing tests** (Core, CLI, Desktop).
 
 **Auto-rebuild while developing:** run `scripts/dev-watch.sh` to rebuild (and, by default, re-install via `scripts/install.sh`) automatically whenever sources change — so the installed `melody-sync` launcher is always the latest build. Use `--build` to only rebuild without installing, and `once` to build+install a single time.
 

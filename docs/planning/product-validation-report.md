@@ -66,6 +66,13 @@ Per the block rules, only critical/security/regressions are fixed immediately; t
 - **Class:** Verified behavior
 - **Observation:** the byte-identical `copy1.mp3`/`copy2.mp3` appear in the duplicate group.
 
+### V5 — Local suggestion coverage on real YouTube-derived filenames
+
+- **Severity:** Informational → input to the Metadata Enrichment decision
+- **Class:** Measured behavior (locked by `SongMatcherRealNamesTest`)
+- **Observation (real library, 13 no-artist files):** the local `SongMatcher` recovers the correct artist for **8/13** via the `Artist - Title` separator heuristic. **5/13 fail** because the heuristic does not handle: en-dash separators (`Hiroyuki Sawano – …`), underscores-as-spaces (`JoJo_s Bizarre Adventure…`), `[ORIGINAL] X - Y` inversions, and `"… by X"` phrasing. These are systematic, not one-offs.
+- **Implication:** ~62% of this library's untagged MP3s are fixable without leaving Quick Fix; the remainder are exactly the case for **Metadata Enrichment** (YouTube identification) or a matcher improvement (en-dash/underscore normalization).
+
 ## 3. Guided GUI Checklist (for a human pass)
 
 Use the preserved `--keep` library. Answer each item; register observations under "GUI findings" below.

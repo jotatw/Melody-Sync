@@ -188,7 +188,7 @@ The current documented project state is a consolidation and stabilization phase 
 Recorded state:
 
 - Version: **v0.13.0-dev**
-- Automated tests: **268 passing**
+- Automated tests: **270 passing**
 - Core: functional and stable enough for continued development
 - Desktop GUI: functional with UX refinement ongoing
 - CLI: functional
@@ -212,6 +212,7 @@ Recorded state:
 - Real-use pass started (2026-08): baseline of the real library captured (690 audio, 14 missing-artist YouTube MP3s, 1 zero-duration opus, Syncthing dirs handled); `planning/real-use-checklist.md` ready for the guided friction pass
 - Regression found during real use (Statistics empty): the performance pass had replaced derived-state refreshes with review-only refreshes, leaving statistics/analytics null. Fixed with `refreshAfterLibraryChange()` (statistics/analytics + review); regression test added
 - Dev workflow: `scripts/dev-watch.sh` added — auto-rebuild (and re-install) the app on source changes so the installed launcher is always current for testing
+- Real-use measurement (2026-08): local suggestion coverage on the 13 no-artist real MP3s is 8/13 (locked by `SongMatcherRealNamesTest`); the 5 systematic misses (en-dash, underscores-as-spaces, bracket prefixes, "by X") support the Metadata Enrichment case — V5 in the validation report
 
 **Metadata & reliability**
 
