@@ -209,6 +209,7 @@ Recorded state:
 - UX: responsive desktop behavior — `WindowSizeClass` (compact/medium/expanded); sidebar auto-collapses, title hides, stat cards stack, SongList hides secondary columns, Quick Fix narrows in compact
 - Design: semantic status colors consolidated — screens read `colorRoles()` (success/warning/info/danger) and charts use `ChartPalette`; mapping documented in DesignSystem §4.5
 - Accessibility: data charts carry a text alternative (format distribution summary via semantics) so information is not color/visual-only
+- Library density: removed redundant "synchronized" line from the header (DirectoryBar already reports sync status); song list header shows a result count ("X of Y songs" when filtered) making the filtered state explicit
 - Metadata reliability: read pipeline verified (single `readMetadata` hub) and Opus layout error message made actionable
 - GitHub presence: README focused on project identity; technical details moved to `docs/architecture/technology.md`; About description updated
 - Screen interaction contracts: finalized (all eight screens + directory README); navigation structure recorded in the design docs

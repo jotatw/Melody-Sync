@@ -236,6 +236,8 @@ The normal state displays the current collection, search/filter controls, and av
 
 The list reflects the active search/filter criteria. The user should be able to understand that the collection is filtered and clear the filter without losing the library itself.
 
+The list header always shows a compact result count (`X of Y songs` when filtered, `Y songs` otherwise), so the filtered state is explicit even before the user inspects the rows.
+
 ### Song Selected
 
 The selected song becomes the contextual focus. Quick Fix and other song-level actions may appear.

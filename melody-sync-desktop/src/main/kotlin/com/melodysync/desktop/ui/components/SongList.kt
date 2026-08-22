@@ -152,7 +152,7 @@ fun SongList(state: AppState) {
 
     Row(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.weight(1f).fillMaxSize().padding(top = 8.dp)) {
-            SongListHeader(state)
+            SongListHeader(state, shown = songs.size, total = state.songs.size)
             HorizontalDivider()
 
             Box(
@@ -403,7 +403,11 @@ private fun copyToClipboard(text: String) {
 }
 
 @Composable
-private fun SongListHeader(state: AppState) {
+private fun SongListHeader(
+    state: AppState,
+    shown: Int,
+    total: Int,
+) {
     val visibleColumns = effectiveVisibleColumns(state, LocalWindowSizeClass.current)
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp, horizontal = 8.dp),
@@ -428,6 +432,12 @@ private fun SongListHeader(state: AppState) {
         if (SongField.BITRATE in visibleColumns) {
             SortableHeader("Bitrate", SongField.BITRATE, Modifier.width(72.dp), state)
         }
+        Text(
+            if (shown != total) "$shown of $total songs" else "$total songs",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(start = Spacing.sm),
+        )
     }
 }
 

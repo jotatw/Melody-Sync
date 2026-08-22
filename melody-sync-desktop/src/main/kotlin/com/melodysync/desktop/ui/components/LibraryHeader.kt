@@ -37,11 +37,4 @@ fun LibraryHeader(state: AppState) {
         StatCard("Hours", "%.1f".format(stats.totalDurationHours), modifier = Modifier.weight(1f), icon = Icons.Filled.Schedule)
         StatCard("Size", "%.2f GB".format(stats.totalSizeGb), modifier = Modifier.weight(1f), icon = Icons.Filled.Storage)
     }
-
-    Text(
-        "Library synchronized · ${stats.totalSongs} songs analyzed",
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = Spacing.sm),
-    )
 }
