@@ -14,7 +14,7 @@
 | Status | Active |
 | Project Version | v0.13.0-dev |
 | Template Version | BaseDocument v1.0 |
-| Last Updated | 2026-08-19 |
+| Last Updated | 2026-08-22 |
 | Maintainer | Melody Sync Project |
 
 ---
@@ -91,10 +91,10 @@ This prevents unnecessary functionality from being added before the existing wor
 | Repository audit 2026-08 | **High** | ✅ Complete (A → B → D → C) | [Audit 2026-08](project/audit-2026-08.md) |
 | Documentation consolidation | **High** | 🚧 Active | [Documentation Index](INDEX.md), [History](project/History.md) |
 | Screen behavior & navigation | **High** | ✅ Contracts finalized; interaction refinement under UX | [Design](design/), [Application Design Research](research/app-design.md) |
-| Metadata reliability | **High** | 🚧 Refinement (WAV read-only; round-trip verified; read-path validation next) | [Metadata Foundation](planning/metadata-foundation.md), [Metadata Formats](planning/metadata-formats.md) |
-| Quick Fix | Medium | ✅ Implemented; reliability refinement remains | [Quick-Fix HUD](research/quick-fix-hud.md) |
-| Review / Health | Medium | ✅ Implemented; interaction refinement ongoing | [Application Design Research](research/app-design.md) |
-| UX / Design System | Medium | 🚧 Continuous refinement | [Design](design/) |
+| Metadata reliability | **High** | ✅ Refined (WAV read-only; write-test verifies persistence; read-path validated) | [Metadata Foundation](planning/metadata-foundation.md), [Metadata Formats](planning/metadata-formats.md), [Reliability Review](planning/metadata-reliability-review.md) |
+| Quick Fix | Medium | ✅ Implemented; local apply feedback | [Quick-Fix HUD](research/quick-fix-hud.md) |
+| Review / Health | Medium | ✅ Refined (loading state, selection guidance) | [Application Design Research](research/app-design.md) |
+| UX / Design System | Medium | ✅ Refined (responsive, semantic colors, density, accessibility); continuous polish remains | [Design](design/) |
 | Updates & Installation | Medium | ✅ Implemented; relaunch deferred | [Update Channels](research/update-channels.md) |
 | Providers | Low | ✅ YouTube + Lyrics support exists; provider boundary being documented | [Providers](integrations/metadata-providers.md) |
 | Platform | Low | 🔒 Frozen | [ADR-0009](architecture/ADR/ADR-0009-PlatformLayer.md) |
@@ -189,7 +189,8 @@ The remaining concern is **reliable application of metadata across real-world fo
 
 - WAV writes are **read-only**: JAudioTagger's WAV writer silently drops LIST/INFO tags, so writes are refused (`supportsWrite` is per-format) until a reliable writer exists.
 - The metadata write-test (`--write-test`) now **verifies persistence** (write → re-read → values match), and round-trip coverage exists for all writable formats.
-- Open refinement: validate the read pipeline hub (`readMetadata()`) and polish provider error messages for users.
+- The read pipeline hub (`readMetadata()`) is **validated**: single registry-backed entry point used by the scanner and write-test; read failures are best-effort by design (documented in `metadata-foundation.md`).
+- Provider error messages are polished (e.g. actionable Opus layout message). A formal review record lives in `planning/metadata-reliability-review.md`.
 
 The goal is not to add more enrichment sources before the existing write path is dependable.
 
@@ -231,17 +232,17 @@ Current design work is focused on defining behavior and limits before further vi
 ### Current refinement areas
 
 - screen hierarchy and navigation; ✅ contracts finalized
-- semantic status colors;
-- consistent base components;
-- Library density and information hierarchy; ← active
-- Statistics presentation;
-- Health and Review relationship;
-- Organize presentation;
+- semantic status colors; ✅ consolidated via `colorRoles()` + `ChartPalette` (DesignSystem §4.5)
+- consistent base components; ✅ `StatusPill`/`ProgressCard`/`ResultCard` shared across sections
+- Library density and information hierarchy; ✅ Filters disclosure, compact columns, result count
+- Statistics presentation; ✅ drill-down validated (single-dimension filter)
+- Health and Review relationship; ✅ loading state + selection guidance in Review
+- Organize presentation; ✅ plan → apply flow completed in-app
 - Settings grouping (data-driven section model implemented; ongoing refinement);
 - keyboard accessibility; ✅ global shortcuts + list navigation implemented
-- responsive behavior;
-- loading and feedback states; ✅ unified (StatusPill/ProgressCard across sections)
-- large-library performance validation; ← active
+- responsive behavior; ✅ `WindowSizeClass` compact/medium/expanded
+- loading and feedback states; ✅ unified (StatusPill/ProgressCard across sections) + local Quick Fix apply errors
+- large-library performance validation; ✅ memoized filtering/statistics (no paging needed — lazy lists)
 
 These are refinement tasks. They should not trigger a new application architecture unless a concrete requirement proves that the current structure cannot support them.
 
@@ -413,6 +414,7 @@ This list is a scope boundary, not a rejection of future possibilities.
 | 1.1 | 2026-08-08 | Consolidated research links and adopted the official development methodology |
 | 1.2 | 2026-08-09 | Reframed roadmap around documentation consolidation, screen behavior, existing capabilities, and explicit scope boundaries |
 | 1.3 | 2026-08-19 | Refreshed area statuses (screen contracts, metadata reliability, UX items); added repository presence, branding, and knowledge graph; updated current direction |
+| 1.4 | 2026-08-20 | Marked the current refinement cycle complete: metadata reliability, responsive desktop, semantic colors, library density, statistics drill-down, Review/Quick Fix refinement, large-library performance |
 
 ---
 

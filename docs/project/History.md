@@ -14,7 +14,7 @@
 | Status | Active |
 | Project Version | v0.13.0-dev |
 | Template Version | HistoryTemplate v1.0 |
-| Last Updated | 2026-08-09 |
+| Last Updated | 2026-08-22 |
 | Maintainer | Melody Sync Project |
 
 ---
@@ -200,24 +200,35 @@ Recorded state:
 - Metadata foundation: completed
 - Auto-update on startup: completed; relaunch orchestration remains separate
 - Settings menu: data-driven section model (dynamic sections)
+**Consolidation & infrastructure**
+
 - Repository audit 2026-08: completed (security, structure, documentation consistency, code)
-- Brand identity: "MS" serif monogram selected as the initial logo; organized as branding assets and integrated into the window icon and About screen
-- UX: global keyboard shortcuts (section switching Ctrl+1…8, sidebar Ctrl+B, rescan F5, close panel Esc), listed in the About screen
-- UX: unify section error feedback on `StatusPill` (DANGER) and shared `ProgressCard` loading across Health, Duplicates, Organize and the scan strip
-- Organize: plan/apply flow completed in the desktop app (explicit Apply + confirmation + local outcome + library resync); CLI `organize --apply` remains available
-- UX: Library toolbar density — search stays visible; artist/album/format filters moved behind a "Filters" disclosure with removable active-filter chips
-- UX: responsive desktop behavior — `WindowSizeClass` (compact/medium/expanded); sidebar auto-collapses, title hides, stat cards stack, SongList hides secondary columns, Quick Fix narrows in compact
-- Design: semantic status colors consolidated — screens read `colorRoles()` (success/warning/info/danger) and charts use `ChartPalette`; mapping documented in DesignSystem §4.5
-- Accessibility: data charts carry a text alternative (format distribution summary via semantics) so information is not color/visual-only
-- Library density: removed redundant "synchronized" line from the header (DirectoryBar already reports sync status); song list header shows a result count ("X of Y songs" when filtered) making the filtered state explicit
-- Statistics: drill-down validated — selecting an artist/album/format opens Library filtered by that single dimension (other filters/query/selection cleared); covered by tests
-- Review/Health → Quick Fix: Review now shows a loading state while diagnosing and a selection guidance hint when nothing is selected yet
-- Quick Fix: Apply failures surface as a local error pill in the panel (cleared on song change); Organize apply flow validated (core reorganize + desktop apply with resync)
-- Metadata reliability: read pipeline verified (single `readMetadata` hub) and Opus layout error message made actionable
-- GitHub presence: README focused on project identity; technical details moved to `docs/architecture/technology.md`; About description updated
 - Screen interaction contracts: finalized (all eight screens + directory README); navigation structure recorded in the design docs
 - Audit refactors C4–C6: applied (`SongField`/`TaskStatus` enums, `refreshDerivedState`/`loadSongsForDirectory` helpers, `UpdateState` extraction)
-- Metadata reliability: WAV trailing-NUL normalization in the read layer; WAV marked read-only after discovering JAudioTagger's WAV writer silently drops tags; per-format write capability (`supportsWrite(extension)`); value round-trip tests across all writable formats; `metadata --write-test` now verifies tag persistence instead of a success boolean
+- Large-library performance: memoized filtering/statistics; lazy lists already in place (no paging needed)
+
+**Metadata & reliability**
+
+- WAV trailing-NUL normalization in the read layer; WAV marked read-only after discovering JAudioTagger's WAV writer silently drops tags; per-format write capability (`supportsWrite(extension)`); value round-trip tests across all writable formats; `metadata --write-test` now verifies tag persistence instead of a success boolean
+- Read pipeline verified (single `readMetadata` hub); Opus layout error message made actionable; formal review in `planning/metadata-reliability-review.md`
+
+**UX & design**
+
+- Global keyboard shortcuts (section switching Ctrl+1…8, sidebar Ctrl+B, rescan F5, close panel Esc), listed in the About screen
+- Unified section error/loading feedback (`StatusPill`/`ProgressCard` across Health, Duplicates, Organize and the scan strip)
+- Responsive desktop behavior — `WindowSizeClass` (compact/medium/expanded); sidebar auto-collapses, title hides, stat cards stack, SongList hides secondary columns, Quick Fix narrows in compact
+- Semantic status colors consolidated — screens read `colorRoles()` (success/warning/info/danger) and charts use `ChartPalette`; mapping documented in DesignSystem §4.5
+- Accessibility: data charts carry a text alternative (format distribution summary via semantics) so information is not color/visual-only
+- Library density: artist/album/format filters behind a "Filters" disclosure with removable chips; removed redundant "synchronized" header line; song list header shows a result count ("X of Y songs" when filtered)
+- Statistics drill-down validated — selecting an artist/album/format opens Library filtered by that single dimension (other filters/query/selection cleared); covered by tests
+- Review/Health → Quick Fix: Review shows a loading state while diagnosing and a selection guidance hint when nothing is selected yet
+- Quick Fix: Apply failures surface as a local error pill in the panel (cleared on song change)
+- Organize: plan/apply flow completed in the desktop app (explicit Apply + confirmation + local outcome + library resync); CLI `organize --apply` remains available
+
+**Repository & identity**
+
+- Brand identity: "MS" serif monogram selected as the initial logo; organized as branding assets and integrated into the window icon and About screen
+- GitHub presence: README focused on project identity; technical details moved to `docs/architecture/technology.md`; About description updated
 
 The detailed current planning state is maintained in [`docs/ROADMAP.md`](../ROADMAP.md), rather than in this history document.
 

@@ -12,6 +12,10 @@ Melody Sync is a personal, open-source tool built around **local files** and **e
 
 **Report-first, apply-second.** Nothing is modified silently: analyses produce plans and suggestions, and every change to metadata or files is a deliberate action you confirm.
 
+## Status
+
+Melody Sync is in a **stable refinement phase** (v0.13.0-dev): the core workflow is consolidated and the focus is reliability and UX polish rather than new feature areas. Metadata writes are verified by re-read persistence, the interface adapts to compact/medium/expanded windows, and status feedback is semantic and consistent. See [`docs/ROADMAP.md`](docs/ROADMAP.md) for planning and [`docs/project/History.md`](docs/project/History.md) for what has been delivered.
+
 ## Features
 
 - **Library** — browse, search, filter, sort, and inspect your collection.
