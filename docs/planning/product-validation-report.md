@@ -70,8 +70,8 @@ Per the block rules, only critical/security/regressions are fixed immediately; t
 
 - **Severity:** Informational → input to the Metadata Enrichment decision
 - **Class:** Measured behavior (locked by `SongMatcherRealNamesTest`)
-- **Observation (real library, 13 no-artist files):** the local `SongMatcher` recovers the correct artist for **8/13** via the `Artist - Title` separator heuristic. **5/13 fail** because the heuristic does not handle: en-dash separators (`Hiroyuki Sawano – …`), underscores-as-spaces (`JoJo_s Bizarre Adventure…`), `[ORIGINAL] X - Y` inversions, and `"… by X"` phrasing. These are systematic, not one-offs.
-- **Implication:** ~62% of this library's untagged MP3s are fixable without leaving Quick Fix; the remainder are exactly the case for **Metadata Enrichment** (YouTube identification) or a matcher improvement (en-dash/underscore normalization).
+- **Observation (real library, 13 no-artist files):** the local `SongMatcher` recovers the correct artist for **9/13** via the `Artist - Title` separator heuristic (after Unicode-dash normalization: `–`, `—`, `－` now act as separators). **4/13 remain** because the heuristic does not handle: underscores-as-spaces (`JoJo_s Bizarre Adventure…`), `[ORIGINAL] X - Y` inversions, `"… by X"` phrasing, and names with no separator. These are systematic, not one-offs; the remaining fixes are considered more complex and deferred.
+- **Implication:** ~69% of this library's untagged MP3s are fixable without leaving Quick Fix; the remainder are exactly the case for **Metadata Enrichment** (YouTube identification) or targeted matcher improvements.
 
 ## 3. Guided GUI Checklist (for a human pass)
 

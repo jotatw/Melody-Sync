@@ -20,8 +20,14 @@ object SongMatcher {
     private val trackPrefix = Regex("^(\\d{1,3})\\s*[-_.]\\s*(.+)$")
     private val separator = Regex("\\s+-\\s+")
 
+    // Unicode dashes are common in real filenames (YouTube/editorial naming:
+    // "Artist – Title"). Normalizing them to the ASCII hyphen lets the
+    // separator heuristic match; title/artist values come out normalized too.
+    private val unicodeDash = Regex("[–—－]")
+
     fun suggest(song: Song): TagSuggestion {
         val filename = song.path.fileName.toString().substringBeforeLast('.').trim()
+            .replace(unicodeDash, "-")
         val dirPath = song.path.parent
         val dirName = dirPath?.fileName?.toString()
         val grandParent = dirPath?.parent?.fileName?.toString()

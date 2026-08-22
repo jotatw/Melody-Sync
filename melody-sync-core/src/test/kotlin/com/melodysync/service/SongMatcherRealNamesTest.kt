@@ -32,6 +32,22 @@ class SongMatcherRealNamesTest {
     }
 
     @Test
+    fun `recovers artist when the separator uses a unicode dash`() {
+        assertEquals(
+            "Hiroyuki Sawano",
+            suggest("Hiroyuki Sawano – 「CRiSiS POiNT」 _Suite_ [vocal_ gemie] _ Epic Battle Music(MP3_320K).mp3").artist,
+        )
+        assertEquals(
+            "Artist",
+            suggest("Artist — Title(MP3_320K).mp3").artist,
+        )
+        assertEquals(
+            "Artist",
+            suggest("Artist － Title(MP3_320K).mp3").artist,
+        )
+    }
+
+    @Test
     fun `title keeps the artist portion when a bracketed prefix is present`() {
         // The heuristic treats "[ORIGINAL] REFLECT - Gawr Gura" as artist =
         // "[ORIGINAL] REFLECT" (the bracket prefix is part of the first half).
