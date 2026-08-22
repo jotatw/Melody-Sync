@@ -35,12 +35,18 @@ Preserved library for the GUI pass: `--keep` output (temp dir reported by the ha
 
 Per the block rules, only critical/security/regressions are fixed immediately; the rest are registered for prioritization.
 
-### V1 — Health does not surface files that only have a filename title
+### V1 — Health DOES surface untagged files (original report was a harness artifact)
 
-- **Severity:** Medium (friction / usefulness gap)
-- **Class:** Friction → Product Validation Report (not fixed during validation)
-- **Observation:** On a library of untagged files, Health reported `0 songs without title/artist`. The diagnosis only flags a file when **both** title and artist are missing. Untagged files get a filename fallback for title, so a whole library of untagged files shows "no metadata issues" even though artist/album are empty.
-- **Suggested direction (later):** surface files whose title equals the filename fallback, or that are missing artist/album, so "needs attention" is meaningful for untagged collections.
+- **Severity:** Resolved (validation-harness bug, fixed)
+- **Class:** Fixed during validation (the report's own tooling was wrong, not the product)
+- **Observation:** An early run reported `0 songs without title/artist` on a library of untagged files. Root cause: the harness invoked `health` **without `--db`**, so it analyzed the default (empty) database instead of the scanned test database. With the correct `--db`, Health surfaces the untagged files correctly (`hasMetadata` = title **and** artist present; filename fallback for title counts as a title, but a missing artist flags the file). The harness now passes `--db` and asserts untagged files are surfaced (7 in the realistic library). **13/13 checks pass.**
+
+### V1b — Health does not surface album-only gaps or filename-fallback titles
+
+- **Severity:** Low (friction / refinement)
+- **Class:** Friction → register and prioritize later (not fixed during validation)
+- **Observation:** `hasMetadata` requires only title and artist. A file with real title + artist but **missing album**, or a file whose title is only the filename fallback but has an artist tag, is not flagged by Health. Quick Fix's `diagnose` already tracks `MissingField.ALBUM`; Health's aggregate count lags behind it.
+- **Suggested direction (later):** align Health's aggregate metadata issue with `QuickFixService.diagnose` (title/artist/album), so "needs attention" is consistent between Health and Review.
 
 ### V2 — Duplicate heuristic groups by title+artist+duration (documented)
 

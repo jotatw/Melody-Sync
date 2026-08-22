@@ -207,7 +207,7 @@ Recorded state:
 - Audit refactors C4–C6: applied (`SongField`/`TaskStatus` enums, `refreshDerivedState`/`loadSongsForDirectory` helpers, `UpdateState` extraction)
 - Large-library performance: memoized filtering/statistics; lazy lists already in place (no paging needed)
 - Consolidation & UX Refinement cycle closed (2026-08): Product Roadmap and INDEX synchronized; next stage is Product Validation (`docs/planning/product-validation.md`, automated + guided GUI with prioritized findings)
-- Product Validation executed (2026-08): automated harness `scripts/validate-workflow.sh` (12/12 checks, GUI boot smoke OK); findings registered in `planning/product-validation-report.md` (V1 Health does not surface untagged-with-filename-title files)
+- Product Validation executed (2026-08): automated harness `scripts/validate-workflow.sh` (13/13 checks, GUI boot smoke OK); harness fixed to analyze health against the scanned database; findings registered in `planning/product-validation-report.md` (V1 corrected — untagged files are surfaced; V1b Health does not yet flag album-only gaps or filename-fallback titles)
 
 **Metadata & reliability**
 

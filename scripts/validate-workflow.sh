@@ -65,9 +65,15 @@ echo "      (scanned songs: ${SCC:-unknown})"
 
 echo
 echo "=== 2. Health ==="
-HEALTH="$(run_cli "health $WORK")"
+HEALTH="$(run_cli "health $WORK --db $DB")"
 check "health analyzes the library" "$HEALTH" "Files:"
 check "health reports issue counts" "$HEALTH" "Metadata issues:"
+UNTAGGED="$(printf '%s' "$HEALTH" | sed -n 's/ *\([0-9][0-9]*\) songs without title\/artist.*/\1/p' | head -1)"
+if [ "${UNTAGGED:-0}" -gt 0 ]; then
+  ok "health surfaces untagged files (${UNTAGGED})"
+else
+  bad "health surfaces untagged files (count 0)"
+fi
 
 echo
 echo "=== 3. Metadata + write-test per format ==="
