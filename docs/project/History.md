@@ -206,6 +206,9 @@ Recorded state:
 - UX: unify section error feedback on `StatusPill` (DANGER) and shared `ProgressCard` loading across Health, Duplicates, Organize and the scan strip
 - Organize: plan/apply flow completed in the desktop app (explicit Apply + confirmation + local outcome + library resync); CLI `organize --apply` remains available
 - UX: Library toolbar density — search stays visible; artist/album/format filters moved behind a "Filters" disclosure with removable active-filter chips
+- UX: responsive desktop behavior — `WindowSizeClass` (compact/medium/expanded); sidebar auto-collapses, title hides, stat cards stack, SongList hides secondary columns, Quick Fix narrows in compact
+- Design: semantic status colors consolidated — screens read `colorRoles()` (success/warning/info/danger) and charts use `ChartPalette`; mapping documented in DesignSystem §4.5
+- Accessibility: data charts carry a text alternative (format distribution summary via semantics) so information is not color/visual-only
 - Metadata reliability: read pipeline verified (single `readMetadata` hub) and Opus layout error message made actionable
 - GitHub presence: README focused on project identity; technical details moved to `docs/architecture/technology.md`; About description updated
 - Screen interaction contracts: finalized (all eight screens + directory README); navigation structure recorded in the design docs

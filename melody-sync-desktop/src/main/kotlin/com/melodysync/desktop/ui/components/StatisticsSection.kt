@@ -25,6 +25,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.RankedItem
@@ -155,12 +157,16 @@ private fun FormatDonut(
 
             val total = formats.sumOf { it.count }.toFloat()
             val palette = ChartPalette.series
+            val chartSummary = formats
+                .sortedByDescending { it.count }
+                .joinToString(", ") { "${it.name} ${"%.0f".format(it.count / total * 100)}%" }
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp)
-                    .padding(top = Spacing.sm),
+                    .padding(top = Spacing.sm)
+                    .semantics { contentDescription = "Format distribution: $chartSummary" },
             ) {
                 PieChart(
                     values = formats.map { it.count.toFloat() },
