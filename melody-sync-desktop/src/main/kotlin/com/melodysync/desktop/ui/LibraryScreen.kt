@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -32,6 +33,7 @@ import com.melodysync.desktop.ui.components.Sidebar
 import com.melodysync.desktop.ui.components.SongList
 import com.melodysync.desktop.ui.components.StatisticsSection
 import com.melodysync.desktop.ui.components.TopBar
+import com.melodysync.desktop.ui.window.LocalWindowSizeClass
 import kotlinx.coroutines.delay
 
 @Composable
@@ -80,13 +82,21 @@ fun LibraryScreen(
                         val selectedSong = state.songs.firstOrNull {
                             it.path.toString() == state.selectedSongPath
                         }
+                        val sizeClass = LocalWindowSizeClass.current
                         Row(modifier = Modifier.fillMaxSize()) {
                             Box(modifier = Modifier.weight(1f).fillMaxSize()) {
                                 SongList(state)
                             }
                             if (selectedSong != null) {
                                 VerticalDivider()
-                                QuickFixPanel(state, selectedSong)
+                                // In compact windows the Quick Fix panel is kept
+                                // narrow so the song list retains usable width.
+                                val panelWidth = if (sizeClass.isCompact) 300.dp else 380.dp
+                                QuickFixPanel(
+                                    state = state,
+                                    song = selectedSong,
+                                    modifier = Modifier.width(panelWidth),
+                                )
                             }
                         }
                     }

@@ -45,12 +45,25 @@ import androidx.compose.ui.unit.dp
 import com.melodysync.desktop.state.AppState
 import com.melodysync.desktop.state.SongField
 import com.melodysync.desktop.theme.Spacing
+import com.melodysync.desktop.ui.window.LocalWindowSizeClass
+import com.melodysync.desktop.ui.window.WindowSizeClass
 import com.melodysync.model.Song
 import java.awt.Desktop
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+
+/**
+ * Secondary columns hidden in compact windows so Title/Artist keep usable
+ * width; the user can still toggle them via the columns menu.
+ */
+private val compactHiddenColumns = setOf(SongField.ALBUM, SongField.FORMAT, SongField.BITRATE)
+
+private fun effectiveVisibleColumns(state: AppState, sizeClass: WindowSizeClass): Set<SongField> {
+    if (!sizeClass.isCompact) return state.visibleColumns
+    return state.visibleColumns - compactHiddenColumns
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -277,6 +290,7 @@ private fun SongRow(
     onFocus: () -> Unit,
 ) {
     val selected = state.selectedSongPath == song.path.toString()
+    val visibleColumns = effectiveVisibleColumns(state, LocalWindowSizeClass.current)
 
     ContextMenuArea(
         items = {
@@ -308,7 +322,7 @@ private fun SongRow(
             } else {
                 Spacer(Modifier.width(3.dp))
             }
-            if (SongField.TITLE in state.visibleColumns) {
+            if (SongField.TITLE in visibleColumns) {
                 Text(
                     song.title ?: song.filename,
                     style = MaterialTheme.typography.bodyLarge.copy(
@@ -318,7 +332,7 @@ private fun SongRow(
                     modifier = Modifier.weight(2f),
                 )
             }
-            if (SongField.ARTIST in state.visibleColumns) {
+            if (SongField.ARTIST in visibleColumns) {
                 Text(
                     song.artist ?: "Unknown artist",
                     style = MaterialTheme.typography.bodyMedium,
@@ -327,7 +341,7 @@ private fun SongRow(
                     modifier = Modifier.weight(1.5f),
                 )
             }
-            if (SongField.ALBUM in state.visibleColumns) {
+            if (SongField.ALBUM in visibleColumns) {
                 Text(
                     song.album ?: "Unknown album",
                     style = MaterialTheme.typography.bodyMedium,
@@ -336,14 +350,14 @@ private fun SongRow(
                     modifier = Modifier.weight(1.5f),
                 )
             }
-            if (SongField.DURATION in state.visibleColumns) {
+            if (SongField.DURATION in visibleColumns) {
                 Text(
                     "%.1f min".format(song.durationMinutes),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.width(80.dp),
                 )
             }
-            if (SongField.FORMAT in state.visibleColumns) {
+            if (SongField.FORMAT in visibleColumns) {
                 Text(
                     song.extension,
                     style = MaterialTheme.typography.bodyMedium,
@@ -351,7 +365,7 @@ private fun SongRow(
                     modifier = Modifier.width(64.dp),
                 )
             }
-            if (SongField.BITRATE in state.visibleColumns) {
+            if (SongField.BITRATE in visibleColumns) {
                 Text(
                     song.bitrate?.let { "${it / 1000} kbps" } ?: "—",
                     style = MaterialTheme.typography.bodySmall,
@@ -390,27 +404,28 @@ private fun copyToClipboard(text: String) {
 
 @Composable
 private fun SongListHeader(state: AppState) {
+    val visibleColumns = effectiveVisibleColumns(state, LocalWindowSizeClass.current)
     Row(
         modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp, horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        if (SongField.TITLE in state.visibleColumns) {
+        if (SongField.TITLE in visibleColumns) {
             SortableHeader("Title", SongField.TITLE, Modifier.weight(2f), state)
         }
-        if (SongField.ARTIST in state.visibleColumns) {
+        if (SongField.ARTIST in visibleColumns) {
             SortableHeader("Artist", SongField.ARTIST, Modifier.weight(1.5f), state)
         }
-        if (SongField.ALBUM in state.visibleColumns) {
+        if (SongField.ALBUM in visibleColumns) {
             SortableHeader("Album", SongField.ALBUM, Modifier.weight(1.5f), state)
         }
-        if (SongField.DURATION in state.visibleColumns) {
+        if (SongField.DURATION in visibleColumns) {
             SortableHeader("Duration", SongField.DURATION, Modifier.width(80.dp), state)
         }
-        if (SongField.FORMAT in state.visibleColumns) {
+        if (SongField.FORMAT in visibleColumns) {
             SortableHeader("Format", SongField.FORMAT, Modifier.width(64.dp), state)
         }
-        if (SongField.BITRATE in state.visibleColumns) {
+        if (SongField.BITRATE in visibleColumns) {
             SortableHeader("Bitrate", SongField.BITRATE, Modifier.width(72.dp), state)
         }
     }
