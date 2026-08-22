@@ -114,7 +114,8 @@ External services remain separate from Core responsibilities and support specifi
 | [Product Roadmap](project/product-roadmap.md) | Complete objective map: consolidation, UX refinement, workflow refinement, maintenance, future expansion and deliberate non-goals | Active — current stage: Product Validation |
 | [ROADMAP](ROADMAP.md) | Current project direction, priorities and near-term implementation state | Active |
 | [Implementation Block 01 — Navigation Context](planning/implementation-block-01-navigation-context.md) | Bounded contextual-navigation implementation | Implemented / validation ongoing |
-| [Product Validation](planning/product-validation.md) | End-to-end workflow validation (automated + guided GUI) with prioritized findings | Approved — ready to execute |
+| [Product Validation](planning/product-validation.md) | End-to-end workflow validation (automated + guided GUI) with prioritized findings | In execution |
+| [Product Validation Report](planning/product-validation-report.md) | Automated results and classified findings; GUI checklist | Findings registered |
 | [Metadata Workflow](planning/metadata-workflow.md) | End-to-end identification, enrichment, review and explicit metadata application | Defined / target workflow |
 | [Metadata Foundation](planning/metadata-foundation.md) | Metadata providers, diagnostics, safe writes, persistence and fixtures | Implemented / consolidated (read-path validated) |
 | [Metadata Formats](planning/metadata-formats.md) | Verified read/write capability matrix | Reference |
