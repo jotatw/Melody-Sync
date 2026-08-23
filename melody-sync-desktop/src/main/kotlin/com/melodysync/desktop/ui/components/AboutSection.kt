@@ -56,7 +56,7 @@ fun AboutSection() {
         )
 
         listOf(
-            "Ctrl+1…8" to "Switch section",
+            "Ctrl+1…6" to "Switch section",
             "Ctrl+B" to "Toggle sidebar",
             "F5" to "Rescan the library",
             "Esc" to "Close the Quick Fix panel",

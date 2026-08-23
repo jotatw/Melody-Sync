@@ -43,7 +43,7 @@ An idea that has not yet been approved as part of the target behavior.
 
 A navigation change must not be considered implemented merely because it is documented here.
 
-The current source still exposes Review and Duplicates as primary sections, while the target model treats them as contextual workflows. fileciteturn157file18
+The sidebar now exposes only the six structural destinations — Review and Duplicates are contextual workflows, matching the target model. fileciteturn157file18
 
 ---
 
@@ -72,7 +72,7 @@ About
 | Settings | Configure application behavior |
 | About | Learn about the application/project |
 
-The current implementation may still expose Review and Duplicates as sidebar items. Those are treated as **navigation-consolidation work**, not as additional long-term primary goals. fileciteturn157file18
+Review and Duplicates are contextual workflows, not sidebar items. They are reached through Health and Library. fileciteturn157file18
 
 ---
 
@@ -290,24 +290,22 @@ About does not change application state.
 
 ### Current state
 
-The application currently exposes these sections in the Desktop navigation:
+The transition is complete: the sidebar exposes only the six structural destinations.
 
 ```text
 Library
 Statistics
 Health
-Review
-Duplicates
 Organize
 Settings
 About
 ```
 
-This is documented as the **current state**, not the target.
+This matches the target state — the transition is complete.
 
 ### Target state
 
-The application should expose:
+The sidebar exposes:
 
 ```text
 Library

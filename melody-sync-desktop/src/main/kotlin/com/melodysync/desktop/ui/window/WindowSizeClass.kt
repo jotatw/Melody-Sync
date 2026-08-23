@@ -1,11 +1,8 @@
 package com.melodysync.desktop.ui.window
 
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocal
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -30,35 +27,21 @@ data class WindowSizeClass(val width: Dp) {
  * CompositionLocal for the current window size class.
  */
 val LocalWindowSizeClass = staticCompositionLocalOf {
-    WindowSizeClass(0.dp)
+    WindowSizeClass(1100.dp)
 }
 
 /**
- * Remembers the current window size class based on window metrics.
- * Uses a simple state-based approach that can be updated externally.
- */
-@Composable
-fun rememberWindowSizeClass(): WindowSizeClass {
-    val widthState = remember { mutableStateOf(0.dp) }
-    
-    return derivedStateOf {
-        if (widthState.value == 0.dp) {
-            WindowSizeClass(1100.dp)
-        } else {
-            widthState.value
-        }
-    }.value as WindowSizeClass
-}
-
-/**
- * Provides the current window size class to the composition tree.
- * Should be called at the root of the composition tree.
+ * Measures the available width and provides the resulting [WindowSizeClass]
+ * to the composition tree via [LocalWindowSizeClass]. Must wrap the root
+ * composable so every screen reads the real window width.
  */
 @Composable
 fun ProvideWindowSizeClass(content: @Composable () -> Unit) {
-    val sizeClass = rememberWindowSizeClass()
-    CompositionLocalProvider(LocalWindowSizeClass provides sizeClass) {
-        content()
+    BoxWithConstraints {
+        val sizeClass = WindowSizeClass(maxWidth)
+        CompositionLocalProvider(LocalWindowSizeClass provides sizeClass) {
+            content()
+        }
     }
 }
 

@@ -13,8 +13,8 @@ import com.melodysync.desktop.state.Section
 /**
  * Global keyboard shortcuts for the main window.
  *
- * - Ctrl+1..8 — switch section (Library, Statistics, Health, Review,
- *   Duplicates, Organize, Settings, About)
+ * - Ctrl+1..6 — switch section (Library, Statistics, Health, Organize,
+ *   Settings, About — same order as the sidebar)
  * - Ctrl+B — toggle the sidebar
  * - F5 — rescan the library
  * - Esc — clear the song selection (close the Quick Fix panel)
@@ -55,9 +55,7 @@ private val sectionShortcuts: Map<Key, Section> = mapOf(
     Key.One to Section.LIBRARY,
     Key.Two to Section.STATISTICS,
     Key.Three to Section.HEALTH,
-    Key.Four to Section.REVIEW,
-    Key.Five to Section.DUPLICATES,
-    Key.Six to Section.ORGANIZE,
-    Key.Seven to Section.SETTINGS,
-    Key.Eight to Section.ABOUT,
+    Key.Four to Section.ORGANIZE,
+    Key.Five to Section.SETTINGS,
+    Key.Six to Section.ABOUT,
 )
