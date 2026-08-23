@@ -120,6 +120,7 @@ External services remain separate from Core responsibilities and support specifi
 | [Product Hardening](planning/product-hardening.md) | Robustness review: fail comprehensibly and safely on error/edge cases | In progress |
 | [Product Hardening Report](planning/product-hardening-report.md) | Probe results — no critical findings | Probes complete |
 | [Real-Use Friction Checklist](planning/real-use-checklist.md) | Guided checklist for using the app on a real library and recording friction | Ready to use |
+| [Friction Register](planning/friction-register.md) | Living record of real-use frictions (F1–F5 seeded; template for new entries) | Active |
 | [Metadata Workflow](planning/metadata-workflow.md) | End-to-end identification, enrichment, review and explicit metadata application | Defined / target workflow |
 | [Metadata Foundation](planning/metadata-foundation.md) | Metadata providers, diagnostics, safe writes, persistence and fixtures | Implemented / consolidated (read-path validated) |
 | [Metadata Formats](planning/metadata-formats.md) | Verified read/write capability matrix | Reference |

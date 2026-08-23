@@ -644,11 +644,21 @@ COMPLETED — Product Validation & Hardening (2026-08)
 11. Guided GUI validation                     ✓ (real use in progress)
 12. Product Hardening (safe failure behavior)  ✓ (no critical findings)
 
-NOW — Real Use
+NOW — Real Use (Track A — active)
 
-13. Use the real library; collect and classify friction (see planning/real-use-checklist.md)
+13. Use the real library; collect friction in planning/friction-register.md
 
-FUTURE (gated on real-use friction)
+PARALLEL — Maintenance (Track B)
+
+    Documentation upkeep, test maintenance, dependency review, small improvements.
+    Does not interrupt Track A.
+
+PARALLEL — Future Design (Track C — design only, no implementation)
+
+    Metadata Enrichment, Playback, fields, Artwork.
+    Design and specify; execute only when Track A justifies.
+
+FUTURE (gated on real-use friction — Track A evidence)
 
 14. Metadata Enrichment when justified by real use
 15. Additional metadata fields when needed
@@ -657,7 +667,47 @@ FUTURE (gated on real-use friction)
 18. Additional providers when the enrichment architecture needs them
 ```
 
-This order is intentionally flexible inside each stage. A real reliability issue may always take priority over planned UX work. Product Validation findings are registered and prioritized — only critical bugs, security/data problems, and regressions are fixed immediately; friction items feed the report and a later decision.
+This order is intentionally flexible inside each stage. A real reliability issue may always take priority over planned UX work. Product Validation findings are registered and prioritized — only critical bugs, security/data problems, and regressions are fixed immediately; friction items feed the register and a later decision.
+
+---
+
+## Expansion Decision Criteria
+
+Each future expansion has explicit triggers that must be confirmed by real use before implementation begins.
+
+### Metadata Enrichment
+
+Implement when **all** of these are confirmed by real use:
+
+- Many songs require manual identification (repetitive);
+- The local matcher (`SongMatcher`) is insufficient (<70% coverage);
+- A metadata provider can significantly improve the identification quality;
+- The user is willing to configure an API key.
+
+### Lightweight Playback
+
+Implement when:
+
+- Identifying or confirming metadata requires listening frequently;
+- A brief preview (5–10s) would eliminate the need to open an external player.
+
+### Additional Metadata Fields
+
+Implement when:
+
+- The absence of a specific field (Year, Genre, etc.) prevents a real decision or organization step;
+- The field can be reliably read from existing tags or provided by enrichment.
+
+### Artwork
+
+Implement when:
+
+- Missing or incorrect artwork becomes a recurring need during curation;
+- The storage/retrieval/caching strategy is defined.
+
+### None of the above
+
+If real use shows the current workflow is sufficient, continue with maintenance only.
 
 ---
 

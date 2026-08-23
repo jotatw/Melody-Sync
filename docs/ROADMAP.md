@@ -59,28 +59,36 @@ The roadmap should therefore remain concise and should not become a second imple
 
 ### Current Direction
 
-The base is consolidated and validated. The immediate priority is **real use and the expansion decision**, not opening feature areas speculatively.
-
-The active work is:
+The base is consolidated, validated, and hardened. The project now operates in **three parallel tracks**:
 
 ```text
-Product Validation ✅
-        │
-        ▼
-Product Hardening ✅
-        │
-        ▼
-Real use (current) — collect friction
-        │
-        ▼
-Expansion decision (gated on real friction)
+TRILHA A — REAL USE (você)
+    usar → observar → registrar fricções → acumular evidências
+    (não bloqueia B nem C)
+
+TRILHA B — PROJECT MAINTENANCE
+    documentação → testes → pequenas correções → higiene
+    (não interrompe A)
+
+TRILHA C — FUTURE DESIGN
+    Metadata Enrichment → Playback → campos → Artwork
+    (planejar sem implementar; só executar quando A justificar)
 ```
 
-- **Real use**: exercise the app on the real library and record friction (see `planning/real-use-checklist.md`); only critical/security/regression fixes are applied immediately.
-- **Metadata Enrichment** (most likely expansion): begin only when real use confirms manual identification is the main bottleneck. Local matcher coverage on the real library is measured (9/13; see `planning/metadata-filename-conventions.md` and the validation report V5).
-- **Maintenance**: keep documentation, tests, and the local knowledge graph current with what is delivered.
+- **Track A (Real Use)**: exercise the app on the real library and record friction in `planning/friction-register.md`. Only critical/security/regression fixes are applied immediately. This is the **current active stage**.
+- **Track B (Maintenance)**: documentation upkeep, test maintenance, dependency review, small improvements. Available in parallel with A.
+- **Track C (Future Design)**: design and specify future expansions without implementing them. The decision to implement is gated on evidence from Track A.
 
-This prevents unnecessary functionality from being added before real usage demonstrates the need.
+**Expansion criteria** (from `product-roadmap.md`):
+
+| Expansion | Trigger |
+|-----------|---------|
+| Metadata Enrichment | Identificação manual repetitiva + matcher local <70% + provider disponível |
+| Lightweight Playback | Confirmar metadata exige ouvir com frequência |
+| Novos campos | Year/Genre/etc. impede decisão ou organização real |
+| Artwork | Arte ausente/incorreta é necessidade recorrente |
+
+This prevents unnecessary functionality from being added before real usage demonstrates the need, while keeping the project moving in parallel.
 
 ---
 
@@ -103,9 +111,9 @@ This prevents unnecessary functionality from being added before real usage demon
 | Knowledge graph | Medium | ✅ Built and updated incrementally (`graphify-out/`) | (local, unversioned) |
 | Product Validation | **High** | ✅ Executed (13/13 automated checks; real-library baseline; findings V1–V5) | [Validation](planning/product-validation.md), [Report](planning/product-validation-report.md) |
 | Product Hardening | Medium | ✅ Executed — safe, comprehensible failures; no critical findings | [Hardening](planning/product-hardening.md), [Report](planning/product-hardening-report.md) |
-| Real use | **High** | 🚧 In progress — friction collection | [Real-Use Checklist](planning/real-use-checklist.md) |
+| Real use | **High** | 🚧 **Track A — active** (friction collection) | [Real-Use Checklist](planning/real-use-checklist.md), [Friction Register](planning/friction-register.md) |
 | Filename conventions | Medium | ✅ Reference grounded on the real library | [Filename Conventions](planning/metadata-filename-conventions.md) |
-| Metadata Enrichment | Future | ⏳ Gated on real-use friction (V5: local matcher 9/13) | [Product Roadmap](project/product-roadmap.md) |
+| Metadata Enrichment | Future | ⏳ Track C — gated on real-use friction (V5: local matcher 9/13) | [Product Roadmap](project/product-roadmap.md) |
 
 ---
 
@@ -422,6 +430,7 @@ This list is a scope boundary, not a rejection of future possibilities.
 | 1.3 | 2026-08-19 | Refreshed area statuses (screen contracts, metadata reliability, UX items); added repository presence, branding, and knowledge graph; updated current direction |
 | 1.4 | 2026-08-20 | Marked the current refinement cycle complete: metadata reliability, responsive desktop, semantic colors, library density, statistics drill-down, Review/Quick Fix refinement, large-library performance |
 | 1.5 | 2026-08-22 | Recorded Product Validation and Product Hardening as executed; added real-use and filename-conventions areas; Metadata Enrichment marked as gated on real-use friction; updated test counts (272) |
+| 1.6 | 2026-08-22 | Reorganized into three parallel tracks (Real Use / Maintenance / Future Design); created friction register; defined expansion criteria; updated current direction |
 
 ---
 
