@@ -156,7 +156,7 @@ A check must not be presented as an installation.
 
 A rebuild/install operation must communicate that it is changing the installed application rather than the music library.
 
-If a restart is required, the UI must state this explicitly.
+If a restart is required, the UI must state this explicitly. Automatic relaunch after update is deferred (see ROADMAP §6); the current UI communicates that the new build takes effect on the next launch.
 
 ## 11. Installation Information
 

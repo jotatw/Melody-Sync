@@ -63,6 +63,8 @@ Duplicates must not:
 - decide which copy is authoritative without user input;
 - implement a second duplicate-detection algorithm in the UI.
 
+The UI marks one candidate per group as **KEEP** (the file with the most complete metadata, then the largest size) as a *suggestion only* — the user can still trash it. The primary is not selectable for trash to prevent accidental removal of the recommended copy.
+
 ---
 
 ## 5. Entry Points

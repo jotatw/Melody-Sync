@@ -135,9 +135,9 @@ The exact categories should follow the diagnostics already supported by the appl
 
 - missing metadata;
 - zero duration;
-- low bitrate;
-- duplicate groups;
 - orphaned or filesystem-related problems when reported by the current health implementation.
+
+Low bitrate is surfaced through the Review/Quick Fix diagnostics (`QualityFlag.LOW_BITRATE`), not through the Health aggregate. Duplicate groups are presented as a separate summary card (see Duplicates).
 
 New categories should only be added when the underlying data and diagnostic behavior exist.
 
